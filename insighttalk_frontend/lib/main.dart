@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:insighttalk_frontend/pages/home.dart';
+import 'package:insighttalk_frontend/router.dart';
 
 
 void main() {
@@ -12,14 +12,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Insight Talk User App',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Insight Talk'),
+      routerConfig: routerConfig.goRouter(),
     );
   }
 }
