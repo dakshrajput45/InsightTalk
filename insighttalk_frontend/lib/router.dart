@@ -5,7 +5,7 @@ import 'package:insighttalk_frontend/pages/home.dart';
 import 'package:insighttalk_frontend/pages/notifications/notfication_view.dart';
 import 'package:insighttalk_frontend/pages/paymentgateway/payment_gateway.dart';
 import 'package:insighttalk_frontend/pages/userProfile/user_profile_view.dart';
-import './main.dart';
+
 
 RouterConfig routerConfig = RouterConfig();
 RouteNames routeNames = RouteNames();

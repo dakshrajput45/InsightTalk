@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "6667383254",
+    "project_id": "insight-talk-af3e1",
+    "storage_bucket": "insight-talk-af3e1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:6667383254:android:5a7235dcdb08336c0b3477",
+        "android_client_info": {
+          "package_name": "com.example.insighttalk_frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH5V-8PrNFiQ8iwDEZhieadIwP1DSfU8E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
