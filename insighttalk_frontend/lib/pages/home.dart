@@ -4,10 +4,10 @@ import 'package:insighttalk_frontend/router.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({
-    Key? key,
+    super.key,
     required this.title,
     required this.navigationShell,
-  }) : super(key: key);
+  });
 
   final String title;
   final StatefulNavigationShell navigationShell;
@@ -30,7 +30,11 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.chat_outlined))
+          IconButton(
+              onPressed: () {
+                context.pushNamed(routeNames.chat);
+              },
+              icon: const Icon(Icons.chat_outlined))
         ],
       ),
       body: widget.navigationShell, // Display the current page

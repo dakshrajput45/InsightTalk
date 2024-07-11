@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:insighttalk_frontend/theme.dart';
 import 'firebase_options.dart';
 import 'package:insighttalk_frontend/firebase_options.dart';
 import 'package:insighttalk_frontend/router.dart';
@@ -21,11 +22,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Insight Talk User App',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      routerConfig: routerConfig.goRouter(),
+      theme: appTheme,
+      routerConfig: routerConfig.getRouter(),
     );
   }
 }
