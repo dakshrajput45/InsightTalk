@@ -1,0 +1,118 @@
+{
+  "project_info": {
+    "project_number": "6667383254",
+    "project_id": "insight-talk-af3e1",
+    "storage_bucket": "insight-talk-af3e1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:6667383254:android:8273a206780a12c20b3477",
+        "android_client_info": {
+          "package_name": "com.example.insighttalk_backend"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "6667383254-ul5gb0q34duc156uhqdmdbotp9jf2h0g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH5V-8PrNFiQ8iwDEZhieadIwP1DSfU8E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "6667383254-ul5gb0q34duc156uhqdmdbotp9jf2h0g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "6667383254-0jiqnihn2pimrpjt3ve559iik7actl58.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.insighttalkFrontend"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:6667383254:android:552c8ca4a3cc2ac80b3477",
+        "android_client_info": {
+          "package_name": "com.example.insighttalk_expert"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "6667383254-ul5gb0q34duc156uhqdmdbotp9jf2h0g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH5V-8PrNFiQ8iwDEZhieadIwP1DSfU8E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "6667383254-ul5gb0q34duc156uhqdmdbotp9jf2h0g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "6667383254-0jiqnihn2pimrpjt3ve559iik7actl58.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.insighttalkFrontend"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:6667383254:android:5a7235dcdb08336c0b3477",
+        "android_client_info": {
+          "package_name": "com.example.insighttalk_frontend"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "6667383254-ul5gb0q34duc156uhqdmdbotp9jf2h0g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH5V-8PrNFiQ8iwDEZhieadIwP1DSfU8E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "6667383254-ul5gb0q34duc156uhqdmdbotp9jf2h0g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "6667383254-0jiqnihn2pimrpjt3ve559iik7actl58.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.insighttalkFrontend"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

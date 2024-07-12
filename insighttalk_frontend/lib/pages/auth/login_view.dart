@@ -14,8 +14,7 @@ class _LoginViewState extends State<LoginView> {
   TextEditingController passwordController = TextEditingController();
   bool _isNotValidate = false;
   void handleLogin(int val) {
-    updateLoginStatus(val); // Update isLoggedIn to true
-    // You can navigate to another screen or perform any post-login action here
+    updateLoginStatus(val); 
   }
 
   @override
@@ -127,7 +126,6 @@ class _LoginViewState extends State<LoginView> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        print("Login button pressed");
                         handleLogin(2);
                         context.goNamed(
                             routeNames.experts); // Navigate to experts route

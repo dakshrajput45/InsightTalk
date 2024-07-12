@@ -144,6 +144,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "14.2.0"
+  insighttalk_backend:
+    dependency: "direct main"
+    description:
+      path: "../insighttalk_backend"
+      relative: true
+    source: path
+    version: "1.0.0+1"
   leak_tracker:
     dependency: transitive
     description:

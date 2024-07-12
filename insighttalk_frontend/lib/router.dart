@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insighttalk_frontend/pages/appointment/appointment_view.dart';
 import 'package:insighttalk_frontend/pages/auth/SignUp_view.dart';
