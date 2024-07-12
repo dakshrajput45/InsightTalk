@@ -2,7 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:insighttalk_expert/firebase_options.dart';
 import 'package:insighttalk_expert/router.dart';
-import 'package:insighttalk_expert/theme.dart';
+import 'package:insighttalk_expert/themes/theme.dart';
+
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();

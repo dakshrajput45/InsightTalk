@@ -1,5 +1,6 @@
 // theme.dart
 import 'package:flutter/material.dart';
+import 'package:insighttalk_expert/themes/text_form_field_widget.dart';
 
 final ThemeData appTheme = ThemeData(
   elevatedButtonTheme: ElevatedButtonThemeData(
@@ -21,5 +22,6 @@ final ThemeData appTheme = ThemeData(
       ),
     ),
   ),
+  inputDecorationTheme: TTextFieldFormTheme.lightInputDecorationTheme,
   useMaterial3: false,
 );
