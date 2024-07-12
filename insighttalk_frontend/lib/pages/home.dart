@@ -67,8 +67,8 @@ class _HomeViewState extends State<HomeView> {
         },
         items: const [
           BottomNavigationBarItem(
-            activeIcon: Icon(Icons.grid_view_sharp),
-            icon: Icon(Icons.grid_view),
+            activeIcon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
           BottomNavigationBarItem(
@@ -82,13 +82,13 @@ class _HomeViewState extends State<HomeView> {
             label: 'Payment Gateway',
           ),
           BottomNavigationBarItem(
-            activeIcon: Icon(Icons.video_collection),
-            icon: Icon(Icons.notifications),
+            activeIcon: Icon(Icons.notifications),
+            icon: Icon(Icons.notifications_outlined),
             label: 'Notifications',
           ),
           BottomNavigationBarItem(
-            activeIcon: Icon(Icons.video_collection),
-            icon: Icon(Icons.person),
+            activeIcon: Icon(Icons.person),
+            icon: Icon(Icons.person_outline),
             label: 'Profile',
           ),
         ],

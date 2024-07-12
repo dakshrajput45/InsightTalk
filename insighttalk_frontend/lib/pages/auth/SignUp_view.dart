@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:insighttalk_frontend/pages/userProfile/profile_screen.dart';
+import 'package:insighttalk_frontend/router.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -55,35 +58,8 @@ class _SignUpViewState extends State<SignUpView> {
                     TextField(
                       controller: emailController,
                       decoration: InputDecoration(
-                        errorStyle: const TextStyle(color: Colors.white),
                         errorText: _isNotValidate ? "Enter Proper Info" : null,
-                        fillColor: Colors.grey.shade100,
-                        filled: true,
                         hintText: 'Email',
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.grey,
-                              width: 1.0), // Color for enabled state
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.black,
-                              width: 2.0), // Color for focused state
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.red,
-                              width: 2.0), // Color for error state
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.redAccent,
-                              width: 2.0), // Color for focused error state
-                          borderRadius: BorderRadius.circular(10),
-                        ),
                       ),
                     ),
                     const SizedBox(
@@ -93,35 +69,8 @@ class _SignUpViewState extends State<SignUpView> {
                       controller: passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
-                        errorStyle: const TextStyle(color: Colors.white),
                         errorText: _isNotValidate ? "Enter Proper Info" : null,
-                        fillColor: Colors.grey.shade100,
-                        filled: true,
                         hintText: 'Password',
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.grey,
-                              width: 1.0), // Color for enabled state
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.black,
-                              width: 2.0), // Color for focused state
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.red,
-                              width: 2.0), // Color for error state
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.redAccent,
-                              width: 2.0), // Color for focused error state
-                          borderRadius: BorderRadius.circular(10),
-                        ),
                       ),
                     ),
                     const SizedBox(
@@ -131,35 +80,8 @@ class _SignUpViewState extends State<SignUpView> {
                       controller: confirmPasswordController,
                       obscureText: true,
                       decoration: InputDecoration(
-                        errorStyle: const TextStyle(color: Colors.white),
                         errorText: _isNotValidate ? "Enter Proper Info" : null,
-                        fillColor: Colors.grey.shade100,
-                        filled: true,
                         hintText: 'Confirm Password',
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.grey,
-                              width: 1.0), // Color for enabled state
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.black,
-                              width: 2.0), // Color for focused state
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.red,
-                              width: 2.0), // Color for error state
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.redAccent,
-                              width: 2.0), // Color for focused error state
-                          borderRadius: BorderRadius.circular(10),
-                        ),
                       ),
                     ),
                     const SizedBox(
@@ -169,7 +91,10 @@ class _SignUpViewState extends State<SignUpView> {
                       width: double
                           .infinity, // Makes the button take the full width of its parent
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          context.pushNamed(routeNames.profilescreen);
+                          // const ProfileScreen();
+                        },
                         child: const Text("Sign Up"),
                       ),
                     ),
@@ -208,7 +133,7 @@ class _SignUpViewState extends State<SignUpView> {
                           // Add your Google SignUp logic here
                         },
                         icon: Image.asset(
-                          'assets/search.png',
+                          'assets/images/search.png',
                           height: 24.0,
                           width: 24.0,
                         ),

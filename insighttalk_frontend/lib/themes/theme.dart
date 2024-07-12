@@ -1,6 +1,6 @@
 // theme.dart
 import 'package:flutter/material.dart';
-import 'package:insighttalk_frontend/widgets_theme/text_form_field_widget.dart';
+import 'package:insighttalk_frontend/themes/widgets_theme/text_form_field_widget.dart';
 
 final ThemeData appTheme = ThemeData(
   elevatedButtonTheme: ElevatedButtonThemeData(

@@ -7,6 +7,7 @@ import 'package:insighttalk_frontend/pages/expert/experts_view.dart';
 import 'package:insighttalk_frontend/pages/home.dart';
 import 'package:insighttalk_frontend/pages/notifications/notfication_view.dart';
 import 'package:insighttalk_frontend/pages/paymentgateway/payment_gateway.dart';
+import 'package:insighttalk_frontend/pages/userProfile/profile_screen.dart';
 import 'package:insighttalk_frontend/pages/userProfile/user_profile_view.dart';
 
 // Simulate login status
@@ -24,6 +25,11 @@ class RouterConfig {
   final GoRouter _router = GoRouter(
     // Define routes
     routes: [
+      GoRoute(
+        path: '/profilescreen',
+        name: routeNames.profilescreen,
+        builder: (context, state) => const ProfileScreen(),
+      ),
       GoRoute(
         path: '/login',
         name: routeNames.login,
@@ -104,4 +110,5 @@ class RouteNames {
   final String login = 'login';
   final String signup = 'signup';
   final String chat = 'chat';
+  final String profilescreen = 'profilescreen';
 }
