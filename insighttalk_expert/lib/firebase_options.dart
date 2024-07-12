@@ -42,7 +42,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyDLlbvurUf2ZRB8S81l4tuw_IOegTOczks',
-    appId: '1:6667383254:web:95d0db78599ab3240b3477',
+    appId: '1:6667383254:web:19d55b2048bd51340b3477',
     messagingSenderId: '6667383254',
     projectId: 'insight-talk-af3e1',
     authDomain: 'insight-talk-af3e1.firebaseapp.com',
@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCH5V-8PrNFiQ8iwDEZhieadIwP1DSfU8E',
-    appId: '1:6667383254:android:8273a206780a12c20b3477',
+    appId: '1:6667383254:android:552c8ca4a3cc2ac80b3477',
     messagingSenderId: '6667383254',
     projectId: 'insight-talk-af3e1',
     storageBucket: 'insight-talk-af3e1.appspot.com',
@@ -59,28 +59,27 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyA2Gl-o3nuyXhOH48Uws09VgTY6zIYKWSE',
-    appId: '1:6667383254:ios:0bf1ab117818e1d20b3477',
+    appId: '1:6667383254:ios:4e8a79c8817f9a340b3477',
     messagingSenderId: '6667383254',
     projectId: 'insight-talk-af3e1',
     storageBucket: 'insight-talk-af3e1.appspot.com',
-    iosClientId: '6667383254-m1q4k4u0au6dfse3selgokte9bhqtg6r.apps.googleusercontent.com',
-    iosBundleId: 'com.example.insighttalkBackend',
+    iosClientId: '6667383254-q3908phkt9q8ab4ijjcuu88s4qmml1i6.apps.googleusercontent.com',
+    iosBundleId: 'com.example.insighttalkExpert',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyA2Gl-o3nuyXhOH48Uws09VgTY6zIYKWSE',
-    appId: '1:6667383254:ios:0bf1ab117818e1d20b3477',
+    appId: '1:6667383254:ios:4e8a79c8817f9a340b3477',
     messagingSenderId: '6667383254',
     projectId: 'insight-talk-af3e1',
     storageBucket: 'insight-talk-af3e1.appspot.com',
-    iosClientId: '6667383254-m1q4k4u0au6dfse3selgokte9bhqtg6r.apps.googleusercontent.com',
-    iosBundleId: 'com.example.insighttalkBackend',
+    iosClientId: '6667383254-q3908phkt9q8ab4ijjcuu88s4qmml1i6.apps.googleusercontent.com',
+    iosBundleId: 'com.example.insighttalkExpert',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyDLlbvurUf2ZRB8S81l4tuw_IOegTOczks',
-    appId: '1:6667383254:web:b78d5470c3e9f0700b3477',
-
+    appId: '1:6667383254:web:b8ed9e38407387aa0b3477',
     messagingSenderId: '6667383254',
     projectId: 'insight-talk-af3e1',
     authDomain: 'insight-talk-af3e1.firebaseapp.com',

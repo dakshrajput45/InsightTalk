@@ -15,8 +15,7 @@ class _LoginViewState extends State<LoginView> {
   TextEditingController passwordController = TextEditingController();
   bool _isNotValidate = false;
   void handleLogin(int val) {
-    updateLoginStatus(val); // Update isLoggedIn to true
-    // You can navigate to another screen or perform any post-login action here
+    updateLoginStatus(val);
   }
 
   @override
@@ -48,39 +47,8 @@ class _LoginViewState extends State<LoginView> {
                   TextField(
                     controller: emailController,
                     decoration: InputDecoration(
-                      errorStyle: const TextStyle(color: Colors.white),
                       errorText: _isNotValidate ? "Enter Proper Info" : null,
-                      fillColor: Colors.grey.shade100,
-                      filled: true,
                       hintText: 'Email',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.grey,
-                          width: 1.0,
-                        ), // Color for enabled state
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.black,
-                          width: 2.0,
-                        ), // Color for focused state
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                          width: 2.0,
-                        ), // Color for error state
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.redAccent,
-                          width: 2.0,
-                        ), // Color for focused error state
-                        borderRadius: BorderRadius.circular(10),
-                      ),
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -88,39 +56,8 @@ class _LoginViewState extends State<LoginView> {
                     controller: passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
-                      errorStyle: const TextStyle(color: Colors.white),
                       errorText: _isNotValidate ? "Enter Proper Info" : null,
-                      fillColor: Colors.grey.shade100,
-                      filled: true,
                       hintText: 'Password',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.grey,
-                          width: 1.0,
-                        ), // Color for enabled state
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.black,
-                          width: 2.0,
-                        ), // Color for focused state
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                          width: 2.0,
-                        ), // Color for error state
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.redAccent,
-                          width: 2.0,
-                        ), // Color for focused error state
-                        borderRadius: BorderRadius.circular(10),
-                      ),
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -128,7 +65,6 @@ class _LoginViewState extends State<LoginView> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        print("Login button pressed");
                         handleLogin(2);
                         context.goNamed(
                             routeNames.experts); // Navigate to experts route
@@ -167,7 +103,7 @@ class _LoginViewState extends State<LoginView> {
                         // Handle Google login
                       },
                       icon: Image.asset(
-                        'assets/search.png',
+                        'assets/images/search.png',
                         height: 24.0,
                         width: 24.0,
                       ),

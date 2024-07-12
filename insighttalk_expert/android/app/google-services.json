@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:6667383254:android:8273a206780a12c20b3477",
+        "mobilesdk_app_id": "1:6667383254:android:1a17abe1abc8cba90b3477",
         "android_client_info": {
-          "package_name": "com.example.insighttalk_backend"
+          "package_name": "com.app.insighttalk_backend"
         }
       },
       "oauth_client": [
