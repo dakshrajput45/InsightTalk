@@ -105,14 +105,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     prefixIcon: Icon(Icons.lock),
                   ),
                 ),
-                const SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    // Handle forgot password action
-                  },
-                  child: const Text('Forgot Password?'),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      // Handle change password action
+                    },
+                    child: const Text('Change Password'),
+                  ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
 
                 // Address Details Section
                 const Text(
@@ -139,7 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     hintText: 'Country',
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
 
                 // Add Category Section
                 const Text(
