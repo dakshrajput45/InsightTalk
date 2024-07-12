@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:insighttalk_frontend/theme.dart';
 import 'firebase_options.dart';
-import 'package:insighttalk_frontend/firebase_options.dart';
 import 'package:insighttalk_frontend/router.dart';
 
 void main() async {
@@ -27,3 +26,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+  

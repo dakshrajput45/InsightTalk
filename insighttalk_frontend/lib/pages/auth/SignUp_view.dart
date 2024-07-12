@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/api_functions/auth/auth_user.dart';
 import 'package:insighttalk_frontend/router.dart';
 
 class SignUpView extends StatefulWidget {
@@ -14,6 +15,7 @@ class _SignUpViewState extends State<SignUpView> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   bool _isNotValidate = false;
+  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class _SignUpViewState extends State<SignUpView> {
           backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back,
               color: Colors.black,
             ),
@@ -171,7 +173,10 @@ class _SignUpViewState extends State<SignUpView> {
                       width: double
                           .infinity, // Makes the button take the full width of its parent
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          // Sign Up Button
+                          _itUserAuthSDK.signOut();
+                        },
                         child: const Text("Sign Up"),
                       ),
                     ),
@@ -207,6 +212,7 @@ class _SignUpViewState extends State<SignUpView> {
                     SizedBox(
                       child: ElevatedButton.icon(
                         onPressed: () {
+                          _itUserAuthSDK.googleSignUp();
                           // Add your Google SignUp logic here
                         },
                         icon: Image.asset(
