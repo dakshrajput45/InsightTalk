@@ -80,6 +80,7 @@ class DefaultFirebaseOptions {
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyDLlbvurUf2ZRB8S81l4tuw_IOegTOczks',
     appId: '1:6667383254:web:b78d5470c3e9f0700b3477',
+
     messagingSenderId: '6667383254',
     projectId: 'insight-talk-af3e1',
     authDomain: 'insight-talk-af3e1.firebaseapp.com',

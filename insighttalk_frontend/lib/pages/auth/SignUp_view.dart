@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/api_functions/auth/auth_user.dart';
 import 'package:insighttalk_frontend/pages/userProfile/editprofile_view.dart';
 import 'package:insighttalk_frontend/router.dart';
 
@@ -15,6 +17,7 @@ class _SignUpViewState extends State<SignUpView> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   bool _isNotValidate = false;
+  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +27,7 @@ class _SignUpViewState extends State<SignUpView> {
           backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back,
               color: Colors.black,
             ),
@@ -92,6 +95,8 @@ class _SignUpViewState extends State<SignUpView> {
                           .infinity, // Makes the button take the full width of its parent
                       child: ElevatedButton(
                         onPressed: () {
+                          // Sign Up Button
+                          _itUserAuthSDK.signOut();
                           context.pushNamed(routeNames.profilescreen);
                           // const ProfileScreen();
                         },
@@ -129,8 +134,15 @@ class _SignUpViewState extends State<SignUpView> {
                     ),
                     SizedBox(
                       child: ElevatedButton.icon(
-                        onPressed: () {
+                        onPressed: () async {
                           // Add your Google SignUp logic here
+                          if(await _itUserAuthSDK.googleSignUp() != null )
+                          {
+                          //  context.goNamed(
+                          //   routeNames.experts);
+                          }
+                          // Needs to implement Signout Button to Signout of App
+                          
                         },
                         icon: Image.asset(
                           'assets/images/search.png',
