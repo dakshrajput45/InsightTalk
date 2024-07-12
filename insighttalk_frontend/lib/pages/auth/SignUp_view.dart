@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:insighttalk_frontend/pages/userProfile/profile_screen.dart';
+import 'package:insighttalk_frontend/pages/userProfile/editprofile_view.dart';
 import 'package:insighttalk_frontend/router.dart';
 
 class SignUpView extends StatefulWidget {
