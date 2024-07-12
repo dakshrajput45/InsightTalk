@@ -38,6 +38,7 @@ dependencies:
   google_sign_in: ^6.2.1
   go_router: ^14.2.0
   cupertino_icons: ^1.0.6
+  flutter_typeahead: ^4.0.0
 
 dev_dependencies:
   flutter_test:
