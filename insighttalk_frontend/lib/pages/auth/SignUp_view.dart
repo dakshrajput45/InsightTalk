@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insighttalk_backend/api_functions/auth/auth_user.dart';
@@ -211,9 +212,15 @@ class _SignUpViewState extends State<SignUpView> {
                     ),
                     SizedBox(
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          _itUserAuthSDK.googleSignUp();
+                        onPressed: () async {
                           // Add your Google SignUp logic here
+                          if(await _itUserAuthSDK.googleSignUp() != null )
+                          {
+                          //  context.goNamed(
+                          //   routeNames.experts);
+                          }
+                          // Needs to implement Signout Button to Signout of App
+                          
                         },
                         icon: Image.asset(
                           'assets/search.png',

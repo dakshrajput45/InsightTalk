@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class ITUserAuthSDK {
@@ -33,9 +32,9 @@ class ITUserAuthSDK {
             await FirebaseAuth.instance.signInWithCredential(credential);
 
         final User? user = authResult.user;
+        print(authResult);
         return user;
       } else {
-        // User canceled the sign-in process
         return null;
       }
     } catch (error) {
@@ -43,13 +42,12 @@ class ITUserAuthSDK {
       print("Error signing in with Google: $error");
       rethrow;
     }
-    // print("Function chal raha hai");
-    // return null;
   }
 
-  Future<User?> emailandPasswordSignUp() async {
+  Future<User?> emailandPasswordSignUp(String email, String password) async {
     try {
-      final UserCredential authResult = await FirebaseAuth.instance.createUserWithEmailAndPassword( email: "Yash123450@gmail.com" ,  password: "Yash123450"   )
+      final UserCredential authResult = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
       print(authResult);
       final User? user = authResult.user;
       return user;
