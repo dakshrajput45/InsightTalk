@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insighttalk_frontend/router.dart'; // Assuming routeNames is defined here
-import 'package:insighttalk_backend/api_functions/auth/auth_user.dart';
+import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginView extends StatefulWidget {
@@ -63,7 +63,8 @@ class _LoginViewState extends State<LoginView> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter an email';
                       }
-                      if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+")
+                      if (!RegExp(
+                              r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+")
                           .hasMatch(value)) {
                         return 'Please enter a valid email';
                       }
