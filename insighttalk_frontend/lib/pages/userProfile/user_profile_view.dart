@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:insighttalk_backend/api_functions/auth/auth_user.dart';
+import 'package:insighttalk_frontend/router.dart';
 
 class UserProfileView extends StatefulWidget {
   const UserProfileView({super.key});
@@ -26,7 +28,7 @@ class _UserProfileViewState extends State<UserProfileView> {
         ElevatedButton(
           onPressed: () {
             _itUserAuthSDK.signOut();
-            Navigator.pushNamed(context, '/login');
+            context.goNamed(routeNames.login);
             // const ProfileScreen();
           },
           child: const Text("Log Out"),
