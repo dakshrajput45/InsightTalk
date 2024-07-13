@@ -22,6 +22,8 @@ class _LoginViewState extends State<LoginView> {
     updateLoginStatus(val);
   }
 
+  bool _isHidden = true;
+
   // handleLogin(String email, String password) {
   //   final user = _itUserAuthSDK.emailandPasswordLogIn(email, password);
   //   return user;
@@ -74,10 +76,20 @@ class _LoginViewState extends State<LoginView> {
                   const SizedBox(height: 30),
                   TextField(
                     controller: passwordController,
-                    obscureText: true,
+                    obscureText: _isHidden,
                     decoration: InputDecoration(
                       errorText: _isNotValidate ? "Enter Proper Info" : null,
                       hintText: 'Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(_isHidden
+                            ? Icons.visibility_off
+                            : Icons.visibility),
+                        onPressed: () {
+                          setState(() {
+                            _isHidden = !_isHidden;
+                          });
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(height: 30),

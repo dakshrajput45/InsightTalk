@@ -18,12 +18,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Insight Talk User App',
-      debugShowCheckedModeBanner: false,
-      theme: appTheme,
-      routerConfig: routerConfig.getRouter(),
+    return SafeArea(
+      child: MaterialApp.router(
+        title: 'Insight Talk User App',
+        debugShowCheckedModeBanner: false,
+        theme: appTheme,
+        routerConfig: routerConfig.getRouter(),
+      ),
     );
   }
 }
-  

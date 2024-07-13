@@ -21,7 +21,7 @@ class ExpertCard extends StatelessWidget {
       child: AspectRatio(
           aspectRatio: 14 / 16,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(12.0),
             child: Column(
               children: [
                 CircleAvatar(

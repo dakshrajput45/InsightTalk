@@ -50,12 +50,6 @@ class _EditProfileViewState extends State<EditProfileView> {
 
   bool _isHidden = true;
 
-  void _showpassword() {
-    setState(() {
-      _isHidden = !_isHidden;
-    });
-  }
-
   void _openImagePicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -227,7 +221,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                             image: DecorationImage(
                               image: _imageUrl != null
                                   ? NetworkImage(_imageUrl!)
-                                  : NetworkImage(
+                                  : const NetworkImage(
                                           'https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg')
                                       as ImageProvider,
                               fit: BoxFit.cover,
@@ -306,7 +300,11 @@ class _EditProfileViewState extends State<EditProfileView> {
                           icon: Icon(_isHidden
                               ? Icons.visibility
                               : Icons.visibility_off),
-                          onPressed: _showpassword,
+                          onPressed: () {
+                            setState(() {
+                              _isHidden = !_isHidden;
+                            });
+                          },
                         )),
                   ),
                   Align(

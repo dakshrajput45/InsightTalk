@@ -64,6 +64,9 @@ flutter:
   assets:
     - assets/images/search.png
     - assets/images/blank_profile_pic.jpg
+    - assets/ads/ad_image1.jpg
+    - assets/ads/ad_image2.jpg
+    - assets/ads/ad_image3.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
