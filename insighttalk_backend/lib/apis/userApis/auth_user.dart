@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
 // import 'package:flutter/foundation.dart';
 
 class ITUserAuthSDK {
@@ -7,6 +8,8 @@ class ITUserAuthSDK {
     print(FirebaseAuth.instance.currentUser);
     return FirebaseAuth.instance.currentUser;
   }
+
+
 
   // *** FIREBASE FUNCTIONS FOR GOOGLE SIGN IN *** //
   /// Sign in with google popup for web
@@ -76,6 +79,7 @@ class ITUserAuthSDK {
         print('Wrong password provided for that user.');
       }
       return null;
+
     } catch (e) {
       print(e);
       rethrow;

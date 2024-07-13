@@ -1,9 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:insighttalk_backend/api_functions/auth/auth_user.dart';
-import 'package:insighttalk_frontend/pages/userProfile/editprofile_view.dart';
 import 'package:insighttalk_frontend/router.dart';
+import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -58,12 +56,22 @@ class _SignUpViewState extends State<SignUpView> {
                 ),
                 child: Column(
                   children: [
-                    TextField(
+                    TextFormField(
                       controller: emailController,
                       decoration: InputDecoration(
                         errorText: _isNotValidate ? "Enter Proper Info" : null,
                         hintText: 'Email',
                       ),
+                      validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter an email';
+                      }
+                      if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+")
+                          .hasMatch(value)) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
                     ),
                     const SizedBox(
                       height: 30,
@@ -91,10 +99,10 @@ class _SignUpViewState extends State<SignUpView> {
                       height: 30,
                     ),
                     SizedBox(
-                      width: double
-                          .infinity, // Makes the button take the full width of its parent
+                      width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
+
                           if (passwordController.text ==
                               confirmPasswordController.text) {
                             User? user =
@@ -102,7 +110,7 @@ class _SignUpViewState extends State<SignUpView> {
                                     email: emailController.text,
                                     password: passwordController.text);
                             if (user != null && mounted) {
-                              context.pushNamed(routeNames.profilescreen);
+                              context.goNamed(routeNames.profilescreen);
                               // context.goNamed(routeNames.experts);
                             } else {
                               print("Sign Up Failed");
@@ -148,15 +156,17 @@ class _SignUpViewState extends State<SignUpView> {
                     SizedBox(
                       child: ElevatedButton.icon(
                         onPressed: () async {
+
                           // Google Sign Up Function Added here (Same function used for Log In)
                           User? user = await _itUserAuthSDK.googleSignUp();
                           if (user != null && mounted) {
-                            context.pushNamed(routeNames.profilescreen);
+                            context.goNamed(routeNames.profilescreen);
                             // const ProfileScreen();
                           } else {
                             print("Google Login Failed");
                           }
                           // Navigate to experts route
+
                         },
                         icon: Image.asset(
                           'assets/images/search.png',
