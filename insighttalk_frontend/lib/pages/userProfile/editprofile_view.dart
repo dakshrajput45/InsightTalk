@@ -1,5 +1,11 @@
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:insighttalk_backend/apis/category/category_apis.dart';
+import 'package:insighttalk_backend/modal/category.dart';
+import 'package:path/path.dart' as Path;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/modal/modal_user.dart';
 import 'package:insighttalk_frontend/pages/userProfile/editprofile_controller.dart';
@@ -24,21 +30,13 @@ class _EditProfileViewState extends State<EditProfileView> {
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
+  final TextEditingController _urlController = TextEditingController();
   final FocusNode _categoryFocusNode = FocusNode();
-  final List<String> _availableCategories = [
-    'DSA',
-    'Flutter',
-    'Politics',
-    'React',
-    'Cricket',
-    'DSA2',
-    'Flutter2',
-    'Politics2',
-    'React2',
-    'Cricket2',
-  ];
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
-   final DsdProfileController _dsdProfileController = DsdProfileController();
+  final DsdProfileController _dsdProfileController = DsdProfileController();
+
+  File? _imageFile;
+  String? _imageUrl;
 
   bool _isHidden = true;
   void _showpassword() {
@@ -47,13 +45,174 @@ class _EditProfileViewState extends State<EditProfileView> {
     });
   }
 
+  void _openImagePicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Choose from gallery'),
+                onTap: () async {
+                  File? Img = await _pickImage(ImageSource.gallery);
+                  if (Img != null) {
+                    await _uploadImageToFirebase(Img);
+                  }
+                  Navigator.pop(context);
+                  print("pick to ho gya");
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.link),
+                title: Text('Upload from link'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        child: Container(
+                          padding: EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                'Upload from link',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              TextField(
+                                controller: _urlController,
+                                decoration: InputDecoration(
+                                    hintText: 'Enter image URL'),
+                              ),
+                              SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Upload'),
+                                    onPressed: () {
+                                      setState(() {
+                                        _imageUrl = _urlController.text;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<File?> _pickImage(ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final pickedImage = await picker.pickImage(source: source);
+      if (pickedImage != null) {
+        _imageFile = File(pickedImage.path);
+        return _imageFile;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> _uploadImageToFirebase(Img) async {
+    if (Img == null) {
+      print('No image selected.');
+      return;
+    }
+
+    try {
+      // Check if the file exists
+      if (!await Img!.exists()) {
+        print('Image file does not exist at path: ${_imageFile!.path}');
+        return;
+      }
+
+      // Create a reference to the location you want to upload to in Firebase Storage
+      final ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('images')
+          .child('${Path.basename(_imageFile!.path)}');
+
+      // Upload the file to Firebase Storage
+      final uploadTask = ref.putFile(Img!);
+
+      // Wait for the upload to complete
+      await uploadTask;
+
+      // Get the download URL
+      final downloadURL = await ref.getDownloadURL();
+
+      setState(() {
+        _imageUrl = downloadURL;
+      });
+
+      print('File uploaded successfully. Download URL: $_imageUrl');
+    } catch (e) {
+      print('Error uploading file: $e');
+      rethrow;
+    }
+  }
+
+  List<String> _availableCategories = [];
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategories(); // Fetch categories when the widget is initialized
+  }
+
+  Future<void> _fetchCategories() async {
+    try {
+      List<DsdCategory> categories =
+          await _dsdProfileController.fetchAllCategories();
+      setState(() {
+        _availableCategories = categories
+            .map((category) => category.categoryTitle!)
+            .whereType<String>()
+            .toList();
+      });
+    } catch (e) {
+      print('Error fetching categories: $e');
+      rethrow;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            "Profile",
+            "Edit Profile",
             textAlign: TextAlign.center,
           ),
         ),
@@ -75,11 +234,14 @@ class _EditProfileViewState extends State<EditProfileView> {
                         Container(
                           height: 120,
                           width: 120,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                              image: AssetImage(
-                                  'assets/images/blank_profile_pic.jpg'),
+                              image: _imageUrl != null
+                                  ? NetworkImage(_imageUrl!)
+                                  : NetworkImage(
+                                          'https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg')
+                                      as ImageProvider,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -101,6 +263,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                               ),
                               onPressed: () {
                                 // Handle profile photo edit action
+                                _openImagePicker(context);
                               },
                             ),
                           ),
@@ -261,7 +424,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                       onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
                           // Handle save action
-                          await _dsdProfileController.updateUser(
+                          await _dsdProfileController
+                              .updateUser(
                             user: DsdUser(
                               userName: _userNameController.value.text.trim(),
                               email: _emailAddressController.value.text,
@@ -270,18 +434,24 @@ class _EditProfileViewState extends State<EditProfileView> {
                                 state: _stateController.value.text.trim(),
                                 city: _cityController.value.text.trim(),
                               ),
-                              category: _categories,
+                              profileImage: _imageUrl != null
+                                  ? _imageUrl
+                                  : "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg",
                             ),
                             userId: _itUserAuthSDK.getUser()!.uid,
-                          ).then((value) {
+                          )
+                              .then((value) {
                             DsdToastMessages.success(context,
                                 text: "Profile updated successfully!");
-                                context.goNamed(routeNames.experts);
+                            context.goNamed(routeNames.experts);
                           });
                         }
                       },
                       child: const Text('Save'),
                     ),
+                  ),
+                  SizedBox(
+                    height: 20,
                   ),
                 ],
               ),

@@ -6,7 +6,7 @@ import 'package:insighttalk_expert/pages/clientChat/client_chat.dart';
 import 'package:insighttalk_expert/pages/expertProfile/expert_profile_view.dart';
 import 'package:insighttalk_expert/pages/home.dart';
 import 'package:insighttalk_expert/pages/notifications/notification_view.dart';
-import './main.dart';
+
 
 RouterConfig routerConfig = RouterConfig();
 RouteNames routeNames = RouteNames();
