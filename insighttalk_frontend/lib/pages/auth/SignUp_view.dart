@@ -102,17 +102,24 @@ class _SignUpViewState extends State<SignUpView> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
-                          // Sign Up Button
-                          var confirmPassword = confirmPasswordController.text;
-                          var password = passwordController.text;
-                          if (password == confirmPassword) {
-                            var email = emailController.text;
-                            if (await _itUserAuthSDK.emailandPasswordSignUp(
-                                    email, password) !=
-                                null) {
-                              context.pushNamed(routeNames.profilescreen);
+
+                          if (passwordController.text ==
+                              confirmPasswordController.text) {
+                            User? user =
+                                await _itUserAuthSDK.emailandPasswordSignUp(
+                                    email: emailController.text,
+                                    password: passwordController.text);
+                            if (user != null && mounted) {
+                              context.goNamed(routeNames.profilescreen);
+                              // context.goNamed(routeNames.experts);
+                            } else {
+                              print("Sign Up Failed");
                             }
+                          } else {
+                            print(
+                                "Password and Confirm Passwords are not same");
                           }
+                          // const ProfileScreen();
                         },
                         child: const Text("Sign Up"),
                       ),
@@ -149,11 +156,17 @@ class _SignUpViewState extends State<SignUpView> {
                     SizedBox(
                       child: ElevatedButton.icon(
                         onPressed: () async {
-                          // Add your Google SignUp logic here
-                          if (await _itUserAuthSDK.googleSignUp() != null) {
+
+                          // Google Sign Up Function Added here (Same function used for Log In)
+                          User? user = await _itUserAuthSDK.googleSignUp();
+                          if (user != null && mounted) {
                             context.goNamed(routeNames.profilescreen);
+                            // const ProfileScreen();
+                          } else {
+                            print("Google Login Failed");
                           }
-                          // Needs to implement Signout Button to Signout of App
+                          // Navigate to experts route
+
                         },
                         icon: Image.asset(
                           'assets/images/search.png',
@@ -165,19 +178,19 @@ class _SignUpViewState extends State<SignUpView> {
                           style: TextStyle(fontSize: 18.0),
                         ),
                         style: ButtonStyle(
-                          padding: MaterialStateProperty.all<EdgeInsets>(
-                            EdgeInsets.symmetric(
+                          padding: WidgetStateProperty.all<EdgeInsets>(
+                            const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),
                           ),
                           backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.white),
+                              WidgetStateProperty.all<Color>(Colors.white),
                           foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.black),
+                              WidgetStateProperty.all<Color>(Colors.black),
                           shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                              WidgetStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
-                              side: BorderSide(color: Colors.grey),
+                              side: const BorderSide(color: Colors.grey),
                             ),
                           ),
                         ),
