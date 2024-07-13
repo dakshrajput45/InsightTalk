@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:insighttalk_backend/api_functions/auth/auth_user.dart';
+import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_frontend/router.dart';
 
 class UserProfileView extends StatefulWidget {
