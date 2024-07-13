@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:insighttalk_frontend/themes/theme.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'firebase_options.dart';
 import 'package:insighttalk_frontend/router.dart';
 
@@ -19,12 +20,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: MaterialApp.router(
+        child: ResponsiveSizer(builder: (context, orientation, screenType) {
+      return MaterialApp.router(
         title: 'Insight Talk User App',
         debugShowCheckedModeBanner: false,
         theme: appTheme,
         routerConfig: routerConfig.getRouter(),
-      ),
-    );
+      );
+    }));
   }
 }

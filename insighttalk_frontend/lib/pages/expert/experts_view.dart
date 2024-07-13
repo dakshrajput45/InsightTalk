@@ -40,7 +40,6 @@ class _ExpertsViewState extends State<ExpertsView> {
 
   @override
   Widget build(BuildContext context) {
-    double _categorySectionHeight = MediaQuery.of(context).size.height * 0.275;
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(15),
@@ -182,7 +181,8 @@ class CategoryCardSection extends StatelessWidget {
             children: [
               Text(
                 category,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               TextButton(
                 onPressed: () {},
