@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
+import 'package:insighttalk_backend/modal/modal_user.dart';
+import 'package:insighttalk_frontend/pages/userProfile/editprofile_controller.dart';
 import 'package:insighttalk_frontend/router.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:insighttalk_backend/helper/toast.dart';
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});
@@ -33,6 +37,8 @@ class _EditProfileViewState extends State<EditProfileView> {
     'React2',
     'Cricket2',
   ];
+  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
+   final DsdProfileController _dsdProfileController = DsdProfileController();
 
   bool _isHidden = true;
   void _showpassword() {
@@ -84,7 +90,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                           child: Container(
                             width: 35,
                             height: 35,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Colors.blue,
                               shape: BoxShape.circle,
                             ),
@@ -126,6 +132,17 @@ class _EditProfileViewState extends State<EditProfileView> {
                       hintText: 'Email Address',
                       prefixIcon: Icon(Icons.email),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter an email';
+                      }
+                      if (!RegExp(
+                              r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+")
+                          .hasMatch(value)) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
@@ -241,10 +258,26 @@ class _EditProfileViewState extends State<EditProfileView> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
                           // Handle save action
-                          context.goNamed(routeNames.experts);
+                          await _dsdProfileController.updateUser(
+                            user: DsdUser(
+                              userName: _userNameController.value.text.trim(),
+                              email: _emailAddressController.value.text,
+                              address: DsdUserAddress(
+                                country: _countryController.value.text.trim(),
+                                state: _stateController.value.text.trim(),
+                                city: _cityController.value.text.trim(),
+                              ),
+                              category: _categories,
+                            ),
+                            userId: _itUserAuthSDK.getUser()!.uid,
+                          ).then((value) {
+                            DsdToastMessages.success(context,
+                                text: "Profile updated successfully!");
+                                context.goNamed(routeNames.experts);
+                          });
                         }
                       },
                       child: const Text('Save'),

@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "6667383254-qbg54ooq6mhgdughfvv43cni535fpt1f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.insighttalk_backend",
+            "certificate_hash": "21d4b39e503bc75e290c8c5f35cbb8c10a717e05"
+          }
+        },
+        {
+          "client_id": "6667383254-vvmajahe61anc5rgjl5pdfkhjmvkvlh0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.insighttalk_backend",
+            "certificate_hash": "91541f7f8814bccd08d9c321980fd27e47792d6a"
+          }
+        },
+        {
           "client_id": "6667383254-ul5gb0q34duc156uhqdmdbotp9jf2h0g.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -85,6 +101,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "6667383254-dg5c0patspvtr0ebkjk9t1kfko3j7llf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.insighttalk_frontend",
+            "certificate_hash": "21d4b39e503bc75e290c8c5f35cbb8c10a717e05"
+          }
+        },
         {
           "client_id": "6667383254-ul5gb0q34duc156uhqdmdbotp9jf2h0g.apps.googleusercontent.com",
           "client_type": 3

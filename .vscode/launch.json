@@ -1,0 +1,68 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "insighttalk_backend",
+            "cwd": "insighttalk_backend",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "insighttalk_backend (profile mode)",
+            "cwd": "insighttalk_backend",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "insighttalk_backend (release mode)",
+            "cwd": "insighttalk_backend",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "insighttalk_expert",
+            "cwd": "insighttalk_expert",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "insighttalk_expert (profile mode)",
+            "cwd": "insighttalk_expert",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "insighttalk_expert (release mode)",
+            "cwd": "insighttalk_expert",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "insighttalk_frontend",
+            "cwd": "insighttalk_frontend",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "insighttalk_frontend (profile mode)",
+            "cwd": "insighttalk_frontend",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "insighttalk_frontend (release mode)",
+            "cwd": "insighttalk_frontend",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}
