@@ -31,4 +31,5 @@ class DsdUserDetailsApis {
       rethrow;
     }
   }
+
 }

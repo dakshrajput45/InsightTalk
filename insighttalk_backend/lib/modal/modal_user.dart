@@ -4,6 +4,7 @@ class DsdUser {
   String? email;
   DsdUserAddress? address;
   List<String>? category;
+  String? profileImage; // Changed to store a single image URL
 
   DsdUser({
     this.userName,
@@ -11,18 +12,23 @@ class DsdUser {
     this.email,
     this.address,
     this.category,
+    this.profileImage,
   });
 
-  factory DsdUser.fromJson(
-      {required Map<String, dynamic> json, required String id}) {
+  factory DsdUser.fromJson({
+    required Map<String, dynamic> json,
+    required String id,
+  }) {
     try {
       return DsdUser(
         id: id,
         userName: json['userName'],
+        email: json['email'],
         category: List<String>.from(json['category'] ?? []),
         address: json['address'] != null
             ? DsdUserAddress.fromJson(json: json['address'])
             : null,
+        profileImage: json['profileImage'], // Parse profile image URL
       );
     } catch (e) {
       print(e);
@@ -37,9 +43,11 @@ class DsdUser {
       if (address != null) 'address': address?.toJson(),
       if (withId) 'id': id,
       if (category != null) 'category': category,
+      if (profileImage != null) 'profileImage': profileImage, // Include profile image URL in JSON output
     };
   }
 }
+
 
 class DsdUserAddress {
   String? country;
@@ -49,7 +57,7 @@ class DsdUserAddress {
   DsdUserAddress({
     this.country,
     this.state,
-    this.city,
+    this.city, String? profileImage,
   });
 
   factory DsdUserAddress.fromJson({required Map<String, dynamic> json}) {

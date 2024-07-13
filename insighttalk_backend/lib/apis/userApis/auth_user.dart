@@ -9,8 +9,6 @@ class ITUserAuthSDK {
     return FirebaseAuth.instance.currentUser;
   }
 
-
-
   // *** FIREBASE FUNCTIONS FOR GOOGLE SIGN IN *** //
   /// Sign in with google popup for web
   ///
