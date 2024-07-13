@@ -40,6 +40,7 @@ class _ExpertsViewState extends State<ExpertsView> {
 
   @override
   Widget build(BuildContext context) {
+    double _categorySectionHeight = MediaQuery.of(context).size.height * 0.275;
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(15),
@@ -152,6 +153,13 @@ class _ExpertsViewState extends State<ExpertsView> {
             height: 10,
           ),
           // Expert Card Section
+          const CategoryCardSection(category: "Top Experts"),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: _userCategory.map((category) {
+              return CategoryCardSection(category: category);
+            }).toList(),
+          )
         ]),
       ),
     );
@@ -159,7 +167,8 @@ class _ExpertsViewState extends State<ExpertsView> {
 }
 
 class CategoryCardSection extends StatelessWidget {
-  const CategoryCardSection({super.key});
+  final String category;
+  const CategoryCardSection({required this.category, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -171,8 +180,8 @@ class CategoryCardSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Top Experts",
+              Text(
+                category,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               TextButton(
