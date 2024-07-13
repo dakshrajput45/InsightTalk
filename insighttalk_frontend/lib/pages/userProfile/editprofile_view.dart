@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:insighttalk_backend/apis/category/category_apis.dart';
+import 'package:insighttalk_backend/modal/category.dart';
 import 'package:path/path.dart' as Path;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -30,18 +32,6 @@ class _EditProfileViewState extends State<EditProfileView> {
   final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _urlController = TextEditingController();
   final FocusNode _categoryFocusNode = FocusNode();
-  final List<String> _availableCategories = [
-    'DSA',
-    'Flutter',
-    'Politics',
-    'React',
-    'Cricket',
-    'DSA2',
-    'Flutter2',
-    'Politics2',
-    'React2',
-    'Cricket2',
-  ];
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   final DsdProfileController _dsdProfileController = DsdProfileController();
 
@@ -49,7 +39,6 @@ class _EditProfileViewState extends State<EditProfileView> {
   String? _imageUrl;
 
   bool _isHidden = true;
-
   void _showpassword() {
     setState(() {
       _isHidden = !_isHidden;
@@ -194,13 +183,36 @@ class _EditProfileViewState extends State<EditProfileView> {
     }
   }
 
+  List<String> _availableCategories = [];
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategories(); // Fetch categories when the widget is initialized
+  }
+
+  Future<void> _fetchCategories() async {
+    try {
+      List<DsdCategory> categories =
+          await _dsdProfileController.fetchAllCategories();
+      setState(() {
+        _availableCategories = categories
+            .map((category) => category.categoryTitle!)
+            .whereType<String>()
+            .toList();
+      });
+    } catch (e) {
+      print('Error fetching categories: $e');
+      rethrow;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            "Profile",
+            "Edit Profile",
             textAlign: TextAlign.center,
           ),
         ),
@@ -422,8 +434,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                                 state: _stateController.value.text.trim(),
                                 city: _cityController.value.text.trim(),
                               ),
-                              category: _categories,
-                              profileImage: _imageUrl,
+                              profileImage: _imageUrl != null
+                                  ? _imageUrl
+                                  : "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg",
                             ),
                             userId: _itUserAuthSDK.getUser()!.uid,
                           )
@@ -436,6 +449,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                       },
                       child: const Text('Save'),
                     ),
+                  ),
+                  SizedBox(
+                    height: 20,
                   ),
                 ],
               ),
