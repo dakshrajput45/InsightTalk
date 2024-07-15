@@ -52,7 +52,7 @@ class _SignUpViewState extends State<SignUpView> {
             SingleChildScrollView(
               child: Container(
                 padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height * 0.20,
+                  top: MediaQuery.of(context).size.height * 0.25,
                   right: 35,
                   left: 35,
                 ),
@@ -77,7 +77,7 @@ class _SignUpViewState extends State<SignUpView> {
                       },
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 20,
                     ),
                     TextField(
                       controller: passwordController,
@@ -98,7 +98,7 @@ class _SignUpViewState extends State<SignUpView> {
                       ),
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 20,
                     ),
                     TextField(
                       controller: confirmPasswordController,
@@ -109,7 +109,7 @@ class _SignUpViewState extends State<SignUpView> {
                       ),
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 20,
                     ),
                     SizedBox(
                       width: double.infinity,

@@ -1,5 +1,4 @@
 class DsdCategory {
-  String? id;
   String? categoryImage;
   int? minValue;
   int? maxValue;
@@ -8,7 +7,6 @@ class DsdCategory {
   List<String>? users;
 
   DsdCategory({
-    this.id,
     this.minValue,
     this.maxValue,
     this.categoryImage,
@@ -20,7 +18,6 @@ class DsdCategory {
   factory DsdCategory.fromJson( { required Map<String, dynamic> json, required String id}) {
     try {
       return DsdCategory(
-        id: id,
         minValue: json['minValue'],
         maxValue: json['maxValue'],
         categoryImage: json['categoryImage'],
@@ -40,7 +37,6 @@ class DsdCategory {
       if (maxValue != null) 'maxValue': maxValue,
       if (experts != null) 'experts' : experts,
       if (users != null) 'users' : users,
-      if (withId) 'id': id,
       if (categoryTitle != null) 'categoryTitle': categoryTitle,
       if (categoryImage != null) 'categoryImage': categoryImage, 
     };

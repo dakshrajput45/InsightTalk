@@ -1,16 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class DsdUser {
   String? id;
   String? userName;
   String? email;
+  DateTime? dateOfBirth;
   DsdUserAddress? address;
   List<String>? category;
-  String? profileImage; // Changed to store a single image URL
+  String? profileImage; 
 
   DsdUser({
     this.userName,
     this.id,
     this.email,
     this.address,
+    this.dateOfBirth,
     this.category,
     this.profileImage,
   });
@@ -24,6 +28,7 @@ class DsdUser {
         id: id,
         userName: json['userName'],
         email: json['email'],
+        dateOfBirth: (json['dateOfBirth'] != null) ? (json['dateOfBirth'] as Timestamp).toDate() : DateTime.now(),
         category: List<String>.from(json['category'] ?? []),
         address: json['address'] != null
             ? DsdUserAddress.fromJson(json: json['address'])
@@ -41,6 +46,7 @@ class DsdUser {
       if (userName != null) 'userName': userName,
       if (email != null) 'email': email,
       if (address != null) 'address': address?.toJson(),
+      if (dateOfBirth != null) 'dateOfBirth': Timestamp.fromDate(dateOfBirth!),
       if (withId) 'id': id,
       if (category != null) 'category': category,
       if (profileImage != null) 'profileImage': profileImage, // Include profile image URL in JSON output

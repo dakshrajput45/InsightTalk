@@ -43,8 +43,8 @@ dependencies:
   go_router: ^14.2.0
   cupertino_icons: ^1.0.6
   flutter_typeahead: ^4.0.0
-  carousel_slider: ^4.2.1
   responsive_sizer: ^3.3.1
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
