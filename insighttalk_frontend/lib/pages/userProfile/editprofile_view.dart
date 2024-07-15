@@ -14,6 +14,7 @@ import 'package:insighttalk_frontend/router.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:insighttalk_backend/helper/toast.dart';
 import 'package:insighttalk_backend/helper/Dsd_dob_validator.dart';
+import 'package:insighttalk_backend/apis/userApis/user_details_api.dart';
 
 final DsdProfileController _dsdProfileController = DsdProfileController();
 
@@ -36,7 +37,7 @@ class _EditProfileViewState extends State<EditProfileView> {
   final TextEditingController _urlController = TextEditingController();
   final FocusNode _categoryFocusNode = FocusNode();
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
-  final DsdCategoryApis _dsdCategoryApis = DsdCategoryApis();
+  final DsdUserDetailsApis _dsdUserApis = DsdUserDetailsApis();
   final DsdDobValidator _dsdDobValidator = DsdDobValidator();
   DateTime? dateOfBirth;
   File? _imageFile;
@@ -146,15 +147,12 @@ class _EditProfileViewState extends State<EditProfileView> {
       print('No image selected.');
       return;
     }
-
     try {
-      // Check if the file exists
       if (!await Img!.exists()) {
         print('Image file does not exist at path: ${_imageFile!.path}');
         return;
       }
 
-      // Create a reference to the location you want to upload to in Firebase Storage
       final ref = firebase_storage.FirebaseStorage.instance
           .ref()
           .child('images')
@@ -162,17 +160,12 @@ class _EditProfileViewState extends State<EditProfileView> {
 
       // Upload the file to Firebase Storage
       final uploadTask = ref.putFile(Img!);
-
-      // Wait for the upload to complete
       await uploadTask;
-
-      // Get the download URL
       final downloadURL = await ref.getDownloadURL();
 
       setState(() {
         _imageUrl = downloadURL;
       });
-
       print('File uploaded successfully. Download URL: $_imageUrl');
     } catch (e) {
       print('Error uploading file: $e');
@@ -195,7 +188,8 @@ class _EditProfileViewState extends State<EditProfileView> {
   @override
   void initState() {
     super.initState();
-    _fetchCategories(); // Fetch categories when the widget is initialized
+    _fetchCategories();
+    getUserData();
   }
 
   Future<void> _fetchCategories() async {
@@ -211,6 +205,28 @@ class _EditProfileViewState extends State<EditProfileView> {
     } catch (e) {
       print('Error fetching categories: $e');
       rethrow;
+    }
+  }
+
+  Future<void> getUserData() async {
+    try {
+      String userId = _itUserAuthSDK.getUser()!.uid;
+      DsdUser? fetchedUserData =
+          await _dsdUserApis.fetchUserById(userId: userId);
+      setState(() {
+        _userNameController.text = fetchedUserData?.userName ?? '';
+        _dobController.text = fetchedUserData?.dateOfBirth != null
+            ? DateFormat("MM/dd/yyyy").format(fetchedUserData!.dateOfBirth!)
+            : '';
+        _cityController.text = fetchedUserData?.address?.city ?? '';
+        _stateController.text = fetchedUserData?.address?.state ?? '';
+        _countryController.text = fetchedUserData?.address?.country ?? '';
+
+        // Populate categories
+        _categories.addAll(fetchedUserData?.category ?? []);
+      });
+    } catch (e) {
+      print('Error fetching user data: $e');
     }
   }
 

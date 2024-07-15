@@ -122,7 +122,7 @@ class _SignUpViewState extends State<SignUpView> {
                                     email: emailController.text,
                                     password: passwordController.text);
                             if (user != null && mounted) {
-                              context.goNamed(routeNames.profilescreen);
+                              context.goNamed(routeNames.editprofileview);
                               // context.goNamed(routeNames.experts);
                             } else {
                               print("Sign Up Failed");
@@ -171,7 +171,7 @@ class _SignUpViewState extends State<SignUpView> {
                           // Google Sign Up Function Added here (Same function used for Log In)
                           User? user = await _itUserAuthSDK.googleSignUp();
                           if (user != null && mounted) {
-                            context.goNamed(routeNames.profilescreen);
+                            context.goNamed(routeNames.editprofileview);
                             // const ProfileScreen();
                           } else {
                             print("Google Login Failed");
