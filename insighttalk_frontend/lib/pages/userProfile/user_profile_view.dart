@@ -85,7 +85,7 @@ class _UserProfileViewState extends State<UserProfileView> {
               ),
               const Spacer(),
               Padding(
-                padding: const EdgeInsets.only(right: 30, bottom: 30),
+                padding: EdgeInsets.only(right: 2.sh, bottom: 8.sh),
                 child: PopupMenuButton<String>(
                   onSelected: (String value) {
                     // Handle menu item selection
@@ -108,8 +108,8 @@ class _UserProfileViewState extends State<UserProfileView> {
                         value: choice,
                         child: Text(
                           choice,
-                          style: const TextStyle(
-                            fontSize: 24.0,
+                          style: TextStyle(
+                            fontSize: 2.sh,
                           ),
                         ),
                       );
@@ -132,15 +132,15 @@ class _UserProfileViewState extends State<UserProfileView> {
               children: [
                 Text(
                   "${userData?.userName}",
-                  style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 4.sh, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
                   height: 5,
                 ),
                 Text(
-                  "${userData?.address?.city},${userData?.address?.state},${userData?.address?.country}",
+                  "${userData?.address?.city}, ${userData?.address?.state}, ${userData?.address?.country}",
                   style: TextStyle(
-                    fontSize: 20.0,
+                    fontSize: 2.sh,
                   ),
                 ),
               ],
@@ -195,10 +195,11 @@ class _UserProfileViewState extends State<UserProfileView> {
                           const SizedBox(height: 10.0),
                           Text(
                             category.categoryTitle!,
-                            style: const TextStyle(
-                              fontSize: 16.0,
+                            style: TextStyle(
+                              fontSize: 1.3.sh,
                               fontWeight: FontWeight.bold,
                             ),
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
@@ -220,6 +221,7 @@ class _UserProfileViewState extends State<UserProfileView> {
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 100),
                 ],
@@ -241,6 +243,7 @@ class _UserProfileViewState extends State<UserProfileView> {
                       color: Colors.blueGrey,
                       fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 10),
                   Center(

@@ -23,15 +23,15 @@ class ExpertCard extends StatelessWidget {
           ? AspectRatio(
               aspectRatio: 13 / 16,
               child: Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 10.0),
                 child: Column(
                   children: [
                     CircleAvatar(
                       radius: 4.sh,
                       backgroundImage: AssetImage(profilePhoto),
                     ),
-                    const SizedBox(
-                      height: 7.0,
+                    SizedBox(
+                      height: 0.4.sh,
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,8 +103,8 @@ class ExpertCard extends StatelessWidget {
                           style: const TextStyle(
                               fontSize: 14, fontWeight: FontWeight.w500),
                         ),
-                        SizedBox(
-                          height: 0.5.sh,
+                        const SizedBox(
+                          height: 7.0,
                         ),
                         Row(
                           children: [

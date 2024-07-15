@@ -42,6 +42,7 @@ class _EditProfileViewState extends State<EditProfileView> {
   DateTime? dateOfBirth;
   File? _imageFile;
   String? _imageUrl;
+  bool? firstTime = false;
 
   void _openImagePicker(BuildContext context) {
     showModalBottomSheet(
@@ -224,6 +225,7 @@ class _EditProfileViewState extends State<EditProfileView> {
 
         // Populate categories
         _categories.addAll(fetchedUserData?.category ?? []);
+        firstTime = true;
       });
     } catch (e) {
       print('Error fetching user data: $e');
@@ -444,7 +446,11 @@ class _EditProfileViewState extends State<EditProfileView> {
                           });
                           await updateCategories(
                               _categories, _itUserAuthSDK.getUser()!.uid);
-                          context.goNamed(routeNames.experts);
+                          if (firstTime == true) {
+                            Navigator.pop(context);
+                          } else {
+                            context.goNamed(routeNames.experts);
+                          }
                         }
                       },
                       child: const Text('Save'),
