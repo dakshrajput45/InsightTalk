@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:insighttalk_backend/apis/category/category_apis.dart';
 import 'package:insighttalk_backend/modal/category.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as Path;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +13,9 @@ import 'package:insighttalk_frontend/pages/userProfile/editprofile_controller.da
 import 'package:insighttalk_frontend/router.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:insighttalk_backend/helper/toast.dart';
+import 'package:insighttalk_backend/helper/Dsd_dob_validator.dart';
+
+final DsdProfileController _dsdProfileController = DsdProfileController();
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});
@@ -24,8 +28,7 @@ class _EditProfileViewState extends State<EditProfileView> {
   final _formKey = GlobalKey<FormState>();
   final List<String> _categories = [];
   final TextEditingController _userNameController = TextEditingController();
-  final TextEditingController _emailAddressController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _dobController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
@@ -33,17 +36,11 @@ class _EditProfileViewState extends State<EditProfileView> {
   final TextEditingController _urlController = TextEditingController();
   final FocusNode _categoryFocusNode = FocusNode();
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
-  final DsdProfileController _dsdProfileController = DsdProfileController();
-
+  final DsdCategoryApis _dsdCategoryApis = DsdCategoryApis();
+  final DsdDobValidator _dsdDobValidator = DsdDobValidator();
+  DateTime? dateOfBirth;
   File? _imageFile;
   String? _imageUrl;
-
-  bool _isHidden = true;
-  void _showpassword() {
-    setState(() {
-      _isHidden = !_isHidden;
-    });
-  }
 
   void _openImagePicker(BuildContext context) {
     showModalBottomSheet(
@@ -80,7 +77,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(
+                              const Text(
                                 'Upload from link',
                                 style: TextStyle(
                                   fontSize: 20,
@@ -183,6 +180,17 @@ class _EditProfileViewState extends State<EditProfileView> {
     }
   }
 
+  Future<void> selectedDOB() async {
+    var dob = await _dsdDobValidator.selectDOB(
+        context, dateOfBirth ?? DateTime.now());
+    if (dob != null && dob != DateTime.now()) {
+      setState(() {
+        dateOfBirth = dob;
+        _dobController.text = DateFormat("MM/dd/yyy").format(dateOfBirth!);
+      });
+    }
+  }
+
   List<String> _availableCategories = [];
   @override
   void initState() {
@@ -239,7 +247,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                             image: DecorationImage(
                               image: _imageUrl != null
                                   ? NetworkImage(_imageUrl!)
-                                  : NetworkImage(
+                                  : const NetworkImage(
                                           'https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg')
                                       as ImageProvider,
                               fit: BoxFit.cover,
@@ -272,7 +280,6 @@ class _EditProfileViewState extends State<EditProfileView> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   // Personal Details Section
                   const Text(
                     'Personal Details',
@@ -290,48 +297,22 @@ class _EditProfileViewState extends State<EditProfileView> {
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
-                    controller: _emailAddressController,
-                    decoration: const InputDecoration(
-                      hintText: 'Email Address',
-                      prefixIcon: Icon(Icons.email),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter an email';
+                    controller: _dobController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                        hintText: 'MM/DD/YY',
+                        labelText: 'Date of Birth',
+                        prefixIcon: const Icon(Icons.calendar_month_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        )),
+                    onTap: () async {
+                      if (_itUserAuthSDK.getUser() != null) {
+                        await selectedDOB();
                       }
-                      if (!RegExp(
-                              r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+")
-                          .hasMatch(value)) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
                     },
                   ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    obscureText: _isHidden,
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                        hintText: 'Password',
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(_isHidden
-                              ? Icons.visibility
-                              : Icons.visibility_off),
-                          onPressed: _showpassword,
-                        )),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        // Handle change password action
-                      },
-                      child: const Text('Change Password'),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
+                  const SizedBox(height: 20),
                   // Address Details Section
                   const Text(
                     'Address Details',
@@ -416,7 +397,6 @@ class _EditProfileViewState extends State<EditProfileView> {
                   const SizedBox(
                     height: 30,
                   ),
-
                   // Save Button
                   SizedBox(
                     width: double.infinity,
@@ -428,12 +408,14 @@ class _EditProfileViewState extends State<EditProfileView> {
                               .updateUser(
                             user: DsdUser(
                               userName: _userNameController.value.text.trim(),
-                              email: _emailAddressController.value.text,
+                              email: _itUserAuthSDK.getUser()!.email,
+                              dateOfBirth: dateOfBirth,
                               address: DsdUserAddress(
                                 country: _countryController.value.text.trim(),
                                 state: _stateController.value.text.trim(),
                                 city: _cityController.value.text.trim(),
                               ),
+                              category: _categories,
                               profileImage: _imageUrl != null
                                   ? _imageUrl
                                   : "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg",
@@ -443,15 +425,14 @@ class _EditProfileViewState extends State<EditProfileView> {
                               .then((value) {
                             DsdToastMessages.success(context,
                                 text: "Profile updated successfully!");
-                            context.goNamed(routeNames.experts);
                           });
+                          await updateCategories(
+                              _categories, _itUserAuthSDK.getUser()!.uid);
+                          context.goNamed(routeNames.experts);
                         }
                       },
                       child: const Text('Save'),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20,
                   ),
                 ],
               ),
@@ -460,5 +441,22 @@ class _EditProfileViewState extends State<EditProfileView> {
         ),
       ),
     );
+  }
+}
+
+Future<void> updateCategories(
+    List<String> categoryTitles, String userId) async {
+  try {
+    await Future.forEach(categoryTitles, (categoryTitle) async {
+      print(categoryTitle);
+      await _dsdProfileController.updateUserIdInCategory(
+        categoryTitle: categoryTitle,
+        userId: userId,
+      );
+    });
+    print('All categories updated successfully.');
+  } catch (e) {
+    print('Error updating categories: $e');
+    // Handle error as needed
   }
 }

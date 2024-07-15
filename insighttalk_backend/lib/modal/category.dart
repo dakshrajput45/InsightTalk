@@ -1,5 +1,4 @@
 class DsdCategory {
-  String? id;
   String? categoryImage;
   int? minValue;
   int? maxValue;
@@ -9,7 +8,6 @@ class DsdCategory {
   int? totalParticipants;
 
   DsdCategory({
-    this.id,
     this.minValue,
     this.maxValue,
     this.categoryImage,
@@ -24,7 +22,6 @@ class DsdCategory {
       {required Map<String, dynamic> json, required String id}) {
     try {
       return DsdCategory(
-        id: id,
         minValue: json['minValue'],
         maxValue: json['maxValue'],
         categoryImage: json['categoryImage'],
@@ -42,9 +39,8 @@ class DsdCategory {
     return {
       if (minValue != null) 'minValue': minValue,
       if (maxValue != null) 'maxValue': maxValue,
-      if (experts != null) 'experts': experts,
-      if (users != null) 'users': users,
-      if (withId) 'id': id,
+      if (experts != null) 'experts' : experts,
+      if (users != null) 'users' : users,
       if (categoryTitle != null) 'categoryTitle': categoryTitle,
       if (categoryImage != null) 'categoryImage': categoryImage,
       if (totalParticipants != null) 'totalParticipants': totalParticipants,

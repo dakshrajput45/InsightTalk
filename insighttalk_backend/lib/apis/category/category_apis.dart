@@ -7,9 +7,17 @@ class DsdCategoryApis {
 
   Future<void> addCategory({required DsdCategory category}) async {
     try {
-      await _db.collection(_collectionPath).add(category.toJson());
+      // Ensure categoryTitle is unique and valid
+      String? categoryTitle =
+          category.categoryTitle; // Adjust this based on your category model
+      await _db
+          .collection(_collectionPath)
+          .doc(categoryTitle)
+          .set(category.toJson());
+
+      print('Category added successfully.');
     } catch (e) {
-      print(e);
+      print('Error adding category: $e');
       rethrow;
     }
   }
@@ -55,6 +63,21 @@ class DsdCategoryApis {
   Future<void> deleteCategory({required String categoryId}) async {
     try {
       await _db.collection(_collectionPath).doc(categoryId).delete();
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> addUserIdToCategory(
+      {required String categoryTitle, required String userId}) async {
+    try {
+      DocumentReference docRef =
+          _db.collection(_collectionPath).doc(categoryTitle);
+      // Update the document to add the userId to the userIds array
+      await docRef.update({
+        'users': FieldValue.arrayUnion([userId])
+      });
     } catch (e) {
       print(e);
       rethrow;

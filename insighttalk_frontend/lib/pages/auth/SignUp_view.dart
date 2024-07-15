@@ -18,6 +18,7 @@ class _SignUpViewState extends State<SignUpView> {
   bool _isNotValidate = false;
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
 
+  bool _isHidden = true;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -51,7 +52,7 @@ class _SignUpViewState extends State<SignUpView> {
             SingleChildScrollView(
               child: Container(
                 padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height * 0.20,
+                  top: MediaQuery.of(context).size.height * 0.25,
                   right: 35,
                   left: 35,
                 ),
@@ -64,46 +65,56 @@ class _SignUpViewState extends State<SignUpView> {
                         hintText: 'Email',
                       ),
                       validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter an email';
-                      }
-                      if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+")
-                          .hasMatch(value)) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
-                    },
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter an email';
+                        }
+                        if (!RegExp(
+                                r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+")
+                            .hasMatch(value)) {
+                          return 'Please enter a valid email';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 20,
                     ),
                     TextField(
                       controller: passwordController,
-                      obscureText: true,
+                      obscureText: _isHidden,
                       decoration: InputDecoration(
                         errorText: _isNotValidate ? "Enter Proper Info" : null,
                         hintText: 'Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(_isHidden
+                              ? Icons.visibility_off
+                              : Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              _isHidden = !_isHidden;
+                            });
+                          },
+                        ),
                       ),
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 20,
                     ),
                     TextField(
                       controller: confirmPasswordController,
-                      obscureText: true,
+                      obscureText: _isHidden,
                       decoration: InputDecoration(
                         errorText: _isNotValidate ? "Enter Proper Info" : null,
                         hintText: 'Confirm Password',
                       ),
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 20,
                     ),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
-
                           if (passwordController.text ==
                               confirmPasswordController.text) {
                             User? user =
@@ -157,7 +168,6 @@ class _SignUpViewState extends State<SignUpView> {
                     SizedBox(
                       child: ElevatedButton.icon(
                         onPressed: () async {
-
                           // Google Sign Up Function Added here (Same function used for Log In)
                           User? user = await _itUserAuthSDK.googleSignUp();
                           if (user != null && mounted) {
@@ -167,7 +177,6 @@ class _SignUpViewState extends State<SignUpView> {
                             print("Google Login Failed");
                           }
                           // Navigate to experts route
-
                         },
                         icon: Image.asset(
                           'assets/images/search.png',
