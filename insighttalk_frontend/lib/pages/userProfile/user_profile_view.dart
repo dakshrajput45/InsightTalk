@@ -27,7 +27,7 @@ class _UserProfileViewState extends State<UserProfileView> {
         Container(
           height: 120,
           width: 120,
-          margin: EdgeInsets.only(top: 40, left: 30, bottom: 10),
+          margin: const EdgeInsets.only(top: 40, left: 30, bottom: 10),
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             borderRadius: const BorderRadius.all(Radius.circular(8)),
@@ -38,8 +38,8 @@ class _UserProfileViewState extends State<UserProfileView> {
           ),
         ),
         Container(
-          margin: EdgeInsets.symmetric(horizontal: 30.0),
-          child: Column(
+          margin: const EdgeInsets.symmetric(horizontal: 30.0),
+          child: const Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -56,8 +56,19 @@ class _UserProfileViewState extends State<UserProfileView> {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 20,
+        ),
+        TextButton(
+          onPressed: () async {
+            _itUserAuthSDK.signOut();
+            context.goNamed(routeNames.login);
+            // Log Out User
+          },
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.all<Color>(Colors.black),
+          ),
+          child: const Text("Sign Out"),
         ),
       ],
     );
