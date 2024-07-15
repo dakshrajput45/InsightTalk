@@ -5,6 +5,7 @@ class DsdCategory {
   String? categoryTitle;
   List<String>? experts;
   List<String>? users;
+  int? totalParticipants;
 
   DsdCategory({
     this.minValue,
@@ -13,9 +14,12 @@ class DsdCategory {
     this.categoryTitle,
     this.experts,
     this.users,
-  });
+  }) {
+    totalParticipants = (experts?.length ?? 0) + (users?.length ?? 0);
+  }
 
-  factory DsdCategory.fromJson( { required Map<String, dynamic> json, required String id}) {
+  factory DsdCategory.fromJson(
+      {required Map<String, dynamic> json, required String id}) {
     try {
       return DsdCategory(
         minValue: json['minValue'],
@@ -38,7 +42,8 @@ class DsdCategory {
       if (experts != null) 'experts' : experts,
       if (users != null) 'users' : users,
       if (categoryTitle != null) 'categoryTitle': categoryTitle,
-      if (categoryImage != null) 'categoryImage': categoryImage, 
+      if (categoryImage != null) 'categoryImage': categoryImage,
+      if (totalParticipants != null) 'totalParticipants': totalParticipants,
     };
   }
 }
