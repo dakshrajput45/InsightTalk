@@ -65,6 +65,7 @@ class _UserProfileViewState extends State<UserProfileView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+
             children: [
               Container(
                 height: 120,

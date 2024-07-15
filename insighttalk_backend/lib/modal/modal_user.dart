@@ -19,10 +19,12 @@ class DsdUser {
     this.profileImage,
   });
 
+
   factory DsdUser.fromJson({
     required Map<String, dynamic> json,
     required String id,
   }) {
+
     try {
       return DsdUser(
         id: id,

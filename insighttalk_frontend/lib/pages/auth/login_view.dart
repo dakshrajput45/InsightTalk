@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/helper/toast.dart';
 import 'package:insighttalk_frontend/router.dart'; // Assuming routeNames is defined here
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -101,6 +102,8 @@ class _LoginViewState extends State<LoginView> {
                             email: emailController.text,
                             password: passwordController.text);
                         if (user != null && mounted) {
+                          DsdToastMessages.success(context,
+                              text: "Email Login Successful");
                           handleSignUp(2);
                           context.goNamed(routeNames.experts);
                         } else {
@@ -143,7 +146,10 @@ class _LoginViewState extends State<LoginView> {
                         User? user = await _itUserAuthSDK.googleSignUp();
                         print('Google Log In function is called ${mounted}');
                         if (user != null && mounted) {
+                          DsdToastMessages.success(context,
+                              text: "Google Login Successful");
                           handleSignUp(2);
+                          await Future.delayed(const Duration(seconds: 2));
                           context.goNamed(routeNames.experts);
                         } else {
                           print("Google Login Failed");
@@ -202,7 +208,8 @@ class _LoginViewState extends State<LoginView> {
                           _itUserAuthSDK.getUser();
                         },
                         onLongPress: () {
-                          _itUserAuthSDK.signOut();
+                          DsdToastMessages.success(context,
+                              text: "Toast added");
                         },
                         child: const Text(
                           "Forget Password",
