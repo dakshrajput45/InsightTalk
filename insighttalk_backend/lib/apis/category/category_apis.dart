@@ -83,4 +83,28 @@ class DsdCategoryApis {
       rethrow;
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchPopularCategories() async {
+    try {
+      var result = await _db.collection(_collectionPath).get();
+      List<Map<String, dynamic>> categories = result.docs.map((doc) {
+        var data = doc.data();
+        return {
+          'id': doc.id,
+          'categoryTitle': data['categoryTitle'],
+          'categoryImage': data['categoryImage'],
+          'totalParticipants':
+              (data['experts']?.length ?? 0) + (data['users']?.length ?? 0)
+        };
+      }).toList();
+
+      categories.sort(
+          (a, b) => b['totalParticipants'].compareTo(a['totalParticipants']));
+      print(categories);
+      return categories;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
 }

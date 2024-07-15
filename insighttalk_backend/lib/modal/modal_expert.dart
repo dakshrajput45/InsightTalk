@@ -2,6 +2,7 @@ class DsdExpert {
   String? id;
   String? expertName;
   String? email;
+  String? expertise;
   DsdExpertAddress? address;
   List<String>? category;
   String? profileImage; // Changed to store a single image URL
@@ -12,6 +13,7 @@ class DsdExpert {
     this.expertName,
     this.id,
     this.email,
+    this.expertise,
     this.address,
     this.category,
     this.profileImage,
@@ -28,6 +30,7 @@ class DsdExpert {
         id: id,
         expertName: json['userName'],
         email: json['email'],
+        expertise: json['expertise'],
         category: List<String>.from(json['category'] ?? []),
         address: json['address'] != null
             ? DsdExpertAddress.fromJson(json: json['address'])
@@ -48,9 +51,12 @@ class DsdExpert {
       if (expertName != null) 'userName': expertName,
       if (email != null) 'email': email,
       if (address != null) 'address': address?.toJson(),
+      if (expertise != null) 'expertise': expertise,
       if (withId) 'id': id,
       if (category != null) 'category': category,
-      if (profileImage != null) 'profileImage': profileImage, // Include profile image URL in JSON output
+      if (profileImage != null)
+        'profileImage':
+            profileImage, // Include profile image URL in JSON output
       if (sumOfRatings != null)
         'sumOfRatings': sumOfRatings, // Include sum of ratings in JSON output
       if (numberOfRatings != null)
@@ -64,8 +70,6 @@ class DsdExpert {
     return sumOfRatings! / (numberOfRatings! * 5);
   }
 }
-
-
 
 class DsdExpertAddress {
   String? country;

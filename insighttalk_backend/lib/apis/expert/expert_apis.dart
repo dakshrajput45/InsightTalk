@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:insighttalk_backend/modal/modal_expert.dart';
 
-class DsdCategoryApis {
+class DsdExpertApis {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final String _collectionPath = "experts";
 
