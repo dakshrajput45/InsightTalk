@@ -26,8 +26,8 @@ class RouterConfig {
     // Define routes
     routes: [
       GoRoute(
-        path: '/profilescreen',
-        name: routeNames.profilescreen,
+        path: '/editprofileview',
+        name: routeNames.editprofileview,
         builder: (context, state) => const EditProfileView(),
       ),
       GoRoute(
@@ -110,5 +110,5 @@ class RouteNames {
   final String login = 'login';
   final String signup = 'signup';
   final String chat = 'chat';
-  final String profilescreen = 'profilescreen';
+  final String editprofileview = 'editprofileview';
 }
