@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:insighttalk_expert/router.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -169,7 +171,9 @@ class _SignUpViewState extends State<SignUpView> {
                       width: double
                           .infinity, // Makes the button take the full width of its parent
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          context.pushNamed(routeNames.editprofile);
+                        },
                         child: const Text("Sign Up"),
                       ),
                     ),
