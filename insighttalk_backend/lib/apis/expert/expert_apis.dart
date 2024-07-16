@@ -6,12 +6,12 @@ class DsdExpertApis {
   final String _expertCollectionPath = "experts";
 
   Future<void> updateExpertDetails(
-      {required String expertId, required DsdExpert user}) async {
+      {required String expertId, required DsdExpert expert}) async {
     try {
       await _db
           .collection(_expertCollectionPath)
           .doc(expertId)
-          .set(user.toJson(), SetOptions(merge: true));
+          .set(expert.toJson(), SetOptions(merge: true));
     } catch (e) {
       print(e);
       rethrow;
