@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:insighttalk_expert/router.dart'; 
+import 'package:insighttalk_backend/helper/toast.dart';
+import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
+import 'package:insighttalk_expert/router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key); // Corrected super.key
@@ -12,6 +15,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   bool _isNotValidate = false;
   void handleLogin(int val) {
     updateLoginStatus(val); // Update isLoggedIn to true
@@ -27,7 +31,7 @@ class _LoginViewState extends State<LoginView> {
           Container(
             padding: const EdgeInsets.only(left: 35, top: 120),
             child: const Text(
-              'Login To Insight Talk',
+              'Login To Insight Talk Expert',
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 33,
@@ -126,11 +130,19 @@ class _LoginViewState extends State<LoginView> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        print("Login button pressed");
-                        handleLogin(2);
-                        context.goNamed(
-                            routeNames.appointment); // Navigate to experts route
+                      onPressed: () async {
+                        User? expert = await _itUserAuthSDK.emailandPasswordLogIn(
+                            email: emailController.text,
+                            password: passwordController.text);
+                        if (expert != null && mounted) {
+                          DsdToastMessages.success(context,
+                              text: "Email Login Successful");
+                          handleLogin(2);
+                          context.goNamed(routeNames.appointment);
+                        } else {
+                          print("Login Failed");
+                        }
+                        // Navigate to experts route
                       },
                       child: const Text("Log In"),
                     ),
@@ -162,8 +174,20 @@ class _LoginViewState extends State<LoginView> {
                   const SizedBox(height: 30),
                   SizedBox(
                     child: ElevatedButton.icon(
-                      onPressed: () {
-                        // Handle Google login
+                      onPressed: () async {
+                        // Google Log In Function Added here (Same function used for Sign Up)
+                        User? user = await _itUserAuthSDK.googleSignUp();
+                        print('Google Log In function is called ${mounted}');
+                        if (user != null && mounted) {
+                          DsdToastMessages.success(context,
+                              text: "Google Login Successful");
+                          handleLogin(2);
+                          await Future.delayed(const Duration(seconds: 2));
+                          context.goNamed(routeNames.appointment);
+                        } else {
+                          print("Google Login Failed");
+                        }
+                        // Navigate to experts route
                       },
                       icon: Image.asset(
                         'assets/search.png',
@@ -175,18 +199,18 @@ class _LoginViewState extends State<LoginView> {
                         style: TextStyle(fontSize: 18.0),
                       ),
                       style: ButtonStyle(
-                        padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                        padding: WidgetStateProperty.all<EdgeInsets>(
+                          const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
                         ),
                         backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
+                            WidgetStateProperty.all<Color>(Colors.white),
                         foregroundColor:
-                            MaterialStateProperty.all<Color>(Colors.black),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                            WidgetStateProperty.all<Color>(Colors.black),
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            side: BorderSide(color: Colors.grey),
+                            side: const BorderSide(color: Colors.grey),
                           ),
                         ),
                       ),
