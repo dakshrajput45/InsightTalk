@@ -92,7 +92,7 @@ class _UserProfileViewState extends State<UserProfileView> {
                     // Handle menu item selection
                     switch (value) {
                       case 'Edit Profile':
-                        context.pushNamed(routeNames.editprofileview);
+                        context.goNamed(routeNames.editprofileview);
                         break;
                       case 'Settings':
                         // Navigate to settings page

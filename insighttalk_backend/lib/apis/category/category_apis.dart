@@ -84,23 +84,21 @@ class DsdCategoryApis {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchPopularCategories() async {
+  Future<List<DsdCategory>?> fetchPopularCategories() async {
     try {
-      var result = await _db.collection(_collectionPath).get();
-      List<Map<String, dynamic>> categories = result.docs.map((doc) {
-        var data = doc.data();
-        return {
-          'id': doc.id,
-          'categoryTitle': data['categoryTitle'],
-          'categoryImage': data['categoryImage'],
-          'totalParticipants':
-              (data['experts']?.length ?? 0) + (data['users']?.length ?? 0)
-        };
-      }).toList();
+      var result = await FirebaseFirestore.instance
+          .collection(_collectionPath)
+          .get();
 
-      categories.sort(
-          (a, b) => b['totalParticipants'].compareTo(a['totalParticipants']));
-      print(categories);
+      List<DsdCategory> categories = result.docs.map((doc) {
+        return DsdCategory.fromJson(
+          json: doc.data() as Map<String, dynamic>,
+          id: doc.id,
+        );
+      }).toList();
+      categories.sort((a, b) => (b.experts!.length + b.users!.length)
+          .compareTo(a.experts!.length + a.users!.length));
+
       return categories;
     } catch (e) {
       print(e);

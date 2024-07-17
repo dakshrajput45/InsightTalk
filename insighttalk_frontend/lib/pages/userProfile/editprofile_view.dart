@@ -447,7 +447,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                           await updateCategories(
                               _categories, _itUserAuthSDK.getUser()!.uid);
                           if (firstTime == true) {
-                            Navigator.pop(context);
+                            context.goNamed(routeNames.userprofile);
                           } else {
                             context.goNamed(routeNames.experts);
                           }

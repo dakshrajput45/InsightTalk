@@ -1,14 +1,14 @@
 import 'package:insighttalk_backend/apis/category/category_apis.dart';
+import 'package:insighttalk_backend/modal/category.dart';
 
-class DsdProfileController {
+class DsdExpertController {
   // final DsdUserDetailsApis _dsdUserDetailsApis = DsdUserDetailsApis();
   final DsdCategoryApis _dsdCategoryApis = DsdCategoryApis();
 
-  Future<List<Map<String, dynamic>>> fetchPopularCategories() async {
+  Future<List<DsdCategory>?> fetchPopularCategories() async {
     try {
-      List<Map<String, dynamic>> categories =
-          await _dsdCategoryApis.fetchPopularCategories();
-      return categories;
+      List<DsdCategory>? categories = await _dsdCategoryApis.fetchPopularCategories();
+      return categories?.take(5).toList();
     } catch (e) {
       rethrow;
     }

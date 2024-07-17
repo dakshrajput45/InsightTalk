@@ -1,6 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:insighttalk_backend/apis/category/category_apis.dart';
+import 'package:insighttalk_backend/modal/category.dart';
 import 'package:insighttalk_frontend/pages/expert/expert_card.dart';
+import 'package:insighttalk_frontend/pages/expert/expert_controller.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ExpertsView extends StatefulWidget {
   const ExpertsView({super.key});
@@ -10,18 +14,8 @@ class ExpertsView extends StatefulWidget {
 }
 
 class _ExpertsViewState extends State<ExpertsView> {
-  final List<String> _popularCategory = [
-    'DSA',
-    'Flutter',
-    'Politics',
-    'React',
-    'Cricket',
-    'DSA2',
-    'Flutter2',
-    'Politics2',
-    'React2',
-    'Cricket2',
-  ];
+  DsdExpertController _dsdExpertController = DsdExpertController();
+  List<DsdCategory>? popularCategory = [];
   final List<String> _userCategory = [
     'DSA',
     'Flutter',
@@ -33,6 +27,25 @@ class _ExpertsViewState extends State<ExpertsView> {
     {"image_path": "assets/ads/ad_image2.jpg"},
     {"image_path": "assets/ads/ad_image3.jpg"},
   ];
+
+  Future<void> fetchTopCategory() async {
+    try {
+      List<DsdCategory>? result = await _dsdExpertController.fetchPopularCategories();
+      setState(() {
+        popularCategory = result;
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTopCategory();
+  }
+
+  
 
   final CarouselController _carouselController = CarouselController();
 
@@ -50,29 +63,43 @@ class _ExpertsViewState extends State<ExpertsView> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(
-            height: 10,
+            height: 20,
           ),
           SizedBox(
-            height: 60,
+            height: 80,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount:
-                  _popularCategory.length > 5 ? 5 : _popularCategory.length,
+                  popularCategory!.length > 5 ? 5 : popularCategory?.length,
               itemBuilder: (context, index) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  margin: const EdgeInsets.all(3),
-                  width: 150,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Handle button press
+                final category = popularCategory?[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal:  18.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      
                     },
-                    style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30))),
-                    child: Text(_popularCategory[index],
-                        style: const TextStyle(fontSize: 16)),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Image.network(
+                            category!.categoryImage!,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(height: 10.0),
+                        Text(
+                          category.categoryTitle!,
+                          style: TextStyle(
+                            fontSize: 1.3.sh,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
