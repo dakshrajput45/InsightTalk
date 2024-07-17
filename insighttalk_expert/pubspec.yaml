@@ -37,6 +37,11 @@ dependencies:
   go_router: ^14.2.0
   flutter_typeahead: ^4.0.0
   flutter_time_picker_spinner: ^2.0.0
+  firebase_auth: ^5.1.2
+  image_picker: ^1.1.2
+  firebase_storage: ^12.1.1
+  path: ^1.9.0
+  intl: ^0.19.0
 
 
   # The following adds the Cupertino Icons font to your application.

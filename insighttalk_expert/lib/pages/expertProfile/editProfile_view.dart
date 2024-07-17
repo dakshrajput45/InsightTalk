@@ -1,8 +1,22 @@
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:insighttalk_backend/helper/toast.dart';
+import 'package:intl/intl.dart';
+import 'package:path/path.dart' as Path;
 import 'package:flutter/material.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
+import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
+import 'package:insighttalk_backend/modal/category.dart';
+import 'package:insighttalk_backend/modal/modal_expert.dart';
+import 'package:insighttalk_expert/pages/expertProfile/edit_expert_profile_controller.dart';
 import 'package:insighttalk_expert/router.dart';
+
+final DsdExpertProfileController _dsdProfileController =
+    DsdExpertProfileController();
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});
@@ -14,26 +28,195 @@ class EditProfileView extends StatefulWidget {
 class _EditProfileViewState extends State<EditProfileView> {
   final _formKey = GlobalKey<FormState>();
   final List<String> _categories = [];
-  final TextEditingController _userNameController = TextEditingController();
-  final TextEditingController _emailAddressController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _expertNameController = TextEditingController();
+  final TextEditingController _expertiseController = TextEditingController();
+  final TextEditingController _aboutController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
+  final TextEditingController _urlController = TextEditingController();
   final FocusNode _categoryFocusNode = FocusNode();
-  final List<String> _availableCategories = [
-    'DSA',
-    'Flutter',
-    'Politics',
-    'React',
-    'Cricket',
-    'DSA2',
-    'Flutter2',
-    'Politics2',
-    'React2',
-    'Cricket2',
-  ];
+  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
+  final DsdExpertApis _dsdExpertApis = DsdExpertApis();
+  File? _imageFile;
+  String? _imageUrl;
+  bool? firstTime = false;
+
+  List<String> _availableCategories = [];
+
+  void _openImagePicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Choose from gallery'),
+                onTap: () async {
+                  File? Img = await _pickImage(ImageSource.gallery);
+                  if (Img != null) {
+                    await _uploadImageToFirebase(Img);
+                  }
+                  Navigator.pop(context);
+                  print("pick to ho gya");
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.link),
+                title: Text('Upload from link'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        child: Container(
+                          padding: EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              const Text(
+                                'Upload from link',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              TextField(
+                                controller: _urlController,
+                                decoration: InputDecoration(
+                                    hintText: 'Enter image URL'),
+                              ),
+                              SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Upload'),
+                                    onPressed: () {
+                                      setState(() {
+                                        _imageUrl = _urlController.text;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<File?> _pickImage(ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final pickedImage = await picker.pickImage(source: source);
+      if (pickedImage != null) {
+        _imageFile = File(pickedImage.path);
+        return _imageFile;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> _uploadImageToFirebase(Img) async {
+    if (Img == null) {
+      print('No image selected.');
+      return;
+    }
+    try {
+      if (!await Img!.exists()) {
+        print('Image file does not exist at path: ${_imageFile!.path}');
+        return;
+      }
+
+      final ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('images')
+          .child('${Path.basename(_imageFile!.path)}');
+
+      // Upload the file to Firebase Storage
+      final uploadTask = ref.putFile(Img!);
+      await uploadTask;
+      final downloadURL = await ref.getDownloadURL();
+
+      setState(() {
+        _imageUrl = downloadURL;
+      });
+      print('File uploaded successfully. Download URL: $_imageUrl');
+    } catch (e) {
+      print('Error uploading file: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategories();
+    getExpertData();
+  }
+
+  Future<void> _fetchCategories() async {
+    try {
+      List<DsdCategory> categories =
+          await _dsdProfileController.fetchAllCategories();
+      setState(() {
+        _availableCategories = categories
+            .map((category) => category.categoryTitle!)
+            .whereType<String>()
+            .toList();
+      });
+    } catch (e) {
+      print('Error fetching categories: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> getExpertData() async {
+    try {
+      String expertId = _itUserAuthSDK.getUser()!.uid;
+      DsdExpert? fetchedExpertData =
+          await _dsdExpertApis.fetchExpertById(expertId: expertId);
+      setState(() {
+        _expertNameController.text = fetchedExpertData?.expertName ?? '';
+        _cityController.text = fetchedExpertData?.address?.city ?? '';
+        _stateController.text = fetchedExpertData?.address?.state ?? '';
+        _countryController.text = fetchedExpertData?.address?.country ?? '';
+
+        // Populate categories
+        _categories.addAll(fetchedExpertData?.category ?? []);
+        firstTime = true;
+      });
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
 
   final Map<String, bool> days = {
     'Monday': false,
@@ -146,10 +329,14 @@ class _EditProfileViewState extends State<EditProfileView> {
                         Container(
                           height: 120,
                           width: 120,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                              image: AssetImage('assets/search.png'),
+                              image: _imageUrl != null
+                                  ? NetworkImage(_imageUrl!)
+                                  : const NetworkImage(
+                                          'https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg')
+                                      as ImageProvider,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -171,6 +358,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                               ),
                               onPressed: () {
                                 // Handle profile photo edit action
+                                _openImagePicker(context);
                               },
                             ),
                           ),
@@ -189,41 +377,23 @@ class _EditProfileViewState extends State<EditProfileView> {
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
-                    controller: _userNameController,
+                    controller: _expertNameController,
                     decoration: const InputDecoration(
-                      hintText: 'User Name',
-                      prefixIcon: Icon(Icons.person),
+                      hintText: 'Expert Name',
                     ),
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
-                    controller: _emailAddressController,
+                    controller: _expertiseController,
                     decoration: const InputDecoration(
-                      hintText: 'Email Address',
-                      prefixIcon: Icon(Icons.email),
+                      hintText: 'Expertise',
                     ),
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
-                    obscureText: _isHidden,
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                        hintText: 'Password',
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(_isHidden
-                              ? Icons.visibility
-                              : Icons.visibility_off),
-                          onPressed: _showpassword,
-                        )),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        // Handle change password action
-                      },
-                      child: const Text('Change Password'),
+                    controller: _aboutController,
+                    decoration: const InputDecoration(
+                      hintText: 'About',
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -484,10 +654,38 @@ class _EditProfileViewState extends State<EditProfileView> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
                           // Handle save action
-                          context.goNamed(routeNames.appointment);
+                          await _dsdProfileController
+                              .updateExpert(
+                            expert: DsdExpert(
+                              expertName:
+                                  _expertNameController.value.text.trim(),
+                              email: _itUserAuthSDK.getUser()!.email,
+                              address: DsdExpertAddress(
+                                country: _countryController.value.text.trim(),
+                                state: _stateController.value.text.trim(),
+                                city: _cityController.value.text.trim(),
+                              ),
+                              category: _categories,
+                              profileImage: _imageUrl != null
+                                  ? _imageUrl
+                                  : "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg",
+                            ),
+                            expertId: _itUserAuthSDK.getUser()!.uid,
+                          )
+                              .then((value) {
+                            DsdToastMessages.success(context,
+                                text: "Profile updated successfully!");
+                          });
+                          await updateCategories(
+                              _categories, _itUserAuthSDK.getUser()!.uid);
+                          if (firstTime == true) {
+                            context.goNamed(routeNames.expertprofile);
+                          } else {
+                            context.goNamed(routeNames.appointment);
+                          }
                         }
                       },
                       child: const Text('Save'),
@@ -500,5 +698,22 @@ class _EditProfileViewState extends State<EditProfileView> {
         ),
       ),
     );
+  }
+}
+
+Future<void> updateCategories(
+    List<String> categoryTitles, String expertId) async {
+  try {
+    await Future.forEach(categoryTitles, (categoryTitle) async {
+      print(categoryTitle);
+      await _dsdProfileController.updateExpertIdInCategory(
+        categoryTitle: categoryTitle,
+        expertId: expertId,
+      );
+    });
+    print('All categories updated successfully.');
+  } catch (e) {
+    print('Error updating categories: $e');
+    // Handle error as needed
   }
 }
