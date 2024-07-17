@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_expert/router.dart';
+import 'package:insighttalk_backend/helper/Dsd_dob_validator.dart';
+import 'package:intl/intl.dart';
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});
@@ -15,13 +19,17 @@ class _EditProfileViewState extends State<EditProfileView> {
   final _formKey = GlobalKey<FormState>();
   final List<String> _categories = [];
   final TextEditingController _userNameController = TextEditingController();
-  final TextEditingController _emailAddressController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
+  final TextEditingController _dobController = TextEditingController();
+  final TextEditingController _aboutController = TextEditingController();
   final FocusNode _categoryFocusNode = FocusNode();
+  final DsdDobValidator _dsdDobValidator = DsdDobValidator();
+  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
+  final int _maxCharacters = 2000;
+  DateTime? dateOfBirth;
   final List<String> _availableCategories = [
     'DSA',
     'Flutter',
@@ -118,13 +126,24 @@ class _EditProfileViewState extends State<EditProfileView> {
     });
   }
 
+  Future<void> selectedDOB() async {
+    var dob = await _dsdDobValidator.selectDOB(
+        context, dateOfBirth ?? DateTime.now());
+    if (dob != null && dob != DateTime.now()) {
+      setState(() {
+        dateOfBirth = dob;
+        _dobController.text = DateFormat("MM/dd/yyy").format(dateOfBirth!);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            "Profile",
+            "Edit Profile",
             textAlign: TextAlign.center,
           ),
         ),
@@ -197,37 +216,63 @@ class _EditProfileViewState extends State<EditProfileView> {
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
-                    controller: _emailAddressController,
-                    decoration: const InputDecoration(
-                      hintText: 'Email Address',
-                      prefixIcon: Icon(Icons.email),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    obscureText: _isHidden,
-                    controller: _passwordController,
+                    controller: _dobController,
+                    readOnly: true,
                     decoration: InputDecoration(
-                        hintText: 'Password',
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(_isHidden
-                              ? Icons.visibility
-                              : Icons.visibility_off),
-                          onPressed: _showpassword,
+                        hintText: 'MM/DD/YY',
+                        labelText: 'Date of Birth',
+                        prefixIcon: const Icon(Icons.calendar_month_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
                         )),
+                    onTap: () async {
+                      if (_itUserAuthSDK.getUser() != null) {
+                        await selectedDOB();
+                      }
+                    },
                   ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        // Handle change password action
-                      },
-                      child: const Text('Change Password'),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
+                    controller: _aboutController,
+                    maxLines: 5,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(2000),
+                    ],
+                    decoration: InputDecoration(
+                      labelText: 'About You',
+                      hintText: 'Write about yourself here',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 10.0),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      suffixIcon: Builder(
+                        builder: (BuildContext context) {
+                          return Padding(
+                            padding:
+                                const EdgeInsets.only(top: 110.0, right: 10.0),
+                            child: Text(
+                              '${_aboutController.text.length}/$_maxCharacters',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          );
+                        },
+                      ),
                     ),
+                    onChanged: (value) {
+                      setState(() {}); // Update the state to refresh suffixIcon
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
                   ),
-                  const SizedBox(height: 10),
-
+                  const SizedBox(
+                    height: 20,
+                  ),
                   // Address Details Section
                   const Text(
                     'Address Details',
