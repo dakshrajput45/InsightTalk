@@ -205,6 +205,8 @@ class _EditProfileViewState extends State<EditProfileView> {
           await _dsdExpertApis.fetchExpertById(expertId: expertId);
       setState(() {
         _expertNameController.text = fetchedExpertData?.expertName ?? '';
+        _expertiseController.text = fetchedExpertData?.expertise ?? '';
+        _aboutController.text = fetchedExpertData?.about ?? '';
         _cityController.text = fetchedExpertData?.address?.city ?? '';
         _stateController.text = fetchedExpertData?.address?.state ?? '';
         _countryController.text = fetchedExpertData?.address?.country ?? '';

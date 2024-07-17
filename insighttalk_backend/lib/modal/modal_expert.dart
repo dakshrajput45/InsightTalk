@@ -3,6 +3,7 @@ class DsdExpert {
   String? expertName;
   String? email;
   String? expertise;
+  String? about;
   DsdExpertAddress? address;
   List<String>? category;
   String? profileImage; // Changed to store a single image URL
@@ -14,6 +15,7 @@ class DsdExpert {
     this.id,
     this.email,
     this.expertise,
+    this.about,
     this.address,
     this.category,
     this.profileImage,
@@ -28,9 +30,10 @@ class DsdExpert {
     try {
       return DsdExpert(
         id: id,
-        expertName: json['userName'],
+        expertName: json['expertName'],
         email: json['email'],
         expertise: json['expertise'],
+        about: json['about'],
         category: List<String>.from(json['category'] ?? []),
         address: json['address'] != null
             ? DsdExpertAddress.fromJson(json: json['address'])
@@ -48,10 +51,11 @@ class DsdExpert {
 
   Map<String, dynamic> toJson({bool withId = false}) {
     return {
-      if (expertName != null) 'userName': expertName,
+      if (expertName != null) 'expertName': expertName,
       if (email != null) 'email': email,
       if (address != null) 'address': address?.toJson(),
       if (expertise != null) 'expertise': expertise,
+      if (about != null) 'about': about,
       if (withId) 'id': id,
       if (category != null) 'category': category,
       if (profileImage != null)
