@@ -65,7 +65,6 @@ class _UserProfileViewState extends State<UserProfileView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-
             children: [
               Container(
                 height: 120,
@@ -99,6 +98,8 @@ class _UserProfileViewState extends State<UserProfileView> {
                         break;
                       case 'Logout':
                         // Perform logout
+                        _itUserAuthSDK.signOut();
+                        context.goNamed(routeNames.login);
                         break;
                     }
                   },
