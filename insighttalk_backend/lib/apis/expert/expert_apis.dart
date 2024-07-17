@@ -3,7 +3,7 @@ import 'package:insighttalk_backend/modal/modal_expert.dart';
 
 class DsdExpertApis {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final String _expertCollectionPath = "experts";
+  final String _expertCollectionPath = "expertDetails";
 
   Future<void> updateExpertDetails(
       {required String expertId, required DsdExpert expert}) async {

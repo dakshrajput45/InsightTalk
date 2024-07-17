@@ -1,12 +1,25 @@
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:insighttalk_backend/helper/toast.dart';
+import 'package:intl/intl.dart';
+import 'package:path/path.dart' as Path;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
+import 'package:insighttalk_backend/modal/category.dart';
+import 'package:insighttalk_backend/modal/modal_expert.dart';
+import 'package:insighttalk_expert/pages/expertProfile/edit_expert_profile_controller.dart';
 import 'package:insighttalk_expert/router.dart';
 import 'package:insighttalk_backend/helper/Dsd_dob_validator.dart';
 import 'package:intl/intl.dart';
+
+final DsdExpertProfileController _dsdProfileController =
+    DsdExpertProfileController();
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});
@@ -18,11 +31,17 @@ class EditProfileView extends StatefulWidget {
 class _EditProfileViewState extends State<EditProfileView> {
   final _formKey = GlobalKey<FormState>();
   final List<String> _categories = [];
-  final TextEditingController _userNameController = TextEditingController();
+  final TextEditingController _expertNameController = TextEditingController();
+  final TextEditingController _expertiseController = TextEditingController();
+  final TextEditingController _aboutController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
+  final TextEditingController _urlController = TextEditingController();
+  final FocusNode _categoryFocusNode = FocusNode();
+  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
+  final DsdExpertApis _dsdExpertApis = DsdExpertApis();
   final TextEditingController _dobController = TextEditingController();
   final TextEditingController _aboutController = TextEditingController();
   final FocusNode _categoryFocusNode = FocusNode();
@@ -30,6 +49,141 @@ class _EditProfileViewState extends State<EditProfileView> {
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   final int _maxCharacters = 2000;
   DateTime? dateOfBirth;
+  File? _imageFile;
+  String? _imageUrl;
+  bool? firstTime = false;
+
+  void _openImagePicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Choose from gallery'),
+                onTap: () async {
+                  File? Img = await _pickImage(ImageSource.gallery);
+                  if (Img != null) {
+                    await _uploadImageToFirebase(Img);
+                  }
+                  Navigator.pop(context);
+                  print("pick to ho gya");
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.link),
+                title: Text('Upload from link'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        child: Container(
+                          padding: EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              const Text(
+                                'Upload from link',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              TextField(
+                                controller: _urlController,
+                                decoration: InputDecoration(
+                                    hintText: 'Enter image URL'),
+                              ),
+                              SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Upload'),
+                                    onPressed: () {
+                                      setState(() {
+                                        _imageUrl = _urlController.text;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<File?> _pickImage(ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final pickedImage = await picker.pickImage(source: source);
+      if (pickedImage != null) {
+        _imageFile = File(pickedImage.path);
+        return _imageFile;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> _uploadImageToFirebase(Img) async {
+    if (Img == null) {
+      print('No image selected.');
+      return;
+    }
+    try {
+      if (!await Img!.exists()) {
+        print('Image file does not exist at path: ${_imageFile!.path}');
+        return;
+      }
+
+      final ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('images')
+          .child('${Path.basename(_imageFile!.path)}');
+
+      // Upload the file to Firebase Storage
+      final uploadTask = ref.putFile(Img!);
+      await uploadTask;
+      final downloadURL = await ref.getDownloadURL();
+
+      setState(() {
+        _imageUrl = downloadURL;
+      });
+      print('File uploaded successfully. Download URL: $_imageUrl');
+    } catch (e) {
+      print('Error uploading file: $e');
+      rethrow;
+    }
+  }
+  
+
   final List<String> _availableCategories = [
     'DSA',
     'Flutter',
@@ -42,6 +196,7 @@ class _EditProfileViewState extends State<EditProfileView> {
     'React2',
     'Cricket2',
   ];
+
 
   final Map<String, bool> days = {
     'Monday': false,
@@ -165,10 +320,14 @@ class _EditProfileViewState extends State<EditProfileView> {
                         Container(
                           height: 120,
                           width: 120,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                              image: AssetImage('assets/search.png'),
+                              image: _imageUrl != null
+                                  ? NetworkImage(_imageUrl!)
+                                  : const NetworkImage(
+                                          'https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg')
+                                      as ImageProvider,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -190,6 +349,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                               ),
                               onPressed: () {
                                 // Handle profile photo edit action
+                                _openImagePicker(context);
                               },
                             ),
                           ),
@@ -208,10 +368,16 @@ class _EditProfileViewState extends State<EditProfileView> {
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
-                    controller: _userNameController,
+                    controller: _expertNameController,
                     decoration: const InputDecoration(
-                      hintText: 'User Name',
-                      prefixIcon: Icon(Icons.person),
+                      hintText: 'Expert Name',
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _expertiseController,
+                    decoration: const InputDecoration(
+                      hintText: 'Expertise',
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -529,10 +695,38 @@ class _EditProfileViewState extends State<EditProfileView> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
                           // Handle save action
-                          context.goNamed(routeNames.appointment);
+                          await _dsdProfileController
+                              .updateExpert(
+                            expert: DsdExpert(
+                              expertName:
+                                  _expertNameController.value.text.trim(),
+                              email: _itUserAuthSDK.getUser()!.email,
+                              address: DsdExpertAddress(
+                                country: _countryController.value.text.trim(),
+                                state: _stateController.value.text.trim(),
+                                city: _cityController.value.text.trim(),
+                              ),
+                              category: _categories,
+                              profileImage: _imageUrl != null
+                                  ? _imageUrl
+                                  : "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg",
+                            ),
+                            expertId: _itUserAuthSDK.getUser()!.uid,
+                          )
+                              .then((value) {
+                            DsdToastMessages.success(context,
+                                text: "Profile updated successfully!");
+                          });
+                          await updateCategories(
+                              _categories, _itUserAuthSDK.getUser()!.uid);
+                          if (firstTime == true) {
+                            context.goNamed(routeNames.expertprofile);
+                          } else {
+                            context.goNamed(routeNames.appointment);
+                          }
                         }
                       },
                       child: const Text('Save'),
@@ -545,5 +739,22 @@ class _EditProfileViewState extends State<EditProfileView> {
         ),
       ),
     );
+  }
+}
+
+Future<void> updateCategories(
+    List<String> categoryTitles, String expertId) async {
+  try {
+    await Future.forEach(categoryTitles, (categoryTitle) async {
+      print(categoryTitle);
+      await _dsdProfileController.updateExpertIdInCategory(
+        categoryTitle: categoryTitle,
+        expertId: expertId,
+      );
+    });
+    print('All categories updated successfully.');
+  } catch (e) {
+    print('Error updating categories: $e');
+    // Handle error as needed
   }
 }
