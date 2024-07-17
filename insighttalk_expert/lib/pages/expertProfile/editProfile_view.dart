@@ -4,6 +4,7 @@ import 'package:insighttalk_backend/helper/toast.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as Path;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -14,6 +15,8 @@ import 'package:insighttalk_backend/modal/category.dart';
 import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_expert/pages/expertProfile/edit_expert_profile_controller.dart';
 import 'package:insighttalk_expert/router.dart';
+import 'package:insighttalk_backend/helper/Dsd_dob_validator.dart';
+import 'package:intl/intl.dart';
 
 final DsdExpertProfileController _dsdProfileController =
     DsdExpertProfileController();
@@ -39,11 +42,16 @@ class _EditProfileViewState extends State<EditProfileView> {
   final FocusNode _categoryFocusNode = FocusNode();
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   final DsdExpertApis _dsdExpertApis = DsdExpertApis();
+  final TextEditingController _dobController = TextEditingController();
+  final TextEditingController _aboutController = TextEditingController();
+  final FocusNode _categoryFocusNode = FocusNode();
+  final DsdDobValidator _dsdDobValidator = DsdDobValidator();
+  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
+  final int _maxCharacters = 2000;
+  DateTime? dateOfBirth;
   File? _imageFile;
   String? _imageUrl;
   bool? firstTime = false;
-
-  List<String> _availableCategories = [];
 
   void _openImagePicker(BuildContext context) {
     showModalBottomSheet(
@@ -174,51 +182,21 @@ class _EditProfileViewState extends State<EditProfileView> {
       rethrow;
     }
   }
+  
 
-  @override
-  void initState() {
-    super.initState();
-    _fetchCategories();
-    getExpertData();
-  }
+  final List<String> _availableCategories = [
+    'DSA',
+    'Flutter',
+    'Politics',
+    'React',
+    'Cricket',
+    'DSA2',
+    'Flutter2',
+    'Politics2',
+    'React2',
+    'Cricket2',
+  ];
 
-  Future<void> _fetchCategories() async {
-    try {
-      List<DsdCategory> categories =
-          await _dsdProfileController.fetchAllCategories();
-      setState(() {
-        _availableCategories = categories
-            .map((category) => category.categoryTitle!)
-            .whereType<String>()
-            .toList();
-      });
-    } catch (e) {
-      print('Error fetching categories: $e');
-      rethrow;
-    }
-  }
-
-  Future<void> getExpertData() async {
-    try {
-      String expertId = _itUserAuthSDK.getUser()!.uid;
-      DsdExpert? fetchedExpertData =
-          await _dsdExpertApis.fetchExpertById(expertId: expertId);
-      setState(() {
-        _expertNameController.text = fetchedExpertData?.expertName ?? '';
-        _expertiseController.text = fetchedExpertData?.expertise ?? '';
-        _aboutController.text = fetchedExpertData?.about ?? '';
-        _cityController.text = fetchedExpertData?.address?.city ?? '';
-        _stateController.text = fetchedExpertData?.address?.state ?? '';
-        _countryController.text = fetchedExpertData?.address?.country ?? '';
-
-        // Populate categories
-        _categories.addAll(fetchedExpertData?.category ?? []);
-        firstTime = true;
-      });
-    } catch (e) {
-      print('Error fetching user data: $e');
-    }
-  }
 
   final Map<String, bool> days = {
     'Monday': false,
@@ -303,13 +281,24 @@ class _EditProfileViewState extends State<EditProfileView> {
     });
   }
 
+  Future<void> selectedDOB() async {
+    var dob = await _dsdDobValidator.selectDOB(
+        context, dateOfBirth ?? DateTime.now());
+    if (dob != null && dob != DateTime.now()) {
+      setState(() {
+        dateOfBirth = dob;
+        _dobController.text = DateFormat("MM/dd/yyy").format(dateOfBirth!);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            "Profile",
+            "Edit Profile",
             textAlign: TextAlign.center,
           ),
         ),
@@ -393,13 +382,63 @@ class _EditProfileViewState extends State<EditProfileView> {
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
-                    controller: _aboutController,
-                    decoration: const InputDecoration(
-                      hintText: 'About',
-                    ),
+                    controller: _dobController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                        hintText: 'MM/DD/YY',
+                        labelText: 'Date of Birth',
+                        prefixIcon: const Icon(Icons.calendar_month_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        )),
+                    onTap: () async {
+                      if (_itUserAuthSDK.getUser() != null) {
+                        await selectedDOB();
+                      }
+                    },
                   ),
-                  const SizedBox(height: 10),
-
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
+                    controller: _aboutController,
+                    maxLines: 5,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(2000),
+                    ],
+                    decoration: InputDecoration(
+                      labelText: 'About You',
+                      hintText: 'Write about yourself here',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 10.0),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      suffixIcon: Builder(
+                        builder: (BuildContext context) {
+                          return Padding(
+                            padding:
+                                const EdgeInsets.only(top: 110.0, right: 10.0),
+                            child: Text(
+                              '${_aboutController.text.length}/$_maxCharacters',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {}); // Update the state to refresh suffixIcon
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   // Address Details Section
                   const Text(
                     'Address Details',
