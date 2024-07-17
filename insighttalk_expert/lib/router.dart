@@ -4,9 +4,9 @@ import 'package:insighttalk_expert/pages/auth/login_view.dart';
 import 'package:insighttalk_expert/pages/auth/signup_view.dart';
 import 'package:insighttalk_expert/pages/clientChat/client_chat.dart';
 import 'package:insighttalk_expert/pages/expertProfile/expert_profile_view.dart';
+import 'package:insighttalk_expert/pages/expertProfile/editProfile_view.dart';
 import 'package:insighttalk_expert/pages/home.dart';
 import 'package:insighttalk_expert/pages/notifications/notification_view.dart';
-
 
 RouterConfig routerConfig = RouterConfig();
 RouteNames routeNames = RouteNames();
@@ -30,6 +30,11 @@ class RouterConfig {
         path: '/signup',
         name: routeNames.signup,
         builder: (context, state) => const SignUpView(),
+      ),
+      GoRoute(
+        path: '/editprofile',
+        name: routeNames.editprofile,
+        builder: (context, state) => const EditProfileView(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => HomeView(
@@ -84,4 +89,5 @@ class RouteNames {
   final String expertprofile = 'expertprofile';
   final String login = 'login';
   final String signup = 'signup';
+  final String editprofile = 'editprofile';
 }

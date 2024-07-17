@@ -49,8 +49,8 @@ class ExpertCard extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 14.sp, fontWeight: FontWeight.w500),
                         ),
-                        const SizedBox(
-                          height: 7.0,
+                         SizedBox(
+                          height: 0.5.sh,
                         ),
                         Row(
                           children: [

@@ -84,7 +84,56 @@ class DsdCategoryApis {
     }
   }
 
+<<<<<<< HEAD
   Future<List<DsdCategory>?> fetchPopularCategories() async {
+=======
+  Future<void> addExpertIdToCategory(
+      {required String categoryTitle, required String expertId}) async {
+    try {
+      DocumentReference docRef =
+          _db.collection(_collectionPath).doc(categoryTitle);
+      // Update the document to add the expertId to the userIds array
+      await docRef.update({
+        'experts': FieldValue.arrayUnion([expertId])
+      });
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> removeUserIdFromCategory(
+      {required String categoryTitle, required String userId}) async {
+    try {
+      DocumentReference docRef =
+          _db.collection(_collectionPath).doc(categoryTitle);
+      // Update the document to remove the userId to the userIds array
+      await docRef.update({
+        'users': FieldValue.arrayRemove([userId])
+      });
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> removeExpertIdFromCategory(
+      {required String categoryTitle, required String expertId}) async {
+    try {
+      DocumentReference docRef =
+          _db.collection(_collectionPath).doc(categoryTitle);
+      // Update the document to remove the expertId to the userIds array
+      await docRef.update({
+        'experts': FieldValue.arrayRemove([expertId])
+      });
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchPopularCategories() async {
+>>>>>>> 53c68f06810a584e488cdb0e149d0f541fdc0ff7
     try {
       var result = await FirebaseFirestore.instance
           .collection(_collectionPath)
