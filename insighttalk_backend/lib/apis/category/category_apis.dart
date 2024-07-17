@@ -84,9 +84,6 @@ class DsdCategoryApis {
     }
   }
 
-<<<<<<< HEAD
-  Future<List<DsdCategory>?> fetchPopularCategories() async {
-=======
   Future<void> addExpertIdToCategory(
       {required String categoryTitle, required String expertId}) async {
     try {
@@ -132,12 +129,10 @@ class DsdCategoryApis {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchPopularCategories() async {
->>>>>>> 53c68f06810a584e488cdb0e149d0f541fdc0ff7
+  Future<List<DsdCategory>?> fetchPopularCategories() async {
     try {
-      var result = await FirebaseFirestore.instance
-          .collection(_collectionPath)
-          .get();
+      var result =
+          await FirebaseFirestore.instance.collection(_collectionPath).get();
 
       List<DsdCategory> categories = result.docs.map((doc) {
         return DsdCategory.fromJson(
