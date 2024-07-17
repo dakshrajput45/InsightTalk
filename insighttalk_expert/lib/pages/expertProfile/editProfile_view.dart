@@ -11,7 +11,6 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
-import 'package:insighttalk_backend/modal/category.dart';
 import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_expert/pages/expertProfile/edit_expert_profile_controller.dart';
 import 'package:insighttalk_expert/router.dart';
@@ -43,10 +42,7 @@ class _EditProfileViewState extends State<EditProfileView> {
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   final DsdExpertApis _dsdExpertApis = DsdExpertApis();
   final TextEditingController _dobController = TextEditingController();
-  final TextEditingController _aboutController = TextEditingController();
-  final FocusNode _categoryFocusNode = FocusNode();
   final DsdDobValidator _dsdDobValidator = DsdDobValidator();
-  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   final int _maxCharacters = 2000;
   DateTime? dateOfBirth;
   File? _imageFile;
@@ -701,9 +697,12 @@ class _EditProfileViewState extends State<EditProfileView> {
                           await _dsdProfileController
                               .updateExpert(
                             expert: DsdExpert(
-                              expertName:
-                                  _expertNameController.value.text.trim(),
+                              id: _itUserAuthSDK.getUser()!.uid,
+                              expertName: _expertNameController.value.text.trim(),
                               email: _itUserAuthSDK.getUser()!.email,
+                              expertise: _expertiseController.value.text.trim(),
+                              dateOfBirth : dateOfBirth,
+                              about: _aboutController.value.text,
                               address: DsdExpertAddress(
                                 country: _countryController.value.text.trim(),
                                 state: _stateController.value.text.trim(),

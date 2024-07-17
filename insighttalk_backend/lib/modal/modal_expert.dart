@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class DsdExpert {
   String? id;
   String? expertName;
   String? email;
   String? expertise;
   String? about;
+  DateTime? dateOfBirth;
   DsdExpertAddress? address;
   List<String>? category;
   String? profileImage; // Changed to store a single image URL
@@ -15,6 +18,7 @@ class DsdExpert {
     this.id,
     this.email,
     this.expertise,
+    this.dateOfBirth,
     this.about,
     this.address,
     this.category,
@@ -33,6 +37,7 @@ class DsdExpert {
         expertName: json['expertName'],
         email: json['email'],
         expertise: json['expertise'],
+        dateOfBirth: (json['dateOfBirth'] != null) ? (json['dateOfBirth'] as Timestamp).toDate() : DateTime.now(),
         about: json['about'],
         category: List<String>.from(json['category'] ?? []),
         address: json['address'] != null
@@ -55,6 +60,7 @@ class DsdExpert {
       if (email != null) 'email': email,
       if (address != null) 'address': address?.toJson(),
       if (expertise != null) 'expertise': expertise,
+      if (dateOfBirth != null) 'dateOfBirth': Timestamp.fromDate(dateOfBirth!),
       if (about != null) 'about': about,
       if (withId) 'id': id,
       if (category != null) 'category': category,
