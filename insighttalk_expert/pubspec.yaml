@@ -40,6 +40,7 @@ dependencies:
   flutter_time_picker_spinner: ^2.0.0
   image_picker: ^1.1.2
   firebase_storage: ^12.1.1
+  responsive_sizer: ^3.3.1
   path: ^1.9.0
   intl: ^0.19.0
 

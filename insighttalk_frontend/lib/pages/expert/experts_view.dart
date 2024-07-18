@@ -30,7 +30,8 @@ class _ExpertsViewState extends State<ExpertsView> {
 
   Future<void> fetchTopCategory() async {
     try {
-      List<DsdCategory>? result = await _dsdExpertController.fetchPopularCategories();
+      List<DsdCategory>? result =
+          await _dsdExpertController.fetchPopularCategories();
       setState(() {
         popularCategory = result;
       });
@@ -44,8 +45,6 @@ class _ExpertsViewState extends State<ExpertsView> {
     super.initState();
     fetchTopCategory();
   }
-
-  
 
   final CarouselController _carouselController = CarouselController();
 
@@ -66,7 +65,7 @@ class _ExpertsViewState extends State<ExpertsView> {
             height: 20,
           ),
           SizedBox(
-            height: 80,
+            height: 17.sw,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount:
@@ -74,11 +73,9 @@ class _ExpertsViewState extends State<ExpertsView> {
               itemBuilder: (context, index) {
                 final category = popularCategory?[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal:  18.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
                   child: GestureDetector(
-                    onTap: () {
-                      
-                    },
+                    onTap: () {},
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,

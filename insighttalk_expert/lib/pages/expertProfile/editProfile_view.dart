@@ -178,21 +178,18 @@ class _EditProfileViewState extends State<EditProfileView> {
       rethrow;
     }
   }
-  
 
   final List<String> _availableCategories = [
-    'DSA',
-    'Flutter',
-    'Politics',
-    'React',
-    'Cricket',
-    'DSA2',
-    'Flutter2',
-    'Politics2',
-    'React2',
-    'Cricket2',
+    "DSA",
+    "Fitness",
+    "Web Development",
+    "Java",
+    "Java Script",
+    "Marketing",
+    "React",
+    "Sales",
+    "Stock Market"
   ];
-
 
   final Map<String, bool> days = {
     'Monday': false,
@@ -698,10 +695,11 @@ class _EditProfileViewState extends State<EditProfileView> {
                               .updateExpert(
                             expert: DsdExpert(
                               id: _itUserAuthSDK.getUser()!.uid,
-                              expertName: _expertNameController.value.text.trim(),
+                              expertName:
+                                  _expertNameController.value.text.trim(),
                               email: _itUserAuthSDK.getUser()!.email,
                               expertise: _expertiseController.value.text.trim(),
-                              dateOfBirth : dateOfBirth,
+                              dateOfBirth: dateOfBirth,
                               about: _aboutController.value.text,
                               address: DsdExpertAddress(
                                 country: _countryController.value.text.trim(),

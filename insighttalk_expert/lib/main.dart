@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:insighttalk_expert/firebase_options.dart';
 import 'package:insighttalk_expert/router.dart';
 import 'package:insighttalk_expert/themes/theme.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
-
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -19,11 +19,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Insight Talk Expert App',
-      debugShowCheckedModeBanner: false,
-      theme:appTheme,
-      routerConfig: routerConfig.getRouter(),
-    );
+    return SafeArea(
+        child: ResponsiveSizer(builder: (context, orientation, screenType) {
+      return MaterialApp.router(
+        title: 'Insight Talk Expert App',
+        debugShowCheckedModeBanner: false,
+        theme: appTheme,
+        routerConfig: routerConfig.getRouter(),
+      );
+    }));
   }
 }

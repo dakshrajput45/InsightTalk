@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:insighttalk_backend/apis/category/category_apis.dart';
+import 'package:insighttalk_backend/modal/category.dart';
 import 'package:insighttalk_backend/modal/modal_expert.dart';
 
 class DsdExpertApis {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final DsdCategoryApis _dsdCategoryApis = DsdCategoryApis();
   final String _expertCollectionPath = "expertDetails";
 
   Future<void> updateExpertDetails(
@@ -62,6 +65,34 @@ class DsdExpertApis {
       print("Rating added successfully.");
     } catch (e) {
       print("Error adding rating: $e");
+    }
+  }
+
+  Future<List<DsdCategory>?> fetchExpertCategories(
+      {required String expertId}) async {
+    try {
+      var result =
+          await _db.collection(_expertCollectionPath).doc(expertId).get();
+      if (result.exists) {
+        DsdExpert expertData =
+            DsdExpert.fromJson(json: result.data()!, id: result.id);
+        List<String>? category = expertData.category;
+        List<DsdCategory> expertCategory = [];
+        print(category);
+        await Future.forEach(category!, (x) async {
+          print(x);
+          DsdCategory? categoryData =
+              await _dsdCategoryApis.fetchCategoryById(categoryId: x);
+          if (categoryData != null) {
+            expertCategory.add(categoryData);
+          }
+        });
+        return expertCategory;
+      }
+      return null;
+    } catch (e) {
+      print(e);
+      rethrow;
     }
   }
 }
