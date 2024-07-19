@@ -304,40 +304,15 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
 }
 
 class PolkaDotPainter extends CustomPainter {
-  final Random _random = Random();
-
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.blue.shade400
       ..style = PaintingStyle.fill;
 
-    double minDotRadius = 2.sh;
-    double maxDotRadius = 10.0.sh;
-    double minSpacing = 20.sh;
-    double maxSpacing = 25.sh;
-
-    double y = 0;
+    double y = -56.sh;
     double x = size.width / 2;
-    canvas.drawCircle(Offset(x, y), 28.sh, paint);
-    // while (y < size.height) {
-    //   double x = 0;
-    //   while (x < size.width) {
-    //     final double dotRadius =
-    //         minDotRadius + _random.nextDouble() * (maxDotRadius - minDotRadius);
-    //     canvas.drawCircle(Offset(x, y), dotRadius, paint);
-
-    //     // Calculate the next x position
-    //     x += dotRadius * 2 +
-    //         minSpacing +
-    //         _random.nextDouble() * (maxSpacing - minSpacing);
-    //   }
-
-    //   // Calculate the next y position
-    //   y += minDotRadius * 2 +
-    //       minSpacing +
-    //       _random.nextDouble() * (maxSpacing - minSpacing);
-    // }
+    canvas.drawCircle(Offset(x, y), 82.sh, paint);
   }
 
   @override
