@@ -118,7 +118,7 @@ class _SignUpViewState extends State<SignUpView> {
                             confirmPasswordController.text) {
                           User? user =
                               await _itUserAuthSDK.emailandPasswordSignUp(
-                                  email: emailController.text,
+                                  email: emailController.text.trim(),
                                   password: passwordController.text);
                           if (user != null && mounted) {
                             context.goNamed(routeNames.editprofileview);
@@ -127,8 +127,7 @@ class _SignUpViewState extends State<SignUpView> {
                             print("Sign Up Failed");
                           }
                         } else {
-                          print(
-                              "Password and Confirm Passwords are not same");
+                          print("Password and Confirm Passwords are not same");
                         }
                         // const ProfileScreen();
                       },
@@ -195,8 +194,7 @@ class _SignUpViewState extends State<SignUpView> {
                             WidgetStateProperty.all<Color>(Colors.white),
                         foregroundColor:
                             WidgetStateProperty.all<Color>(Colors.black),
-                        shape:
-                            WidgetStateProperty.all<RoundedRectangleBorder>(
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
                             side: const BorderSide(color: Colors.grey),
