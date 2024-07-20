@@ -1,5 +1,5 @@
 import 'package:insighttalk_backend/apis/category/category_apis.dart';
-import 'package:insighttalk_backend/modal/category.dart';
+import 'package:insighttalk_backend/modal/modal_category.dart';
 
 class DsdExpertController {
   // final DsdUserDetailsApis _dsdUserDetailsApis = DsdUserDetailsApis();

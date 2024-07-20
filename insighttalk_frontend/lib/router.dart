@@ -14,7 +14,6 @@ import 'package:insighttalk_frontend/pages/userProfile/user_profile_view.dart';
 int isLoggedIn = 1;
 void updateLoginStatus(int loggedIn) {
   isLoggedIn = loggedIn;
-  print(isLoggedIn);
 }
 
 RouterConfig routerConfig = RouterConfig();

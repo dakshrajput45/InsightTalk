@@ -6,7 +6,7 @@ import 'package:insighttalk_expert/router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginView extends StatefulWidget {
-  const LoginView({Key? key}) : super(key: key); // Corrected super.key
+  const LoginView({super.key}); // Corrected super.key
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -16,7 +16,7 @@ class _LoginViewState extends State<LoginView> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
-  bool _isNotValidate = false;
+  final bool _isNotValidate = false;
   void handleLogin(int val) {
     updateLoginStatus(val); // Update isLoggedIn to true
     // You can navigate to another screen or perform any post-login action here
@@ -190,7 +190,6 @@ class _LoginViewState extends State<LoginView> {
                       onPressed: () async {
                         // Google Log In Function Added here (Same function used for Sign Up)
                         User? user = await _itUserAuthSDK.googleSignUp();
-                        print('Google Log In function is called ${mounted}');
                         if (user != null && mounted) {
                           DsdToastMessages.success(context,
                               text: "Google Login Successful");

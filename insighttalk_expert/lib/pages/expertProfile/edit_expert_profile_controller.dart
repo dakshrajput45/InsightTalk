@@ -1,6 +1,6 @@
 import 'package:insighttalk_backend/apis/category/category_apis.dart';
 import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
-import 'package:insighttalk_backend/modal/category.dart';
+import 'package:insighttalk_backend/modal/modal_category.dart';
 import 'package:insighttalk_backend/modal/modal_expert.dart';
 
 class DsdExpertProfileController {

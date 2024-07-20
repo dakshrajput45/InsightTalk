@@ -1,10 +1,9 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/apis/userApis/user_details_api.dart';
-import 'package:insighttalk_backend/modal/category.dart';
+import 'package:insighttalk_backend/modal/modal_category.dart';
 import 'package:insighttalk_backend/modal/modal_user.dart';
 import 'package:insighttalk_frontend/router.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -32,7 +31,7 @@ class _UserProfileViewState extends State<UserProfileView> {
         categories = fetchedCategories;
       });
     } catch (e) {
-      print('Error fetching categories: $e');
+      rethrow;
     }
   }
 
@@ -46,7 +45,7 @@ class _UserProfileViewState extends State<UserProfileView> {
         userData = fetchedUserData;
       });
     } catch (e) {
-      print('Error fetching user data: $e');
+      rethrow;
     }
   }
 
@@ -77,7 +76,7 @@ class _UserProfileViewState extends State<UserProfileView> {
                     image: userData != null && userData!.profileImage != null
                         ? NetworkImage(userData!
                             .profileImage!) // Safe to use ! here after null check
-                        : NetworkImage(
+                        : const NetworkImage(
                             'https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg'),
                     fit: BoxFit.cover,
                   ),
@@ -136,7 +135,7 @@ class _UserProfileViewState extends State<UserProfileView> {
                   "${userData?.userName}",
                   style: TextStyle(fontSize: 4.sh, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Text(

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:insighttalk_backend/modal/category.dart';
+import 'package:insighttalk_backend/modal/modal_category.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as Path;
 import 'package:flutter/material.dart';
@@ -52,20 +52,19 @@ class _EditProfileViewState extends State<EditProfileView> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                leading: Icon(Icons.photo_library),
-                title: Text('Choose from gallery'),
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from gallery'),
                 onTap: () async {
-                  File? Img = await _pickImage(ImageSource.gallery);
-                  if (Img != null) {
-                    await _uploadImageToFirebase(Img);
+                  File? img = await _pickImage(ImageSource.gallery);
+                  if (img != null) {
+                    await _uploadImageToFirebase(img);
                   }
                   Navigator.pop(context);
-                  print("pick to ho gya");
                 },
               ),
               ListTile(
-                leading: Icon(Icons.link),
-                title: Text('Upload from link'),
+                leading: const Icon(Icons.link),
+                title: const Text('Upload from link'),
                 onTap: () async {
                   Navigator.pop(context);
                   await showDialog(
@@ -73,7 +72,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                     builder: (BuildContext context) {
                       return Dialog(
                         child: Container(
-                          padding: EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(16),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,24 +84,24 @@ class _EditProfileViewState extends State<EditProfileView> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               TextField(
                                 controller: _urlController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                     hintText: 'Enter image URL'),
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: <Widget>[
                                   TextButton(
-                                    child: Text('Cancel'),
+                                    child: const Text('Cancel'),
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
                                   ),
                                   TextButton(
-                                    child: Text('Upload'),
+                                    child: const Text('Upload'),
                                     onPressed: () {
                                       setState(() {
                                         _imageUrl = _urlController.text;
@@ -142,14 +141,12 @@ class _EditProfileViewState extends State<EditProfileView> {
     }
   }
 
-  Future<void> _uploadImageToFirebase(Img) async {
-    if (Img == null) {
-      print('No image selected.');
+  Future<void> _uploadImageToFirebase(img) async {
+    if (img == null) {
       return;
     }
     try {
-      if (!await Img!.exists()) {
-        print('Image file does not exist at path: ${_imageFile!.path}');
+      if (!await img!.exists()) {
         return;
       }
 
@@ -159,16 +156,14 @@ class _EditProfileViewState extends State<EditProfileView> {
           .child('${Path.basename(_imageFile!.path)}');
 
       // Upload the file to Firebase Storage
-      final uploadTask = ref.putFile(Img!);
+      final uploadTask = ref.putFile(img!);
       await uploadTask;
       final downloadURL = await ref.getDownloadURL();
 
       setState(() {
         _imageUrl = downloadURL;
       });
-      print('File uploaded successfully. Download URL: $_imageUrl');
     } catch (e) {
-      print('Error uploading file: $e');
       rethrow;
     }
   }
@@ -203,7 +198,6 @@ class _EditProfileViewState extends State<EditProfileView> {
             .toList();
       });
     } catch (e) {
-      print('Error fetching categories: $e');
       rethrow;
     }
   }
@@ -214,6 +208,7 @@ class _EditProfileViewState extends State<EditProfileView> {
       DsdUser? fetchedUserData =
           await _dsdUserApis.fetchUserById(userId: userId);
       setState(() {
+        _imageUrl = fetchedUserData?.profileImage ?? '';
         _userNameController.text = fetchedUserData?.userName ?? '';
         _dobController.text = fetchedUserData?.dateOfBirth != null
             ? DateFormat("MM/dd/yyyy").format(fetchedUserData!.dateOfBirth!)
@@ -227,7 +222,7 @@ class _EditProfileViewState extends State<EditProfileView> {
         firstTime = true;
       });
     } catch (e) {
-      print('Error fetching user data: $e');
+      rethrow;
     }
   }
 
@@ -433,9 +428,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                                 city: _cityController.value.text.trim(),
                               ),
                               category: _categories,
-                              profileImage: _imageUrl != null
-                                  ? _imageUrl
-                                  : "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg",
+                              profileImage: _imageUrl ??
+                                  "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg",
                             ),
                             userId: _itUserAuthSDK.getUser()!.uid,
                           )
@@ -469,15 +463,13 @@ Future<void> updateCategories(
     List<String> categoryTitles, String userId) async {
   try {
     await Future.forEach(categoryTitles, (categoryTitle) async {
-      print(categoryTitle);
       await _dsdProfileController.updateUserIdInCategory(
         categoryTitle: categoryTitle,
         userId: userId,
       );
     });
-    print('All categories updated successfully.');
   } catch (e) {
-    print('Error updating categories: $e');
+    rethrow;
     // Handle error as needed
   }
 }

@@ -4,10 +4,10 @@ import 'package:insighttalk_expert/router.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({
-    Key? key,
+    super.key,
     required this.title,
     required this.navigationShell,
-  }) : super(key: key);
+  });
 
   final String title;
   final StatefulNavigationShell navigationShell;

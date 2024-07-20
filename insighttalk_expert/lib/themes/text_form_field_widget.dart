@@ -5,7 +5,7 @@ class TTextFieldFormTheme {
 
   static InputDecorationTheme lightInputDecorationTheme = InputDecorationTheme(
     errorStyle: const TextStyle(color: Colors.white),
-    fillColor: Color.fromRGBO(245, 245, 245, 1),
+    fillColor: const Color.fromRGBO(245, 245, 245, 1),
     filled: true,
     enabledBorder: OutlineInputBorder(
       borderSide: const BorderSide(
@@ -15,7 +15,7 @@ class TTextFieldFormTheme {
       borderRadius: BorderRadius.circular(10), // Color for enabled state
     ),
     focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(
+      borderSide: const BorderSide(
         color: Colors.black,
         width: 2.0,
       ),

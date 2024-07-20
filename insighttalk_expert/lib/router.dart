@@ -14,7 +14,6 @@ RouteNames routeNames = RouteNames();
 int isLoggedIn = 1;
 void updateLoginStatus(int loggedIn) {
   isLoggedIn = loggedIn;
-  print(isLoggedIn);
 }
 
 class RouterConfig {

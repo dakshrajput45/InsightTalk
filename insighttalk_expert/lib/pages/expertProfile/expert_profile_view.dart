@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
-import 'package:insighttalk_backend/modal/category.dart';
+import 'package:insighttalk_backend/modal/modal_category.dart';
 import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_expert/router.dart';
-import 'dart:math';
-
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ExpertProfileView extends StatefulWidget {
@@ -40,7 +38,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
         categories = fetchedCategories;
       });
     } catch (e) {
-      print('Error fetching categories: $e');
+      rethrow;
     }
   }
 
@@ -54,7 +52,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
         expertData = fetchedExpertData;
       });
     } catch (e) {
-      print('Error fetching user data: $e');
+      rethrow;
     }
   }
 
@@ -92,7 +90,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
                   top: 0,
                   right: 0,
                   child: Padding(
-                    padding: EdgeInsets.only(right: 2.sh, bottom: 4.sh),
+                    padding: EdgeInsets.only(bottom: 4.sh),
                     child: PopupMenuButton<String>(
                       onSelected: (String value) {
                         // Handle menu item selection
@@ -156,7 +154,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
             ),
           ])),
           const SizedBox(
-            height: 20,
+            height: 30,
           ),
           Container(
             padding: EdgeInsets.all(3.sw),
@@ -170,10 +168,9 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
               children: [
                 Text(
                   "About",
-                  style:
-                      TextStyle(fontSize: 2.3.sh, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 3.sh, fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 5),
+                SizedBox(height: 2.sh),
                 Text(
                   "${expertData?.about}",
                   style: TextStyle(
@@ -269,7 +266,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
             height: 10,
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(
               "Reviews",
               style: TextStyle(fontSize: 2.3.sh, fontWeight: FontWeight.w500),
@@ -279,7 +276,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
             final review = reviews[index];
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-              child: Container(
+              child: SizedBox(
                 width: double.infinity,
                 child: Card(
                   shape: RoundedRectangleBorder(

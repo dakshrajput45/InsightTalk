@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:insighttalk_backend/modal/category.dart';
+import 'package:insighttalk_backend/modal/modal_category.dart';
 
 class DsdCategoryApis {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -136,7 +136,7 @@ class DsdCategoryApis {
 
       List<DsdCategory> categories = result.docs.map((doc) {
         return DsdCategory.fromJson(
-          json: doc.data() as Map<String, dynamic>,
+          json: doc.data(),
           id: doc.id,
         );
       }).toList();

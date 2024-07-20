@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
 import 'package:insighttalk_backend/helper/toast.dart';
+import 'package:insighttalk_backend/modal/modal_category.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as Path;
 import 'package:flutter/material.dart';
@@ -9,13 +11,11 @@ import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_expert/pages/expertProfile/edit_expert_profile_controller.dart';
 import 'package:insighttalk_expert/router.dart';
 import 'package:insighttalk_backend/helper/Dsd_dob_validator.dart';
-import 'package:intl/intl.dart';
 
 final DsdExpertProfileController _dsdProfileController =
     DsdExpertProfileController();
@@ -58,20 +58,19 @@ class _EditProfileViewState extends State<EditProfileView> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                leading: Icon(Icons.photo_library),
-                title: Text('Choose from gallery'),
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from gallery'),
                 onTap: () async {
-                  File? Img = await _pickImage(ImageSource.gallery);
-                  if (Img != null) {
-                    await _uploadImageToFirebase(Img);
+                  File? img = await _pickImage(ImageSource.gallery);
+                  if (img != null) {
+                    await _uploadImageToFirebase(img);
                   }
                   Navigator.pop(context);
-                  print("pick to ho gya");
                 },
               ),
               ListTile(
-                leading: Icon(Icons.link),
-                title: Text('Upload from link'),
+                leading: const Icon(Icons.link),
+                title: const Text('Upload from link'),
                 onTap: () async {
                   Navigator.pop(context);
                   await showDialog(
@@ -79,7 +78,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                     builder: (BuildContext context) {
                       return Dialog(
                         child: Container(
-                          padding: EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(16),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,24 +90,24 @@ class _EditProfileViewState extends State<EditProfileView> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               TextField(
                                 controller: _urlController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                     hintText: 'Enter image URL'),
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: <Widget>[
                                   TextButton(
-                                    child: Text('Cancel'),
+                                    child: const Text('Cancel'),
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
                                   ),
                                   TextButton(
-                                    child: Text('Upload'),
+                                    child: const Text('Upload'),
                                     onPressed: () {
                                       setState(() {
                                         _imageUrl = _urlController.text;
@@ -148,14 +147,12 @@ class _EditProfileViewState extends State<EditProfileView> {
     }
   }
 
-  Future<void> _uploadImageToFirebase(Img) async {
-    if (Img == null) {
-      print('No image selected.');
+  Future<void> _uploadImageToFirebase(img) async {
+    if (img == null) {
       return;
     }
     try {
-      if (!await Img!.exists()) {
-        print('Image file does not exist at path: ${_imageFile!.path}');
+      if (!await img!.exists()) {
         return;
       }
 
@@ -165,31 +162,19 @@ class _EditProfileViewState extends State<EditProfileView> {
           .child('${Path.basename(_imageFile!.path)}');
 
       // Upload the file to Firebase Storage
-      final uploadTask = ref.putFile(Img!);
+      final uploadTask = ref.putFile(img!);
       await uploadTask;
       final downloadURL = await ref.getDownloadURL();
 
       setState(() {
         _imageUrl = downloadURL;
       });
-      print('File uploaded successfully. Download URL: $_imageUrl');
     } catch (e) {
-      print('Error uploading file: $e');
       rethrow;
     }
   }
 
-  final List<String> _availableCategories = [
-    "DSA",
-    "Fitness",
-    "Web Development",
-    "Java",
-    "Java Script",
-    "Marketing",
-    "React",
-    "Sales",
-    "Stock Market"
-  ];
+  List<String> _availableCategories = [];
 
   final Map<String, bool> days = {
     'Monday': false,
@@ -267,13 +252,6 @@ class _EditProfileViewState extends State<EditProfileView> {
     );
   }
 
-  bool _isHidden = true;
-  void _showpassword() {
-    setState(() {
-      _isHidden = !_isHidden;
-    });
-  }
-
   Future<void> selectedDOB() async {
     var dob = await _dsdDobValidator.selectDOB(
         context, dateOfBirth ?? DateTime.now());
@@ -283,6 +261,54 @@ class _EditProfileViewState extends State<EditProfileView> {
         _dobController.text = DateFormat("MM/dd/yyy").format(dateOfBirth!);
       });
     }
+  }
+
+  Future<void> _fetchCategories() async {
+    try {
+      List<DsdCategory> categories =
+          await _dsdProfileController.fetchAllCategories();
+      setState(() {
+        _availableCategories = categories
+            .map((category) => category.categoryTitle!)
+            .whereType<String>()
+            .toList();
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> getExpertData() async {
+    try {
+      String expertId = _itUserAuthSDK.getUser()!.uid;
+      DsdExpert? fetchedExpertData =
+          await _dsdExpertApis.fetchExpertById(expertId: expertId);
+      setState(() {
+        _imageUrl = fetchedExpertData?.profileImage ?? '';
+        _expertNameController.text = fetchedExpertData?.expertName ?? '';
+        _expertiseController.text = fetchedExpertData?.expertise ?? '';
+        _aboutController.text = fetchedExpertData?.about ?? '';
+        _dobController.text = fetchedExpertData?.dateOfBirth != null
+            ? DateFormat("MM/dd/yyyy").format(fetchedExpertData!.dateOfBirth!)
+            : '';
+        _cityController.text = fetchedExpertData?.address?.city ?? '';
+        _stateController.text = fetchedExpertData?.address?.state ?? '';
+        _countryController.text = fetchedExpertData?.address?.country ?? '';
+
+        // Populate categories
+        _categories.addAll(fetchedExpertData?.category ?? []);
+        firstTime = true;
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategories();
+    getExpertData();
   }
 
   @override
@@ -380,7 +406,6 @@ class _EditProfileViewState extends State<EditProfileView> {
                     decoration: InputDecoration(
                         hintText: 'MM/DD/YY',
                         labelText: 'Date of Birth',
-                        prefixIcon: const Icon(Icons.calendar_month_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         )),
@@ -402,8 +427,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                     decoration: InputDecoration(
                       labelText: 'About You',
                       hintText: 'Write about yourself here',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.symmetric(
                           vertical: 20.0, horizontal: 10.0),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       suffixIcon: Builder(
@@ -413,7 +438,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                                 const EdgeInsets.only(top: 110.0, right: 10.0),
                             child: Text(
                               '${_aboutController.text.length}/$_maxCharacters',
-                              style: TextStyle(color: Colors.grey),
+                              style: const TextStyle(color: Colors.grey),
                             ),
                           );
                         },
@@ -623,7 +648,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                                       ],
                                     ),
                                   );
-                                }).toList(),
+                                }),
                                 Center(
                                   child: SizedBox(
                                     height: 50,
@@ -707,9 +732,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                                 city: _cityController.value.text.trim(),
                               ),
                               category: _categories,
-                              profileImage: _imageUrl != null
-                                  ? _imageUrl
-                                  : "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg",
+                              profileImage: _imageUrl ??
+                                  "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg",
                             ),
                             expertId: _itUserAuthSDK.getUser()!.uid,
                           )
@@ -743,15 +767,13 @@ Future<void> updateCategories(
     List<String> categoryTitles, String expertId) async {
   try {
     await Future.forEach(categoryTitles, (categoryTitle) async {
-      print(categoryTitle);
       await _dsdProfileController.updateExpertIdInCategory(
         categoryTitle: categoryTitle,
         expertId: expertId,
       );
     });
-    print('All categories updated successfully.');
   } catch (e) {
-    print('Error updating categories: $e');
+    rethrow;
     // Handle error as needed
   }
 }

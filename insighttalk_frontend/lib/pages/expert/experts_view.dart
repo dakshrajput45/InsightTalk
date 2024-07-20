@@ -1,7 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:insighttalk_backend/apis/category/category_apis.dart';
-import 'package:insighttalk_backend/modal/category.dart';
+import 'package:insighttalk_backend/modal/modal_category.dart';
 import 'package:insighttalk_frontend/pages/expert/expert_card.dart';
 import 'package:insighttalk_frontend/pages/expert/expert_controller.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -14,7 +13,7 @@ class ExpertsView extends StatefulWidget {
 }
 
 class _ExpertsViewState extends State<ExpertsView> {
-  DsdExpertController _dsdExpertController = DsdExpertController();
+  final DsdExpertController _dsdExpertController = DsdExpertController();
   List<DsdCategory>? popularCategory = [];
   final List<String> _userCategory = [
     'DSA',

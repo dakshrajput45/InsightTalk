@@ -12,6 +12,7 @@ class DsdExpert {
   String? profileImage; // Changed to store a single image URL
   int? sumOfRatings; // Sum of all ratings
   int? numberOfRatings; // Number of ratings
+  Map<String, List<TimeSlot>>? availability;
 
   DsdExpert({
     this.expertName,
@@ -25,6 +26,7 @@ class DsdExpert {
     this.profileImage,
     this.numberOfRatings = 0,
     this.sumOfRatings = 0,
+    this.availability,
   });
 
   factory DsdExpert.fromJson({
@@ -47,6 +49,7 @@ class DsdExpert {
         sumOfRatings: json['sumOfRatings'] ?? 0, // Parse sum of ratings
         numberOfRatings:
             json['numberOfRatings'] ?? 0, // Parse number of ratings
+        availability: (json['availability'] as Map<String, dynamic>?)?.map((day, slots) => MapEntry(day, (slots as List).map((slot) => TimeSlot.fromMap(slot)).toList())),
       );
     } catch (e) {
       print(e);
@@ -72,6 +75,7 @@ class DsdExpert {
       if (numberOfRatings != null)
         'numberOfRatings':
             numberOfRatings, // Include number of ratings in JSON output
+      'availability': availability?.map((day, slots) => MapEntry(day, slots.map((slot) => slot.toMap()).toList())),
     };
   }
 
@@ -107,5 +111,26 @@ class DsdExpertAddress {
       if (country != null) 'country': country,
       if (city != null) 'city': city,
     };
+  }
+}
+
+class TimeSlot {
+  String startTime;
+  String endTime;
+
+  TimeSlot({required this.startTime, required this.endTime});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'startTime': startTime,
+      'endTime': endTime,
+    };
+  }
+
+  factory TimeSlot.fromMap(Map<String, dynamic> map) {
+    return TimeSlot(
+      startTime: map['startTime'],
+      endTime: map['endTime'],
+    );
   }
 }

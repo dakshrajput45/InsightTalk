@@ -6,7 +6,7 @@ import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginView extends StatefulWidget {
-  const LoginView({Key? key}) : super(key: key); // Corrected super.key
+  const LoginView({super.key}); // Corrected super.key
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -17,7 +17,7 @@ class _LoginViewState extends State<LoginView> {
   TextEditingController passwordController = TextEditingController();
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
 
-  bool _isNotValidate = false;
+  final bool _isNotValidate = false;
 
   void handleSignUp(int val) {
     updateLoginStatus(val);
