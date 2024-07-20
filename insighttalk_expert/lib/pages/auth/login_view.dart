@@ -22,6 +22,8 @@ class _LoginViewState extends State<LoginView> {
     // You can navigate to another screen or perform any post-login action here
   }
 
+  bool _isHidden = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,13 +91,23 @@ class _LoginViewState extends State<LoginView> {
                   const SizedBox(height: 30),
                   TextField(
                     controller: passwordController,
-                    obscureText: true,
+                    obscureText: _isHidden,
                     decoration: InputDecoration(
                       errorStyle: const TextStyle(color: Colors.white),
                       errorText: _isNotValidate ? "Enter Proper Info" : null,
                       fillColor: Colors.grey.shade100,
                       filled: true,
                       hintText: 'Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(_isHidden
+                            ? Icons.visibility_off
+                            : Icons.visibility),
+                        onPressed: () {
+                          setState(() {
+                            _isHidden = !_isHidden;
+                          });
+                        },
+                      ),
                       enabledBorder: OutlineInputBorder(
                         borderSide: const BorderSide(
                           color: Colors.grey,
@@ -131,9 +143,10 @@ class _LoginViewState extends State<LoginView> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
-                        User? expert = await _itUserAuthSDK.emailandPasswordLogIn(
-                            email: emailController.text,
-                            password: passwordController.text);
+                        User? expert =
+                            await _itUserAuthSDK.emailandPasswordLogIn(
+                                email: emailController.text.trim(),
+                                password: passwordController.text);
                         if (expert != null && mounted) {
                           DsdToastMessages.success(context,
                               text: "Email Login Successful");
