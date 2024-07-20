@@ -397,11 +397,12 @@ class _EditProfileViewState extends State<EditProfileView> {
                     children: _categories.map((category) {
                       return Chip(
                         label: Text(category),
-                        onDeleted: () {
+                        onDeleted: () async{
                           setState(() {
                             _categories.remove(category);
                             _availableCategories.add(category);
                           });
+                          await _dsdProfileController.DeleteUserIdInCategory(categoryTitle: category, userId: _itUserAuthSDK.getUser()!.uid);
                         },
                       );
                     }).toList(),

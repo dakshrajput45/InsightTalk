@@ -35,4 +35,13 @@ class DsdProfileController {
       rethrow;
     }
   }
+
+  Future<void> DeleteUserIdInCategory({required String categoryTitle, required String userId}) async{
+    try {
+      await _dsdCategoryApis.removeUserIdFromCategory(
+          categoryTitle: categoryTitle, userId: userId);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
