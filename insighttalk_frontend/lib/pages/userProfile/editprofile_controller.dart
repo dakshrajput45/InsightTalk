@@ -1,6 +1,7 @@
 import 'package:insighttalk_backend/apis/category/category_apis.dart';
 import 'package:insighttalk_backend/apis/userApis/user_details_api.dart';
 import 'package:insighttalk_backend/modal/modal_category.dart';
+import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_backend/modal/modal_user.dart';
 
 class DsdProfileController {
@@ -36,10 +37,21 @@ class DsdProfileController {
     }
   }
 
-  Future<void> DeleteUserIdInCategory({required String categoryTitle, required String userId}) async{
+  Future<void> deleteUserIdInCategory(
+      {required String categoryTitle, required String userId}) async {
     try {
       await _dsdCategoryApis.removeUserIdFromCategory(
           categoryTitle: categoryTitle, userId: userId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<DsdExpert>?> fetchExpertData({required String categoryId}) async {
+    try {
+      List<DsdExpert>? experts =
+          await _dsdCategoryApis.fetchExpertOfCategory(categoryId);
+      return experts;
     } catch (e) {
       rethrow;
     }

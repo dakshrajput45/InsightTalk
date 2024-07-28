@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:insighttalk_backend/modal/modal_category.dart';
+import 'package:insighttalk_backend/modal/modal_expert.dart';
 
 class DsdCategoryApis {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -129,10 +130,24 @@ class DsdCategoryApis {
     }
   }
 
-  Future<List<DsdCategory>?> fetchPopularCategories() async {
+  Future<DsdExpert?> fetchExpertById({required String expertId}) async {
     try {
       var result =
-          await FirebaseFirestore.instance.collection(_collectionPath).get();
+          await _db.collection("expertDetails").doc(expertId).get();
+      if (result.exists) {
+        return DsdExpert.fromJson(json: result.data()!, id: result.id);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<List<DsdCategory>?> fetchPopularCategories() async {
+    try {
+      var result = await _db.collection(_collectionPath).get();
 
       List<DsdCategory> categories = result.docs.map((doc) {
         return DsdCategory.fromJson(
@@ -144,6 +159,27 @@ class DsdCategoryApis {
           .compareTo(a.experts!.length + a.users!.length));
 
       return categories;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<List<DsdExpert>?> fetchExpertOfCategory(String categoryId) async {
+    try {
+      var result = await _db.collection(_collectionPath).doc(categoryId).get();
+      if (result.exists) {
+        var categoryData =
+            DsdCategory.fromJson(json: result.data()!, id: result.id);
+        List<DsdExpert>? experts = [];
+        experts = await Future.wait(categoryData.experts!.map((expertId) async {
+          DsdExpert? expertData =
+              await fetchExpertById(expertId: expertId);
+          return expertData!;
+        }).toList());
+        return experts;
+      }
+      return null;
     } catch (e) {
       print(e);
       rethrow;

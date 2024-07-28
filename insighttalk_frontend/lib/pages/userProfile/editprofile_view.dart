@@ -231,6 +231,14 @@ class _EditProfileViewState extends State<EditProfileView> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          leading: firstTime!
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    context.goNamed(routeNames.userprofile);
+                  },
+                )
+              : null,
           title: const Text(
             "Edit Profile",
             textAlign: TextAlign.center,
@@ -304,7 +312,6 @@ class _EditProfileViewState extends State<EditProfileView> {
                     controller: _userNameController,
                     decoration: const InputDecoration(
                       hintText: 'User Name',
-                      prefixIcon: Icon(Icons.person),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -314,7 +321,6 @@ class _EditProfileViewState extends State<EditProfileView> {
                     decoration: InputDecoration(
                         hintText: 'MM/DD/YY',
                         labelText: 'Date of Birth',
-                        prefixIcon: const Icon(Icons.calendar_month_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         )),
@@ -397,12 +403,14 @@ class _EditProfileViewState extends State<EditProfileView> {
                     children: _categories.map((category) {
                       return Chip(
                         label: Text(category),
-                        onDeleted: () async{
+                        onDeleted: () async {
                           setState(() {
                             _categories.remove(category);
                             _availableCategories.add(category);
                           });
-                          await _dsdProfileController.DeleteUserIdInCategory(categoryTitle: category, userId: _itUserAuthSDK.getUser()!.uid);
+                          await _dsdProfileController.deleteUserIdInCategory(
+                              categoryTitle: category,
+                              userId: _itUserAuthSDK.getUser()!.uid);
                         },
                       );
                     }).toList(),
