@@ -99,7 +99,7 @@ class _LoginViewState extends State<LoginView> {
                     child: ElevatedButton(
                       onPressed: () async {
                         User? user = await _itUserAuthSDK.emailandPasswordLogIn(
-                            email: emailController.text,
+                            email: emailController.text.trim(),
                             password: passwordController.text);
                         if (user != null && mounted) {
                           DsdToastMessages.success(context,

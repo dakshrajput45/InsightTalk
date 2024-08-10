@@ -118,7 +118,7 @@ class _SignUpViewState extends State<SignUpView> {
                             confirmPasswordController.text) {
                           User? user =
                               await _itUserAuthSDK.emailandPasswordSignUp(
-                                  email: emailController.text,
+                                  email: emailController.text.trim(),
                                   password: passwordController.text);
                           if (user != null && mounted) {
                             context.goNamed(routeNames.editprofile);
