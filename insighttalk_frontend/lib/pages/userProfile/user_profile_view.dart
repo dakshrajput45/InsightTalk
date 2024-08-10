@@ -18,6 +18,7 @@ class UserProfileView extends StatefulWidget {
 class _UserProfileViewState extends State<UserProfileView> {
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   final DsdUserDetailsApis _dsdUserApis = DsdUserDetailsApis();
+
   List<DsdCategory>? categories = [];
   DsdUser? userData;
 
@@ -180,29 +181,35 @@ class _UserProfileViewState extends State<UserProfileView> {
                 itemCount: categories!.length,
                 itemBuilder: (context, index) {
                   final category = categories![index];
-                  return Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Image.network(
-                              category.categoryImage!,
-                              fit: BoxFit.cover,
+                  return GestureDetector(
+                    onTap: () async {
+                      final categoryTitle = category.categoryTitle!;
+                      context.push('/expertsOfCategory/$categoryTitle');
+                    },
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Image.network(
+                                category.categoryImage!,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10.0),
-                          Text(
-                            category.categoryTitle!,
-                            style: TextStyle(
-                              fontSize: 1.3.sh,
-                              fontWeight: FontWeight.bold,
+                            const SizedBox(height: 10.0),
+                            Text(
+                              category.categoryTitle!,
+                              style: TextStyle(
+                                fontSize: 1.3.sh,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   );

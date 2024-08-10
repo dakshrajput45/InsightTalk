@@ -8,6 +8,7 @@ import 'package:insighttalk_frontend/pages/home.dart';
 import 'package:insighttalk_frontend/pages/notifications/notfication_view.dart';
 import 'package:insighttalk_frontend/pages/paymentgateway/payment_gateway.dart';
 import 'package:insighttalk_frontend/pages/userProfile/editprofile_view.dart';
+import 'package:insighttalk_frontend/pages/userProfile/experts_of_category_view.dart';
 import 'package:insighttalk_frontend/pages/userProfile/user_profile_view.dart';
 
 // Simulate login status
@@ -44,6 +45,14 @@ class RouterConfig {
         name: routeNames.chat,
         builder: (context, state) => const ChatView(),
       ),
+      GoRoute(
+      path: '/expertsOfCategory/:categoryTitle',  // Updated path to include categoryTitle
+      name: routeNames.expertsOfCategory,
+      builder: (context, state) {
+        final categoryTitle = state.pathParameters['categoryTitle']!;
+        return CategoryExperts(categoryTitle: categoryTitle);
+      },
+    ),
       // StatefulShellRoute for authenticated routes
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -110,4 +119,5 @@ class RouteNames {
   final String signup = 'signup';
   final String chat = 'chat';
   final String editprofileview = 'editprofileview';
+  final String expertsOfCategory = 'expertsOfCategory';
 }

@@ -1,8 +1,12 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
+import 'package:insighttalk_backend/apis/userApis/user_details_api.dart';
 import 'package:insighttalk_backend/modal/modal_category.dart';
+import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_frontend/pages/expert/expert_card.dart';
 import 'package:insighttalk_frontend/pages/expert/expert_controller.dart';
+import 'package:insighttalk_frontend/pages/userProfile/editprofile_controller.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ExpertsView extends StatefulWidget {
@@ -13,14 +17,12 @@ class ExpertsView extends StatefulWidget {
 }
 
 class _ExpertsViewState extends State<ExpertsView> {
+  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   final DsdExpertController _dsdExpertController = DsdExpertController();
+  final DsdUserDetailsApis _dsdUserApis = DsdUserDetailsApis();
   List<DsdCategory>? popularCategory = [];
-  final List<String> _userCategory = [
-    'DSA',
-    'Flutter',
-    'Politics',
-    'React',
-  ];
+  List<DsdCategory>? _userCategory = [];
+
   final List<Map<String, dynamic>> imageList = [
     {"image_path": "assets/ads/ad_image1.jpg"},
     {"image_path": "assets/ads/ad_image2.jpg"},
@@ -39,10 +41,27 @@ class _ExpertsViewState extends State<ExpertsView> {
     }
   }
 
+  List<DsdCategory>? categories = [];
+
+  Future<void> getCategory() async {
+    try {
+      String userId = _itUserAuthSDK.getUser()!.uid;
+      List<DsdCategory>? fetchedCategories =
+          await _dsdUserApis.fetchUserCategories(userId: userId);
+
+      setState(() {
+        _userCategory = fetchedCategories;
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     fetchTopCategory();
+    getCategory();
   }
 
   final CarouselController _carouselController = CarouselController();
@@ -112,7 +131,7 @@ class _ExpertsViewState extends State<ExpertsView> {
             children: [
               InkWell(
                 onTap: () {
-                  //Event Handler for Carousel when tapped
+                  // Event Handler for Carousel when tapped
                 },
                 child: CarouselSlider(
                   items: imageList
@@ -174,12 +193,14 @@ class _ExpertsViewState extends State<ExpertsView> {
           const SizedBox(
             height: 10,
           ),
-          // Expert Card Section
-          const CategoryCardSection(category: "Top Experts"),
+          // // Expert Card Section
+          // const CategoryCardSection(category: "Top Experts"),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: _userCategory.map((category) {
-              return CategoryCardSection(category: category);
+            children: _userCategory!
+                .where((category) => category.experts!.isNotEmpty)
+                .map((category) {
+              return CategoryCardSection(category: category.categoryTitle!);
             }).toList(),
           )
         ]),
@@ -188,9 +209,35 @@ class _ExpertsViewState extends State<ExpertsView> {
   }
 }
 
-class CategoryCardSection extends StatelessWidget {
+class CategoryCardSection extends StatefulWidget {
   final String category;
   const CategoryCardSection({required this.category, super.key});
+
+  @override
+  _CategoryCardSectionState createState() => _CategoryCardSectionState();
+}
+
+class _CategoryCardSectionState extends State<CategoryCardSection> {
+  final DsdProfileController _dsdProfileController = DsdProfileController();
+  List<DsdExpert> expertData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getExperts(categoryTitle: widget.category);
+  }
+
+  Future<void> getExperts({required String categoryTitle}) async {
+    try {
+      List<DsdExpert>? data = await _dsdProfileController.fetchExpertData(
+          categoryId: categoryTitle);
+      setState(() {
+        expertData = data!;
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +250,7 @@ class CategoryCardSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                category,
+                widget.category,
                 style:
                     const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
@@ -219,14 +266,15 @@ class CategoryCardSection extends StatelessWidget {
           const SizedBox(height: 5.0),
           Expanded(
             child: ListView.builder(
-              itemCount: 5,
+              itemCount: expertData.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
-                return const ExpertCard(
-                  profilePhoto: "assets/images/blank_profile_pic.jpg",
-                  name: "Deepanshu Sharma",
-                  description: "Software Developer",
-                  rating: 5.0,
+                final expert = expertData[index];
+                return ExpertCard(
+                  profilePhoto: expert.profileImage!,
+                  name: expert.expertName!,
+                  description: expert.expertise!,
+                  rating: expert.averageRating,
                 );
               },
             ),

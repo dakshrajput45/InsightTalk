@@ -157,6 +157,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
             height: 30,
           ),
           Container(
+            margin: EdgeInsets.symmetric(horizontal:1.5.sw,vertical: 1.sw),
             padding: EdgeInsets.all(3.sw),
             decoration: BoxDecoration(
               border: Border.all(width: 1.0, color: Colors.grey),
@@ -275,7 +276,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
           ...List.generate(reviews.length, (index) {
             final review = reviews[index];
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
               child: SizedBox(
                 width: double.infinity,
                 child: Card(
@@ -284,7 +285,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
                   ),
                   elevation: 3,
                   child: Padding(
-                    padding: const EdgeInsets.all(12.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: Text(
                       review,
                       style: TextStyle(fontSize: 2.sh),
