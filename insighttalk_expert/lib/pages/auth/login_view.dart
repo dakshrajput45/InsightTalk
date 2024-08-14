@@ -19,7 +19,6 @@ class _LoginViewState extends State<LoginView> {
   final bool _isNotValidate = false;
   void handleLogin(int val) {
     updateLoginStatus(val); // Update isLoggedIn to true
-    // You can navigate to another screen or perform any post-login action here
   }
 
   bool _isHidden = true;

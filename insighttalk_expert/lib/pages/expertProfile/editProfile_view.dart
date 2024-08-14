@@ -17,8 +17,7 @@ import 'package:insighttalk_expert/pages/expertProfile/edit_expert_profile_contr
 import 'package:insighttalk_expert/router.dart';
 import 'package:insighttalk_backend/helper/Dsd_dob_validator.dart';
 
-final DsdExpertProfileController _dsdProfileController =
-    DsdExpertProfileController();
+final DsdExpertProfileController _dsdProfileController = DsdExpertProfileController();
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});

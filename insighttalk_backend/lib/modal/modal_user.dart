@@ -51,7 +51,7 @@ class DsdUser {
       if (dateOfBirth != null) 'dateOfBirth': Timestamp.fromDate(dateOfBirth!),
       if (withId) 'id': id,
       if (category != null) 'category': category,
-      if (profileImage != null) 'profileImage': profileImage, // Include profile image URL in JSON output
+      if (profileImage != null) 'profileImage': profileImage, 
     };
   }
 }
