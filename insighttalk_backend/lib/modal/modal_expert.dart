@@ -39,7 +39,9 @@ class DsdExpert {
         expertName: json['expertName'],
         email: json['email'],
         expertise: json['expertise'],
-        dateOfBirth: (json['dateOfBirth'] != null) ? (json['dateOfBirth'] as Timestamp).toDate() : DateTime.now(),
+        dateOfBirth: (json['dateOfBirth'] != null)
+            ? (json['dateOfBirth'] as Timestamp).toDate()
+            : DateTime.now(),
         about: json['about'],
         category: List<String>.from(json['category'] ?? []),
         address: json['address'] != null
@@ -49,7 +51,12 @@ class DsdExpert {
         sumOfRatings: json['sumOfRatings'] ?? 0, // Parse sum of ratings
         numberOfRatings:
             json['numberOfRatings'] ?? 0, // Parse number of ratings
-        availability: (json['availability'] as Map<String, dynamic>?)?.map((day, slots) => MapEntry(day, (slots as List).map((slot) => TimeSlot.fromMap(slot)).toList())),
+        availability: (json['availability'] as Map<String, dynamic>?)?.map(
+            (day, slots) => MapEntry(
+                day,
+                (slots as List)
+                    .map((slot) => TimeSlot.fromMap(slot))
+                    .toList())),
       );
     } catch (e) {
       print(e);
@@ -75,7 +82,8 @@ class DsdExpert {
       if (numberOfRatings != null)
         'numberOfRatings':
             numberOfRatings, // Include number of ratings in JSON output
-      'availability': availability?.map((day, slots) => MapEntry(day, slots.map((slot) => slot.toMap()).toList())),
+      'availability': availability?.map((day, slots) =>
+          MapEntry(day, slots.map((slot) => slot.toMap()).toList())),
     };
   }
 
@@ -133,4 +141,5 @@ class TimeSlot {
       endTime: map['endTime'],
     );
   }
+  String get formattedTime => "$startTime - $endTime";
 }

@@ -157,7 +157,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
             height: 30,
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal:1.5.sw,vertical: 1.sw),
+            margin: EdgeInsets.symmetric(horizontal: 1.5.sw, vertical: 1.sw),
             padding: EdgeInsets.all(3.sw),
             decoration: BoxDecoration(
               border: Border.all(width: 1.0, color: Colors.grey),
@@ -169,7 +169,8 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
               children: [
                 Text(
                   "About",
-                  style: TextStyle(fontSize: 3.sh, fontWeight: FontWeight.w600),
+                  style:
+                      TextStyle(fontSize: 2.5.sh, fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 2.sh),
                 Text(
@@ -193,7 +194,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
                 Text(
                   "Your Categories",
                   style:
-                      TextStyle(fontSize: 2.3.sh, fontWeight: FontWeight.bold),
+                      TextStyle(fontSize: 2.5.sh, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -270,7 +271,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(
               "Reviews",
-              style: TextStyle(fontSize: 2.3.sh, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 2.5.sh, fontWeight: FontWeight.w500),
             ),
           ),
           ...List.generate(reviews.length, (index) {
