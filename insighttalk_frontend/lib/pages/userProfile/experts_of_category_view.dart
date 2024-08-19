@@ -52,6 +52,7 @@ class _CategoryExpertsState extends State<CategoryExperts> {
         itemBuilder: (BuildContext context, int index) {
           DsdExpert expert = expertData[index];
           return ExpertCard(
+            expertId: expert.id!,
             profilePhoto: expert.profileImage!,
             name: expert.expertName!,
             description: expert.expertise!,

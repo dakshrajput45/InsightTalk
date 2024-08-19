@@ -3,6 +3,8 @@ import 'package:insighttalk_frontend/pages/appointment/appointment_view.dart';
 import 'package:insighttalk_frontend/pages/auth/SignUp_view.dart';
 import 'package:insighttalk_frontend/pages/auth/login_view.dart';
 import 'package:insighttalk_frontend/pages/chat/chat_view.dart';
+import 'package:insighttalk_frontend/pages/expert/book_appointment_view.dart';
+import 'package:insighttalk_frontend/pages/expert/expert_profile_view.dart';
 import 'package:insighttalk_frontend/pages/expert/experts_view.dart';
 import 'package:insighttalk_frontend/pages/home.dart';
 import 'package:insighttalk_frontend/pages/notifications/notfication_view.dart';
@@ -31,6 +33,27 @@ class RouterConfig {
         builder: (context, state) => const EditProfileView(),
       ),
       GoRoute(
+        path: '/expertprofileview/:expertId',
+        name: routeNames.expertprofileview,
+        builder: (context, state) {
+          final expertId = state.pathParameters['expertId']!;
+          return ExpertProfileView(
+            expertId: expertId,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/bookappointmentview/:expertId',
+        name: routeNames.bookappointmentview,
+        builder: (context, state) {
+          final expertId = state.pathParameters['expertId']!;
+          return BookAppointmentView(
+            expertId: expertId,
+          );
+        },
+      ),
+
+      GoRoute(
         path: '/login',
         name: routeNames.login,
         builder: (context, state) => const LoginView(),
@@ -46,13 +69,14 @@ class RouterConfig {
         builder: (context, state) => const ChatView(),
       ),
       GoRoute(
-      path: '/expertsOfCategory/:categoryTitle',  // Updated path to include categoryTitle
-      name: routeNames.expertsOfCategory,
-      builder: (context, state) {
-        final categoryTitle = state.pathParameters['categoryTitle']!;
-        return CategoryExperts(categoryTitle: categoryTitle);
-      },
-    ),
+        path:
+            '/expertsOfCategory/:categoryTitle', // Updated path to include categoryTitle
+        name: routeNames.expertsOfCategory,
+        builder: (context, state) {
+          final categoryTitle = state.pathParameters['categoryTitle']!;
+          return CategoryExperts(categoryTitle: categoryTitle);
+        },
+      ),
       // StatefulShellRoute for authenticated routes
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -118,6 +142,8 @@ class RouteNames {
   final String login = 'login';
   final String signup = 'signup';
   final String chat = 'chat';
+  final String bookappointmentview = 'bookappointmentview';
   final String editprofileview = 'editprofileview';
+  final String expertprofileview = 'expertprofileview';
   final String expertsOfCategory = 'expertsOfCategory';
 }
