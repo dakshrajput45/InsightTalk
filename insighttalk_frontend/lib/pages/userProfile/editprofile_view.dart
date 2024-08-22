@@ -1,8 +1,9 @@
 import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:insighttalk_backend/modal/modal_category.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart' as Path;
+import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -153,7 +154,7 @@ class _EditProfileViewState extends State<EditProfileView> {
       final ref = firebase_storage.FirebaseStorage.instance
           .ref()
           .child('images')
-          .child('${Path.basename(_imageFile!.path)}');
+          .child(path.basename(_imageFile!.path));
 
       // Upload the file to Firebase Storage
       final uploadTask = ref.putFile(img!);
@@ -424,6 +425,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
+                          //get fcm token
+                          var token = await FirebaseMessaging.instance.getToken();
                           // Handle save action
                           await _dsdProfileController
                               .updateUser(
@@ -437,8 +440,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                                 city: _cityController.value.text.trim(),
                               ),
                               category: _categories,
-                              profileImage: _imageUrl ??
-                                  "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg",
+                              profileImage: _imageUrl ?? "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg",
+                              fcmToken: token
                             ),
                             userId: _itUserAuthSDK.getUser()!.uid,
                           )

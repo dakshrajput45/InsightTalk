@@ -4,10 +4,10 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 class ExpertCard extends StatelessWidget {
   final String profilePhoto;
   final String name;
-  String? description;
+  final String? description;
   final double rating;
 
-  ExpertCard({
+  const ExpertCard({
     required this.profilePhoto,
     required this.name,
     this.description,

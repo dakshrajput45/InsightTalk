@@ -37,7 +37,7 @@ class DsdExpertProfileController {
     }
   }
 
-  Future<void> DeleteExperIdCategory(
+  Future<void> deleteExperIdCategory(
       {required String categoryTitle, required String expertId}) async {
     try {
       await _dsdCategoryApis.removeExpertIdFromCategory(

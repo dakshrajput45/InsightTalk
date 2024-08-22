@@ -41,8 +41,12 @@ dependencies:
   image_picker: ^1.1.2
   firebase_storage: ^12.1.1
   responsive_sizer: ^3.3.1
+  shared_preferences: ^2.3.2
+  cached_network_image: ^3.3.1
+  flutter_ringtone_player: ^4.0.0+3
   path: ^1.9.0
   intl: ^0.19.0
+  firebase_messaging: ^15.0.4
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -74,7 +78,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/search.png
-  #   - images/a_dot_ham.jpeg
+    - assets/sounds/pop.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

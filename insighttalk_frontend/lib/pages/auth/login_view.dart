@@ -144,7 +144,7 @@ class _LoginViewState extends State<LoginView> {
                       onPressed: () async {
                         // Google Log In Function Added here (Same function used for Sign Up)
                         User? user = await _itUserAuthSDK.googleSignUp();
-                        print('Google Log In function is called ${mounted}');
+                        print('Google Log In function is called $mounted');
                         if (user != null && mounted) {
                           DsdToastMessages.success(context,
                               text: "Google Login Successful");

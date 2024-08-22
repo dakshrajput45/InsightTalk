@@ -6,6 +6,7 @@ class DsdExpert {
   String? email;
   String? expertise;
   String? about;
+  String? fcmToken;
   DateTime? dateOfBirth;
   DsdExpertAddress? address;
   List<String>? category;
@@ -24,6 +25,7 @@ class DsdExpert {
     this.address,
     this.category,
     this.profileImage,
+    this.fcmToken,
     this.numberOfRatings = 0,
     this.sumOfRatings = 0,
     this.availability,
@@ -39,6 +41,7 @@ class DsdExpert {
         expertName: json['expertName'],
         email: json['email'],
         expertise: json['expertise'],
+        fcmToken: json['fcmToken'],
         dateOfBirth: (json['dateOfBirth'] != null) ? (json['dateOfBirth'] as Timestamp).toDate() : DateTime.now(),
         about: json['about'],
         category: List<String>.from(json['category'] ?? []),
@@ -65,6 +68,7 @@ class DsdExpert {
       if (expertise != null) 'expertise': expertise,
       if (dateOfBirth != null) 'dateOfBirth': Timestamp.fromDate(dateOfBirth!),
       if (about != null) 'about': about,
+      if (fcmToken != null) 'fcmToken': fcmToken,
       if (withId) 'id': id,
       if (category != null) 'category': category,
       if (profileImage != null)

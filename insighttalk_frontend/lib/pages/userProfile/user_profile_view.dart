@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/apis/chat/chat_api.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/apis/userApis/user_details_api.dart';
 import 'package:insighttalk_backend/modal/modal_category.dart';
@@ -18,6 +19,7 @@ class UserProfileView extends StatefulWidget {
 class _UserProfileViewState extends State<UserProfileView> {
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   final DsdUserDetailsApis _dsdUserApis = DsdUserDetailsApis();
+  final DsdChatApis _dsdChatApis = DsdChatApis();
 
   List<DsdCategory>? categories = [];
   DsdUser? userData;
@@ -52,9 +54,9 @@ class _UserProfileViewState extends State<UserProfileView> {
 
   @override
   void initState() {
-    super.initState();
     getCategory();
     getUserData();
+    super.initState();
   }
 
   @override
@@ -87,7 +89,7 @@ class _UserProfileViewState extends State<UserProfileView> {
               Padding(
                 padding: EdgeInsets.only(right: 2.sh, bottom: 8.sh),
                 child: PopupMenuButton<String>(
-                  onSelected: (String value) {
+                  onSelected: (String value) async {
                     // Handle menu item selection
                     switch (value) {
                       case 'Edit Profile':
@@ -101,11 +103,19 @@ class _UserProfileViewState extends State<UserProfileView> {
                         _itUserAuthSDK.signOut();
                         context.goNamed(routeNames.login);
                         break;
+                      case 'create chat room':
+                        await _dsdChatApis.createChatRoom(
+                            "g5aIvBvX3TgkhAue0cKOKdTrU1r1",
+                            "g5aIvBvX3TgkhAue0cKOKdTrU1r1");
                     }
                   },
                   itemBuilder: (BuildContext context) {
-                    return {'Edit Profile', 'Settings', 'Logout'}
-                        .map((String choice) {
+                    return {
+                      'Edit Profile',
+                      'Settings',
+                      'Logout',
+                      'create chat room'
+                    }.map((String choice) {
                       return PopupMenuItem<String>(
                         value: choice,
                         child: Text(

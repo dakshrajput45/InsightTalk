@@ -7,7 +7,8 @@ class DsdUser {
   DateTime? dateOfBirth;
   DsdUserAddress? address;
   List<String>? category;
-  String? profileImage; 
+  String? profileImage;
+  String? fcmToken;
 
   DsdUser({
     this.userName,
@@ -17,25 +18,27 @@ class DsdUser {
     this.dateOfBirth,
     this.category,
     this.profileImage,
+    this.fcmToken,
   });
-
 
   factory DsdUser.fromJson({
     required Map<String, dynamic> json,
     required String id,
   }) {
-
     try {
       return DsdUser(
         id: id,
         userName: json['userName'],
         email: json['email'],
-        dateOfBirth: (json['dateOfBirth'] != null) ? (json['dateOfBirth'] as Timestamp).toDate() : DateTime.now(),
+        dateOfBirth: (json['dateOfBirth'] != null)
+            ? (json['dateOfBirth'] as Timestamp).toDate()
+            : DateTime.now(),
         category: List<String>.from(json['category'] ?? []),
         address: json['address'] != null
             ? DsdUserAddress.fromJson(json: json['address'])
             : null,
-        profileImage: json['profileImage'], // Parse profile image URL
+        profileImage: json['profileImage'],
+        fcmToken: json['fcmToken']
       );
     } catch (e) {
       print(e);
@@ -51,11 +54,11 @@ class DsdUser {
       if (dateOfBirth != null) 'dateOfBirth': Timestamp.fromDate(dateOfBirth!),
       if (withId) 'id': id,
       if (category != null) 'category': category,
-      if (profileImage != null) 'profileImage': profileImage, 
+      if (profileImage != null) 'profileImage': profileImage,
+      if (fcmToken != null) 'fcmToken': fcmToken,
     };
   }
 }
-
 
 class DsdUserAddress {
   String? country;
@@ -65,7 +68,8 @@ class DsdUserAddress {
   DsdUserAddress({
     this.country,
     this.state,
-    this.city, String? profileImage,
+    this.city,
+    String? profileImage,
   });
 
   factory DsdUserAddress.fromJson({required Map<String, dynamic> json}) {

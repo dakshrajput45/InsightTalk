@@ -1,10 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:insighttalk_backend/services/notification_services.dart';
 import 'package:insighttalk_frontend/themes/theme.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'firebase_options.dart';
 import 'package:insighttalk_frontend/router.dart';
 
+DsdNotificationService? dsdNotificationService;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

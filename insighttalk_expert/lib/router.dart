@@ -1,10 +1,12 @@
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/modal/modal_chat_rooms.dart';
 import 'package:insighttalk_expert/pages/appointment/appointment_view.dart';
 import 'package:insighttalk_expert/pages/auth/login_view.dart';
 import 'package:insighttalk_expert/pages/auth/signup_view.dart';
 import 'package:insighttalk_expert/pages/clientChat/client_chat.dart';
+import 'package:insighttalk_expert/pages/clientChat/client_chat_room.dart';
 import 'package:insighttalk_expert/pages/expertProfile/expert_profile_view.dart';
-import 'package:insighttalk_expert/pages/expertProfile/editProfile_view.dart';
+import 'package:insighttalk_expert/pages/expertProfile/edit_profile_view.dart';
 import 'package:insighttalk_expert/pages/home.dart';
 import 'package:insighttalk_expert/pages/notifications/notification_view.dart';
 
@@ -35,6 +37,24 @@ class RouterConfig {
         name: routeNames.editprofile,
         builder: (context, state) => const EditProfileView(),
       ),
+      GoRoute(
+        path: '/chatRooms/view/:id',
+        name: routeNames.chat,
+        pageBuilder: (context, state) {
+          final Map<String, dynamic> extras =
+              state.extra as Map<String, dynamic>;
+          final String? userName = extras['userName'];
+          final DsdChatRooms? room = extras['chatRoom'];
+
+          return NoTransitionPage(
+            child: ClientChatView(
+              roomId: state.pathParameters["id"],
+              room: room,
+              userName: userName,
+            ),
+          );
+        },
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => HomeView(
           navigationShell: navigationShell,
@@ -50,10 +70,9 @@ class RouterConfig {
                     const NoTransitionPage(child: AppointmentView()),
               ),
               GoRoute(
-                path: '/clientchat',
-                name: routeNames.clientchat,
-                pageBuilder: (context, state) =>
-                    const NoTransitionPage(child: ClientChatView()),
+                path: '/chatRooms',
+                name: routeNames.chatRooms,
+                builder: (context, state) => const CleintChatRoomView(),
               ),
               GoRoute(
                 path: '/notification',
@@ -83,10 +102,11 @@ class RouterConfig {
 
 class RouteNames {
   final String appointment = 'appointment';
-  final String clientchat = 'clientchat';
   final String notification = 'notification';
   final String expertprofile = 'expertprofile';
   final String login = 'login';
   final String signup = 'signup';
   final String editprofile = 'editprofile';
+  final String chat = 'chat';
+  final String chatRooms = 'chatRooms';
 }

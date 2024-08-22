@@ -1,7 +1,9 @@
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/modal/modal_chat_rooms.dart';
 import 'package:insighttalk_frontend/pages/appointment/appointment_view.dart';
 import 'package:insighttalk_frontend/pages/auth/SignUp_view.dart';
 import 'package:insighttalk_frontend/pages/auth/login_view.dart';
+import 'package:insighttalk_frontend/pages/chat/chat_room_view.dart';
 import 'package:insighttalk_frontend/pages/chat/chat_view.dart';
 import 'package:insighttalk_frontend/pages/expert/experts_view.dart';
 import 'package:insighttalk_frontend/pages/home.dart';
@@ -41,18 +43,37 @@ class RouterConfig {
         builder: (context, state) => const SignUpView(),
       ),
       GoRoute(
-        path: '/chat',
-        name: routeNames.chat,
-        builder: (context, state) => const ChatView(),
+        path: '/chatRooms',
+        name: routeNames.chatRooms,
+        builder: (context, state) => const ChatRoomsView(),
       ),
       GoRoute(
-      path: '/expertsOfCategory/:categoryTitle',  // Updated path to include categoryTitle
-      name: routeNames.expertsOfCategory,
-      builder: (context, state) {
-        final categoryTitle = state.pathParameters['categoryTitle']!;
-        return CategoryExperts(categoryTitle: categoryTitle);
-      },
-    ),
+        path:
+            '/expertsOfCategory/:categoryTitle', // Updated path to include categoryTitle
+        name: routeNames.expertsOfCategory,
+        builder: (context, state) {
+          final categoryTitle = state.pathParameters['categoryTitle']!;
+          return CategoryExperts(categoryTitle: categoryTitle);
+        },
+      ),
+      GoRoute(
+        path: '/chatRooms/view/:id',
+        name: routeNames.chat,
+        pageBuilder: (context, state) {
+          final Map<String, dynamic> extras =
+              state.extra as Map<String, dynamic>;
+          final String? userName = extras['userName'];
+          final DsdChatRooms? room = extras['chatRoom'];
+
+          return NoTransitionPage(
+            child: ChatView(
+              roomId: state.pathParameters["id"],
+              room: room,
+              userName: userName,
+            ),
+          );
+        },
+      ),
       // StatefulShellRoute for authenticated routes
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -118,6 +139,7 @@ class RouteNames {
   final String login = 'login';
   final String signup = 'signup';
   final String chat = 'chat';
+  final String chatRooms = 'chatRooms';
   final String editprofileview = 'editprofileview';
   final String expertsOfCategory = 'expertsOfCategory';
 }

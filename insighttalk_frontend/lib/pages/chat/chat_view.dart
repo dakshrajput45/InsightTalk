@@ -1,8 +1,21 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:insighttalk_backend/helper/extension.dart';
+import 'package:insighttalk_backend/modal/modal_chat_rooms.dart';
+import 'package:insighttalk_backend/modal/modal_message.dart';
+import 'package:insighttalk_backend/widegts/chat/chat_contoller.dart';
+import 'package:insighttalk_backend/widegts/chat/message_view.dart';
 
 class ChatView extends StatefulWidget {
-  const ChatView({super.key});
+  final String? roomId;
+  final DsdChatRooms? room;
+  final String? userName;
+
+  const ChatView({super.key,required this.roomId, required this.room, required this.userName});
 
   @override
   _ChatViewState createState() => _ChatViewState();
@@ -11,67 +24,24 @@ class ChatView extends StatefulWidget {
 class _ChatViewState extends State<ChatView> {
   TextEditingController senderMessageController = TextEditingController();
   final ScrollController _listViewController = ScrollController();
+  final DsdChatController _dsdChatController = DsdChatController();
+  late Stream<QuerySnapshot> _messageStream;
+  bool _isLoading = false;
+  DsdChatRooms? _chatRoom;
 
-  // Dummy messages with additional messages and two users
-  final List<Map<String, dynamic>> _messages = [
-    {
-      'senderName': 'user1',
-      'text': "Sounds great! Let's catch up soon.",
-      'timestamp': DateTime(2024, 8, 3, 10, 6, 0),
-    },
-    {
-      'senderName': 'user2',
-      'text': "Same here, keeping busy with work and hobbies.",
-      'timestamp': DateTime(2024, 8, 3, 10, 5, 0),
-    },
-    {
-      'senderName': 'user1',
-      'text': "Just working on some projects. What about you?",
-      'timestamp': DateTime(2024, 8, 3, 10, 4, 0),
-    },
-    {
-      'senderName': 'user2',
-      'text': "Glad to hear that! What have you been up to?",
-      'timestamp': DateTime(2024, 8, 3, 10, 3, 0),
-    },
-    {
-      'senderName': 'user1',
-      'text': "I'm doing well, thanks for asking!",
-      'timestamp': DateTime(2024, 8, 3, 10, 2, 0),
-    },
-    {
-      'senderName': 'user2',
-      'text': "I'm good, thanks! How about you?",
-      'timestamp': DateTime(2024, 8, 3, 10, 1, 0),
-    },
-    {
-      'senderName': 'user1',
-      'text': 'Hello, how are you?',
-      'timestamp': DateTime(2024, 8, 3, 10, 0, 0),
-    },
-    {
-      'senderName': 'user2',
-      'text': 'Hello, how are you?',
-      'timestamp': DateTime(2024, 8, 3, 10, 0, 0),
-    },
-    {
-      'senderName': 'user1',
-      'text': 'Hello, how are you?',
-      'timestamp': DateTime(2024, 8, 3, 10, 0, 0),
-    },
-  ];
+  final List<DsdMessage> _messages = [];
+  final Timestamp screenLoadTime = Timestamp.now();
 
   void _sendTextMessage(String text) {
+    if (widget.roomId == null) return;
     if (text.isEmpty) return;
 
-    setState(() {
-      _messages.insert(0, {
-        'senderName': "user1",
-        'text': text,
-        'timestamp': DateTime.now(),
-      });
-    });
-
+    DsdMessage message = DsdMessage(
+        text: text, time: Timestamp.now(), senderName: widget.userName);
+    _dsdChatController.sendMessage(
+      message: message,
+      room: widget.room!,
+    );
     senderMessageController.clear();
     scrollToBottom();
   }
@@ -88,33 +58,126 @@ class _ChatViewState extends State<ChatView> {
     });
   }
 
+  void scrollToTop() {
+    if (_listViewController.positions.isNotEmpty) {
+      _listViewController.animateTo(
+        _listViewController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeIn,
+      );
+    }
+  }
+
+  void _sortMessages() {
+    _messages.sort(
+      (b, a) => a.time!.toDate().compareTo(b.time!.toDate()),
+    );
+  }
+
+  Future<void> loadOldMessages(
+      {bool hardReset = false,
+      bool scrollBottom = false,
+      bool showLoader = true,
+      bool scrollTop = false}) async {
+    if (showLoader) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
+
+    _messages.addAll(await _dsdChatController.fetchOldMessages(
+      roomId: widget.roomId!,
+      time: screenLoadTime,
+      hardReset: hardReset,
+    ));
+    _sortMessages();
+
+    setState(() {
+      _isLoading = false;
+    });
+    if (scrollBottom && _messages.isNotEmpty) scrollToBottom();
+    if (scrollTop && _messages.isNotEmpty) scrollToTop();
+  }
+
+  late StreamSubscription<QuerySnapshot<Object?>> docChangeListener;
+  late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>
+      chatRoomListener;
+
+  @override
+  void initState() {
+    super.initState();
+    loadOldMessages(hardReset: true, showLoader: true, scrollBottom: true);
+    _messageStream = FirebaseFirestore.instance
+        .collection('chatRooms')
+        .doc(widget.roomId)
+        .collection("messages")
+        .where("time", isGreaterThan: screenLoadTime)
+        .orderBy("time", descending: true)
+        .snapshots();
+    docChangeListener = _messageStream.listen(
+      (event) {
+        for (var change in event.docChanges) {
+          switch (change.type) {
+            case DocumentChangeType.added:
+              {
+                FlutterRingtonePlayer()
+                    .play(fromAsset: "assets/sounds/pop.mp3");
+                setState(() {
+                  _messages.add(DsdMessage.fromJson(
+                      change.doc.data() as Map<String, dynamic>,
+                      change.doc.id));
+                  _sortMessages();
+                });
+
+                scrollToBottom();
+              }
+              break;
+            case DocumentChangeType.modified:
+              break;
+            case DocumentChangeType.removed:
+              break;
+          }
+        }
+      },
+    );
+    chatRoomListener = FirebaseFirestore.instance
+        .collection("chatRooms")
+        .doc(widget.roomId)
+        .snapshots()
+        .listen(
+      (event) {
+        _chatRoom = DsdChatRooms.fromJson(event.data()!, event.id);
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    docChangeListener.cancel();
+    chatRoomListener.cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
             CircleAvatar(
-              backgroundImage: NetworkImage('https://media.istockphoto.com/id/1327592506/vector/default-avatar-photo-placeholder-icon-grey-profile-picture-business-man.jpg?s=612x612&w=0&k=20&c=BpR0FVaEa5F24GIw7K8nMWiiGmbb8qmhfkpXcp1dhQg='),
+              backgroundImage:
+                  NetworkImage('${_chatRoom?.expert!.profileImage}'),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'User Name',
-                    style: TextStyle(
+                    "${_chatRoom?.expert!.expertName}".toUpperCase(),
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  ),
-                  Text(
-                    'Active Now',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
                     ),
                   ),
                 ],
@@ -123,108 +186,167 @@ class _ChatViewState extends State<ChatView> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: _messages.isNotEmpty
-                ? buildMessages()
-                : const Center(
-                    child: Text("Type a message to begin conversation!"),
-                  ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Theme.of(context).colorScheme.surface,
-              ),
-            ),
-            child: Row(
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Column(
               children: [
                 Expanded(
-                  child: TextFormField(
-                    controller: senderMessageController,
-                    onChanged: (val) {
-                      setState(() {});
-                    },
-                    minLines: 1,
-                    autocorrect: true,
-                    maxLines: 3,
-                    decoration: const InputDecoration(
-                      hintText: 'Write a message...',
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                    maxLength: senderMessageController.value.text.length > 900
-                        ? 1024
-                        : null,
-                    keyboardType: TextInputType.text,
-                  ),
+                  child: _messages.isNotEmpty
+                      ? buildMessages()
+                      : const Center(
+                          child: Text("Type a message to begin conversation!"),
+                        ),
                 ),
-                if (senderMessageController.value.text.isNotEmpty)
-                  IconButton(
-                    onPressed: () {
-                      _sendTextMessage(senderMessageController.text);
-                    },
-                    color: Theme.of(context).colorScheme.primary,
-                    icon: const Icon(
-                      Icons.send,
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.surface,
                     ),
-                  )
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: senderMessageController,
+                          onChanged: (val) {
+                            setState(() {});
+                          },
+                          minLines: 1,
+                          autocorrect: true,
+                          maxLines: 3,
+                          decoration: const InputDecoration(
+                            hintText: 'Write a message...',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                          maxLength:
+                              senderMessageController.value.text.length > 900
+                                  ? 1024
+                                  : null,
+                          keyboardType: TextInputType.text,
+                        ),
+                      ),
+                      if (senderMessageController.value.text.isNotEmpty)
+                        IconButton(
+                          onPressed: () {
+                            _sendTextMessage(senderMessageController.text);
+                          },
+                          color: Theme.of(context).colorScheme.primary,
+                          icon: const Icon(
+                            Icons.send,
+                          ),
+                        )
+                    ],
+                  ),
+                )
               ],
             ),
-          )
-        ],
-      ),
     );
   }
 
   Widget buildMessages() {
-    return ListView.builder(
-      reverse: true,
-      controller: _listViewController,
-      itemCount: _messages.length,
-      itemBuilder: (context, index) {
-        final message = _messages[index];
-        final selfMessage = message['senderName'] == "user1";
-        final bgColor = selfMessage
-            ? Theme.of(context).colorScheme.primary
-            : const Color.fromARGB(255, 202, 202, 202);
-        final fgColor = selfMessage
-            ? Theme.of(context).colorScheme.onPrimary
-            : Colors.black;
-
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment:
-                selfMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                margin: selfMessage ? const EdgeInsets.only(left: 90) : const EdgeInsets.only(right: 90),
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  message['text'],
-                  style: TextStyle(color: fgColor),
-                ),
-              ),
-              Text(
-                "${(message['timestamp'] as DateTime).hour}:${(message['timestamp'] as DateTime).minute} ${((message['timestamp'] as DateTime).hour < 12) ? 'AM' : 'PM'}",
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
+    return RefreshIndicator(
+      onRefresh: () async {
+        loadOldMessages(showLoader: false).then(
+          (value) {
+            scrollToTop();
+          },
         );
       },
+      triggerMode: RefreshIndicatorTriggerMode.onEdge,
+      child: ListView.builder(
+        reverse: true,
+        controller: _listViewController,
+        physics: const ClampingScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: _messages.length,
+        itemBuilder: (context, index) {
+          final message = _messages[index];
+          final selfMessage = message.senderName == widget.userName;
+          final bgColor = selfMessage
+              ? Theme.of(context).colorScheme.primary
+              : const Color.fromARGB(255, 202, 202, 202);
+          final fgColor = selfMessage
+              ? Theme.of(context).colorScheme.onPrimary
+              : Colors.black;
+
+          // Previous message ka time check karenge
+          bool showDate = false;
+          if (index == _messages.length - 1) {
+            // Agar pehla message hai, toh date dikhani hogi
+            showDate = true;
+          } else {
+            final lastMessage = _messages[index + 1];
+            // Agar current message aur previous message ka date alag hai, toh date dikhani hogi
+            if (message.time!.toDate().day != lastMessage.time!.toDate().day ||
+                message.time!.toDate().month !=
+                    lastMessage.time!.toDate().month ||
+                message.time!.toDate().year !=
+                    lastMessage.time!.toDate().year) {
+              showDate = true;
+            }
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: selfMessage
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
+              children: [
+                if (showDate) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6.0, top: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surface,
+                              border: Border.all(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerHigh),
+                              borderRadius: BorderRadius.circular(8)),
+                          child: Text(
+                            message.time!
+                                .toDate()
+                                .dateFormatter("EEEE, dd MMMM"),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(
+                    color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                  ),
+                ],
+                DsdMessageView(
+                    message: message,
+                    selfMessage: selfMessage,
+                    bgColor: bgColor,
+                    fgColor: fgColor),
+                Row(
+                  mainAxisAlignment: selfMessage
+                      ? MainAxisAlignment.end
+                      : MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      message.time!.toDate().dateFormatter("hh:mm aa"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
+import 'package:insighttalk_backend/services/notification_services.dart';
+import 'package:insighttalk_expert/main.dart';
 import 'package:insighttalk_expert/router.dart';
 
 class HomeView extends StatefulWidget {
@@ -18,6 +21,18 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   int _selectedIndex = 0;
+  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
+
+  @override
+  void initState() {
+    if (_itUserAuthSDK.getUser()?.uid != null) {
+      dsdNotificationService = DsdNotificationService(
+        uid: _itUserAuthSDK.getUser()!.uid,
+        context: context,
+      );
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +57,7 @@ class _HomeViewState extends State<HomeView> {
                 context.goNamed(routeNames.appointment);
                 break;
               case 1:
-                context.goNamed(routeNames.clientchat);
+                context.goNamed(routeNames.chatRooms);
                 break;
               case 2:
                 context.goNamed(routeNames.notification);

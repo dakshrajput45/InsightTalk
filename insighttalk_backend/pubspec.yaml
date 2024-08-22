@@ -35,6 +35,13 @@ dependencies:
   firebase_auth: ^5.1.2
   google_sign_in: ^6.2.1
   cupertino_icons: ^1.0.6
+  flutter_local_notifications: ^17.2.2
+  firebase_messaging: ^15.0.4
+  shared_preferences: ^2.3.2
+  googleapis_auth:
+  http: ^1.2.2
+  go_router:
+  intl:
 
 dev_dependencies:
   flutter_test:

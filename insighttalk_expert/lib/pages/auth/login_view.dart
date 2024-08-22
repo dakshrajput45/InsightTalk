@@ -151,9 +151,7 @@ class _LoginViewState extends State<LoginView> {
                               text: "Email Login Successful");
                           handleLogin(2);
                           context.goNamed(routeNames.appointment);
-                        } else {
-                          print("Login Failed");
-                        }
+                        } 
                         // Navigate to experts route
                       },
                       child: const Text("Log In"),
@@ -195,9 +193,7 @@ class _LoginViewState extends State<LoginView> {
                           handleLogin(2);
                           await Future.delayed(const Duration(seconds: 2));
                           context.goNamed(routeNames.appointment);
-                        } else {
-                          print("Google Login Failed");
-                        }
+                        } 
                         // Navigate to experts route
                       },
                       icon: Image.asset(

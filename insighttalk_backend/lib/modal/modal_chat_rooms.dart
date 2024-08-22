@@ -1,39 +1,49 @@
+import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_backend/modal/modal_message.dart';
+import 'package:insighttalk_backend/modal/modal_user.dart';
 
 class DsdChatRooms {
   String? id;
   String? userId;
   String? expertId;
+  bool? lock;
   DsdMessage? lastMessage;
-  List<DsdMessage>? chats;
+  DsdUser? user;
+  DsdExpert? expert;
 
   DsdChatRooms({
-    required this.id,
+    this.id,
     required this.userId,
     required this.expertId,
-    required this.chats,
-    required this.lastMessage,
+    required this.lock,
+    this.lastMessage,
+    this.user,
+    this.expert,
   });
 
-  factory DsdChatRooms.fromJson(
-      {required Map<String, dynamic> json, required String id}) {
+  factory DsdChatRooms.fromJson(Map<String, dynamic> json, String id) {
     try {
       return DsdChatRooms(
         id: id,
+        lock: json['lock'],
         userId: json['userId'],
         expertId: json['expertId'],
         lastMessage: json['lastMessage'] != null
             ? DsdMessage.fromJson(
-                json: Map<String, dynamic>.from(json['lastMessage']), id: id)
+                json['lastMessage'] as Map<String, dynamic>,
+                id,
+              )
             : null,
-        chats: json['chats'] != null
-            ? List<DsdMessage>.from(
-                json['chats'].map(
-                  (chat) => DsdMessage.fromJson(
-                    json: Map<String, dynamic>.from(chat),
-                    id: chat['id'], // assuming each message has its own 'id'
-                  ),
-                ),
+        user: json['user'] != null
+            ? DsdUser.fromJson(
+                json: json['user'] as Map<String, dynamic>,
+                id: json['user']['id'] as String,
+              )
+            : null,
+        expert: json['expert'] != null
+            ? DsdExpert.fromJson(
+                json: json['expert'] as Map<String, dynamic>,
+                id: json['expert']['id'] as String,
               )
             : null,
       );
@@ -43,14 +53,15 @@ class DsdChatRooms {
     }
   }
 
-   Map<String, dynamic> toJson({bool withId = false}) {
+  Map<String, dynamic> toJson({bool withId = false}) {
     return {
       if (withId && id != null) 'id': id,
+      if (lock != null) 'lock': lock,
       if (userId != null) 'userId': userId,
       if (expertId != null) 'expertId': expertId,
       if (lastMessage != null) 'lastMessage': lastMessage?.toJson(withId: true),
-      if (chats != null)
-        'chats': chats?.map((message) => message.toJson(withId: true)).toList(),
+      if (user != null) 'user': user?.toJson(withId: true),
+      if (expert != null) 'expert': expert?.toJson(withId: true),
     };
   }
 }
