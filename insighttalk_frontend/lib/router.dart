@@ -5,6 +5,8 @@ import 'package:insighttalk_frontend/pages/auth/SignUp_view.dart';
 import 'package:insighttalk_frontend/pages/auth/login_view.dart';
 import 'package:insighttalk_frontend/pages/chat/chat_room_view.dart';
 import 'package:insighttalk_frontend/pages/chat/chat_view.dart';
+import 'package:insighttalk_frontend/pages/expert/book_appointment_view.dart';
+import 'package:insighttalk_frontend/pages/expert/expert_profile_view.dart';
 import 'package:insighttalk_frontend/pages/expert/experts_view.dart';
 import 'package:insighttalk_frontend/pages/home.dart';
 import 'package:insighttalk_frontend/pages/notifications/notfication_view.dart';
@@ -32,6 +34,27 @@ class RouterConfig {
         name: routeNames.editprofileview,
         builder: (context, state) => const EditProfileView(),
       ),
+      GoRoute(
+        path: '/expertprofileview/:expertId',
+        name: routeNames.expertprofileview,
+        builder: (context, state) {
+          final expertId = state.pathParameters['expertId']!;
+          return ExpertProfileView(
+            expertId: expertId,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/bookappointmentview/:expertId',
+        name: routeNames.bookappointmentview,
+        builder: (context, state) {
+          final expertId = state.pathParameters['expertId']!;
+          return BookAppointmentView(
+            expertId: expertId,
+          );
+        },
+      ),
+
       GoRoute(
         path: '/login',
         name: routeNames.login,
@@ -141,5 +164,7 @@ class RouteNames {
   final String chat = 'chat';
   final String chatRooms = 'chatRooms';
   final String editprofileview = 'editprofileview';
+  final String expertprofileview = 'expertprofileview';
   final String expertsOfCategory = 'expertsOfCategory';
+  final String bookappointmentview = 'bookappointmentview';
 }

@@ -271,6 +271,7 @@ class _CategoryCardSectionState extends State<CategoryCardSection> {
               itemBuilder: (context, index) {
                 final expert = expertData[index];
                 return ExpertCard(
+                  expertId: expert.id!,
                   profilePhoto: expert.profileImage!,
                   name: expert.expertName!,
                   description: expert.expertise!,
