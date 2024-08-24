@@ -66,7 +66,9 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
           elevation: 0.0,
         ),
         body: expertData == null
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
             : SingleChildScrollView(
                 padding: EdgeInsets.all(3.sw),
                 child: CustomPaint(

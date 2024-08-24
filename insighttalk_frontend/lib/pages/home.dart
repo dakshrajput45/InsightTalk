@@ -69,9 +69,6 @@ class _HomeViewState extends State<HomeView> {
                 context.goNamed(routeNames.paymentgateway);
                 break;
               case 3:
-                context.goNamed(routeNames.notification);
-                break;
-              case 4:
                 context.goNamed(routeNames.userprofile);
                 break;
               default:
@@ -95,11 +92,7 @@ class _HomeViewState extends State<HomeView> {
             activeIcon: Icon(Icons.payment),
             label: 'Payment Gateway',
           ),
-          BottomNavigationBarItem(
-            activeIcon: Icon(Icons.notifications),
-            icon: Icon(Icons.notifications_outlined),
-            label: 'Notifications',
-          ),
+          
           BottomNavigationBarItem(
             activeIcon: Icon(Icons.person),
             icon: Icon(Icons.person_outline),

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -160,15 +161,34 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return  _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          :Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Row(
           children: [
-            CircleAvatar(
-              backgroundImage:
-                  NetworkImage('${_chatRoom?.expert!.profileImage}'),
-            ),
+            ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: widget.room!.expert!.profileImage!,
+                    placeholder: (context, url) => const Center(
+                      child: SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.0,
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                    fit: BoxFit.cover,
+                    width: 40,
+                    height: 40,
+                  ),
+                ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -186,11 +206,7 @@ class _ChatViewState extends State<ChatView> {
           ],
         ),
       ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : Column(
+      body: Column(
               children: [
                 Expanded(
                   child: _messages.isNotEmpty

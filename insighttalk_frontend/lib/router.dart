@@ -9,7 +9,6 @@ import 'package:insighttalk_frontend/pages/expert/book_appointment_view.dart';
 import 'package:insighttalk_frontend/pages/expert/expert_profile_view.dart';
 import 'package:insighttalk_frontend/pages/expert/experts_view.dart';
 import 'package:insighttalk_frontend/pages/home.dart';
-import 'package:insighttalk_frontend/pages/notifications/notfication_view.dart';
 import 'package:insighttalk_frontend/pages/paymentgateway/payment_gateway.dart';
 import 'package:insighttalk_frontend/pages/userProfile/editprofile_view.dart';
 import 'package:insighttalk_frontend/pages/userProfile/experts_of_category_view.dart';
@@ -126,12 +125,7 @@ class RouterConfig {
                 pageBuilder: (context, state) =>
                     const NoTransitionPage(child: PaymentGatewayView()),
               ),
-              GoRoute(
-                path: '/notification',
-                name: routeNames.notification,
-                pageBuilder: (context, state) =>
-                    const NoTransitionPage(child: NotificationView()),
-              ),
+              
               GoRoute(
                 path: '/userprofile',
                 name: routeNames.userprofile,
@@ -157,7 +151,7 @@ class RouteNames {
   final String experts = 'experts';
   final String appointment = 'appointment';
   final String paymentgateway = 'paymentgateway';
-  final String notification = 'notification';
+  
   final String userprofile = 'userprofile';
   final String login = 'login';
   final String signup = 'signup';

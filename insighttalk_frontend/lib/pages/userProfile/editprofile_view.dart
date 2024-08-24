@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:insighttalk_backend/modal/modal_category.dart';
@@ -43,88 +44,106 @@ class _EditProfileViewState extends State<EditProfileView> {
   File? _imageFile;
   String? _imageUrl;
   bool? firstTime = false;
+  bool _isLoading = true;
+  bool _sendData = false;
 
-  void _openImagePicker(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.photo_library),
-                title: const Text('Choose from gallery'),
-                onTap: () async {
-                  File? img = await _pickImage(ImageSource.gallery);
-                  if (img != null) {
-                    await _uploadImageToFirebase(img);
-                  }
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.link),
-                title: const Text('Upload from link'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Dialog(
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              const Text(
-                                'Upload from link',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+  Future<void> _openImagePicker(BuildContext context) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      File? img;
+      await showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ListTile(
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text('Choose from gallery'),
+                  onTap: () async {
+                    img = await _pickImage(ImageSource.gallery);
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.link),
+                  title: const Text('Upload from link'),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Dialog(
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                const Text(
+                                  'Upload from link',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 16),
-                              TextField(
-                                controller: _urlController,
-                                decoration: const InputDecoration(
-                                    hintText: 'Enter image URL'),
-                              ),
-                              const SizedBox(height: 16),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  TextButton(
-                                    child: const Text('Cancel'),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: const Text('Upload'),
-                                    onPressed: () {
-                                      setState(() {
-                                        _imageUrl = _urlController.text;
-                                      });
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
+                                const SizedBox(height: 16),
+                                TextField(
+                                  controller: _urlController,
+                                  decoration: const InputDecoration(
+                                      hintText: 'Enter image URL'),
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: <Widget>[
+                                    TextButton(
+                                      child: const Text('Cancel'),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text('Upload'),
+                                      onPressed: () {
+                                        setState(() {
+                                          _imageUrl = _urlController.text;
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      );
+
+      // Check if an image was picked and upload it to Firebase
+      if (img != null) {
+        await _uploadImageToFirebase(img!);
+      }
+    } catch (e) {
+      print('Error: $e');
+    } finally {
+      // Reset isLoading to false once the process is complete
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<File?> _pickImage(ImageSource source) async {
@@ -184,8 +203,15 @@ class _EditProfileViewState extends State<EditProfileView> {
   @override
   void initState() {
     super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
     _fetchCategories();
     getUserData();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<void> _fetchCategories() async {
@@ -227,6 +253,8 @@ class _EditProfileViewState extends State<EditProfileView> {
     }
   }
 
+  var defaultImage =
+      "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg";
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -250,7 +278,7 @@ class _EditProfileViewState extends State<EditProfileView> {
             FocusScope.of(context).unfocus();
           },
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(30.0),
+            padding: const EdgeInsets.all(16.0),
             child: Form(
               key: _formKey,
               child: Column(
@@ -260,40 +288,46 @@ class _EditProfileViewState extends State<EditProfileView> {
                   Center(
                     child: Stack(
                       children: [
-                        Container(
-                          height: 120,
-                          width: 120,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: _imageUrl != null
-                                  ? NetworkImage(_imageUrl!)
-                                  : const NetworkImage(
-                                          'https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg')
-                                      as ImageProvider,
-                              fit: BoxFit.cover,
+                        ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: _imageUrl ?? defaultImage,
+                            placeholder: (context, url) => const Center(
+                              child: SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.0,
+                                ),
+                              ),
                             ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                            fit: BoxFit.cover,
+                            width: 120,
+                            height: 120,
                           ),
                         ),
                         Positioned(
                           bottom: 0,
                           right: 0,
-                          child: Container(
-                            width: 35,
-                            height: 35,
-                            decoration: const BoxDecoration(
-                              color: Colors.blue,
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.edit,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                // Handle profile photo edit action
-                                _openImagePicker(context);
-                              },
+                          child: InkWell(
+                            onTap: () async {
+                              await _openImagePicker(context);
+                            },
+                            child: CircleAvatar(
+                              key: ValueKey(_isLoading),
+                              backgroundColor: Colors.blue,
+                              child: _isLoading
+                                  ? const Padding(
+                                      padding: EdgeInsets.all(10.0),
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : const Icon(
+                                      Icons.edit,
+                                      color: Colors.white,
+                                    ),
                             ),
                           ),
                         ),
@@ -424,28 +458,35 @@ class _EditProfileViewState extends State<EditProfileView> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
+                        setState(() {
+                          _sendData = true;
+                        });
                         if (_formKey.currentState?.validate() ?? false) {
                           //get fcm token
-                          var token = await FirebaseMessaging.instance.getToken();
+                          var token =
+                              await FirebaseMessaging.instance.getToken();
                           // Handle save action
                           await _dsdProfileController
                               .updateUser(
                             user: DsdUser(
-                              userName: _userNameController.value.text.trim(),
-                              email: _itUserAuthSDK.getUser()!.email,
-                              dateOfBirth: dateOfBirth,
-                              address: DsdUserAddress(
-                                country: _countryController.value.text.trim(),
-                                state: _stateController.value.text.trim(),
-                                city: _cityController.value.text.trim(),
-                              ),
-                              category: _categories,
-                              profileImage: _imageUrl ?? "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg",
-                              fcmToken: token
-                            ),
+                                userName: _userNameController.value.text.trim(),
+                                email: _itUserAuthSDK.getUser()!.email,
+                                dateOfBirth: dateOfBirth,
+                                address: DsdUserAddress(
+                                  country: _countryController.value.text.trim(),
+                                  state: _stateController.value.text.trim(),
+                                  city: _cityController.value.text.trim(),
+                                ),
+                                category: _categories,
+                                profileImage: _imageUrl ??
+                                    "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg",
+                                fcmToken: token),
                             userId: _itUserAuthSDK.getUser()!.uid,
                           )
                               .then((value) {
+                            setState(() {
+                              _sendData = false;
+                            });
                             DsdToastMessages.success(context,
                                 text: "Profile updated successfully!");
                           });
@@ -458,7 +499,15 @@ class _EditProfileViewState extends State<EditProfileView> {
                           }
                         }
                       },
-                      child: const Text('Save'),
+                      child: _sendData
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text('Save'),
                     ),
                   ),
                 ],

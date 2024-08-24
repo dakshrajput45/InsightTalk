@@ -60,152 +60,173 @@ class _ExpertsViewState extends State<ExpertsView> {
   @override
   void initState() {
     super.initState();
-    fetchTopCategory();
-    getCategory();
+    _loadData();
+   
+  }
+
+  Future<void> _loadData() async {
+    await fetchTopCategory();
+    await getCategory();
+     setState(() {
+      _loading = false;
+    });
   }
 
   final CarouselController _carouselController = CarouselController();
 
   int _currentCarouselIndex = 0;
-
+  bool _loading = true;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(15),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // Popular Categories
-          const Text(
-            'Popular Categories',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          SizedBox(
-            height: 17.sw,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount:
-                  popularCategory!.length > 5 ? 5 : popularCategory?.length,
-              itemBuilder: (context, index) {
-                final category = popularCategory?[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Image.network(
-                            category!.categoryImage!,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(height: 10.0),
-                        Text(
-                          category.categoryTitle!,
-                          style: TextStyle(
-                            fontSize: 1.3.sh,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+    return _loading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : Scaffold(
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Popular Categories
+                    const Text(
+                      'Popular Categories',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          const SizedBox(
-            height: 20,
-          ),
-
-          // AdCarousel Section
-
-          Stack(
-            children: [
-              InkWell(
-                onTap: () {
-                  // Event Handler for Carousel when tapped
-                },
-                child: CarouselSlider(
-                  items: imageList
-                      .map((item) => AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.asset(
-                                item['image_path'],
-                                fit: BoxFit.cover,
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    SizedBox(
+                      height: 17.sw,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: popularCategory!.length > 5
+                            ? 5
+                            : popularCategory?.length,
+                        itemBuilder: (context, index) {
+                          final category = popularCategory?[index];
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 18.0),
+                            child: GestureDetector(
+                              onTap: () {},
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Image.network(
+                                      category!.categoryImage!,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10.0),
+                                  Text(
+                                    category.categoryTitle!,
+                                    style: TextStyle(
+                                      fontSize: 1.3.sh,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
                               ),
                             ),
-                          ))
-                      .toList(),
-                  carouselController: _carouselController,
-                  options: CarouselOptions(
-                    scrollPhysics: const BouncingScrollPhysics(),
-                    enlargeCenterPage: true,
-                    autoPlay: true,
-                    autoPlayCurve: Curves.fastOutSlowIn,
-                    enableInfiniteScroll: true,
-                    autoPlayAnimationDuration:
-                        const Duration(milliseconds: 800),
-                    viewportFraction: 1,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        _currentCarouselIndex = index;
-                      });
-                    },
-                  ),
-                ),
-              ),
-              Positioned(
-                  bottom: 10,
-                  left: 0,
-                  right: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: imageList.asMap().entries.map((entry) {
-                      return GestureDetector(
-                        onTap: () =>
-                            _carouselController.animateToPage(entry.key),
-                        child: Container(
-                          width: _currentCarouselIndex == entry.key ? 17 : 7,
-                          height: 7,
-                          margin: const EdgeInsets.symmetric(horizontal: 3.0),
-                          decoration: BoxDecoration(
-                            color: _currentCarouselIndex == entry.key
-                                ? Colors.blue
-                                : Colors.grey,
-                            borderRadius: BorderRadius.circular(10),
+                          );
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 20,
+                    ),
+
+                    // AdCarousel Section
+
+                    Stack(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            // Event Handler for Carousel when tapped
+                          },
+                          child: CarouselSlider(
+                            items: imageList
+                                .map((item) => AspectRatio(
+                                      aspectRatio: 16 / 9,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.asset(
+                                          item['image_path'],
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ))
+                                .toList(),
+                            carouselController: _carouselController,
+                            options: CarouselOptions(
+                              scrollPhysics: const BouncingScrollPhysics(),
+                              enlargeCenterPage: true,
+                              autoPlay: true,
+                              autoPlayCurve: Curves.fastOutSlowIn,
+                              enableInfiniteScroll: true,
+                              autoPlayAnimationDuration:
+                                  const Duration(milliseconds: 800),
+                              viewportFraction: 1,
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  _currentCarouselIndex = index;
+                                });
+                              },
+                            ),
                           ),
                         ),
-                      );
-                    }).toList(),
-                  ))
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          // // Expert Card Section
-          // const CategoryCardSection(category: "Top Experts"),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: _userCategory!
-                .where((category) => category.experts!.isNotEmpty)
-                .map((category) {
-              return CategoryCardSection(category: category.categoryTitle!);
-            }).toList(),
-          )
-        ]),
-      ),
-    );
+                        Positioned(
+                            bottom: 10,
+                            left: 0,
+                            right: 0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: imageList.asMap().entries.map((entry) {
+                                return GestureDetector(
+                                  onTap: () => _carouselController
+                                      .animateToPage(entry.key),
+                                  child: Container(
+                                    width: _currentCarouselIndex == entry.key
+                                        ? 17
+                                        : 7,
+                                    height: 7,
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 3.0),
+                                    decoration: BoxDecoration(
+                                      color: _currentCarouselIndex == entry.key
+                                          ? Colors.blue
+                                          : Colors.grey,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ))
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    // // Expert Card Section
+                    // const CategoryCardSection(category: "Top Experts"),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _userCategory!
+                          .where((category) => category.experts!.isNotEmpty)
+                          .map((category) {
+                        return CategoryCardSection(
+                            category: category.categoryTitle!);
+                      }).toList(),
+                    )
+                  ]),
+            ),
+          );
   }
 }
 
@@ -224,7 +245,11 @@ class _CategoryCardSectionState extends State<CategoryCardSection> {
   @override
   void initState() {
     super.initState();
-    getExperts(categoryTitle: widget.category);
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    await getExperts(categoryTitle: widget.category);
   }
 
   Future<void> getExperts({required String categoryTitle}) async {

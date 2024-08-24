@@ -35,30 +35,39 @@ class DsdUserDetailsApis {
     }
   }
 
-  Future<List<DsdCategory>?> fetchUserCategories(
-      {required String userId}) async {
-    try {
-      var result = await _db.collection(_userCollectionPath).doc(userId).get();
-      if (result.exists) {
-        DsdUser userData =
-            DsdUser.fromJson(json: result.data()!, id: result.id);
-        List<String>? category = userData.category;
-        List<DsdCategory> userCategory = [];
-        print(category);
-        await Future.forEach(category!, (x) async {
-          print(x);
-          DsdCategory? categoryData =
-              await _dsdCategoryApis.fetchCategoryById(categoryId: x);
-          if (categoryData != null) {
-            userCategory.add(categoryData);
+  Future<List<DsdCategory>?> fetchUserCategories({required String userId}) async {
+  try {
+    var result = await _db.collection(_userCollectionPath).doc(userId).get();
+    if (result.exists) {
+      DsdUser userData = DsdUser.fromJson(json: result.data()!, id: result.id);
+      List<String>? categoryIds = userData.category;
+
+      if (categoryIds != null && categoryIds.isNotEmpty) {
+        // Fetch all categories concurrently
+        List<Future<DsdCategory?>> categoryFutures = categoryIds.map((categoryId) async {
+          try {
+            return await _dsdCategoryApis.fetchCategoryById(categoryId: categoryId);
+          } catch (e) {
+            print('Error fetching category $categoryId: $e');
+            return null; // Handle individual fetch errors
           }
-        });
-        return userCategory;
+        }).toList();
+
+        // Wait for all futures to complete
+        List<DsdCategory?> fetchedCategories = await Future.wait(categoryFutures);
+
+        // Filter out null values
+        List<DsdCategory> validCategories = fetchedCategories.whereType<DsdCategory>().toList();
+
+        return validCategories;
       }
-      return null;
-    } catch (e) {
-      print(e);
-      rethrow;
+      return [];
     }
+    return [];
+  } catch (e) {
+    print(e);
+    rethrow;
   }
+}
+
 }

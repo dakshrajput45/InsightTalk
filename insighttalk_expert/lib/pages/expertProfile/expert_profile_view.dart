@@ -60,8 +60,12 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
   @override
   void initState() {
     super.initState();
-    getCategory();
-    getExpertData();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    await getCategory();
+    await getExpertData();
     setState(() {
       _loading = false;
     });

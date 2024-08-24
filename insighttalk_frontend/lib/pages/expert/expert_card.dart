@@ -1,6 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:insighttalk_frontend/pages/expert/expert_profile_view.dart';
 import 'package:insighttalk_frontend/router.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -36,9 +36,24 @@ class ExpertCard extends StatelessWidget {
             padding: const EdgeInsets.all(12.0),
             child: Column(
               children: [
-                CircleAvatar(
-                  radius: Device.screenType == ScreenType.mobile ? 4.sh : 50,
-                  backgroundImage: NetworkImage(profilePhoto),
+                ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: profilePhoto,
+                    placeholder: (context, url) => const Center(
+                      child: SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.0,
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                    fit: BoxFit.cover,
+                    width: 60,
+                    height: 60,
+                  ),
                 ),
                 const SizedBox(
                   height: 10.0,
