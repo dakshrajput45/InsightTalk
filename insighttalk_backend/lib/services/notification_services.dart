@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:insighttalk_backend/apis/userApis/user_details_api.dart';
 import 'package:insighttalk_backend/modal/modal_notification.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,57 +14,22 @@ class DsdNotificationService {
   final _db = FirebaseFirestore.instance;
   final String uid;
   final BuildContext context;
+  final DsdUserDetailsApis _dsdUserDetailsApis = DsdUserDetailsApis();
 
   DsdNotificationService({required this.uid, required this.context}) {
     print("##........## Notifaction service call huaa ##........##");
     _initializeNotifications();
   }
 
-  _checkToken(String token) async {
-    print("##........## token check hone aaya ##........##");
-    try {
-      var doc = await _db
-          .collection(_tokenCollection)
-          .where("token", isEqualTo: token)
-          .get();
-      print(doc.size);
-      print("##........## Token shi s check huaa ##........##");
-      return doc.size > 0;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  _sendTokenToServer(String token) async {
-    try {
-      await _db.collection(_tokenCollection).add({
-        "id": uid,
-        "token": token,
-        "createdAt": FieldValue.serverTimestamp(),
-      });
-    } catch (e) {
-      rethrow;
-    }
-  }
-
   Future<void> _initializeNotifications() async {
     print("##........## Initialize notifications ##........##");
     await FirebaseMessaging.instance.requestPermission(provisional: true);
     var token = await FirebaseMessaging.instance.getToken();
-    print("##........## FCM Token: $token  ##........##");
-    if (token != null) {
-      if (!(await _checkToken(token))) {
-        print("##........## If k andr aaya ##........##");
-        _sendTokenToServer(token);
-        print("##........## SendToken bhi chl gya ##........##");
-      }
-      print("##........## If ke Bahar bhi aa gya ##........##");
-      print("Initializing Local Notifications");
-      _initializeLocalNotifications();
-      print("Before calling _initializeForegroundHandler()");
-      _initializeForegroundHandler();
-      print("After calling _initializeForegroundHandler()");
-    }
+    await _dsdUserDetailsApis.updateFcmToken(token!);
+    _initializeLocalNotifications();
+    print("Before calling _initializeForegroundHandler()");
+    _initializeForegroundHandler();
+    print("After calling _initializeForegroundHandler()");
   }
 
   Future<void> _initializeLocalNotifications() async {

@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
+import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/modal/modal_expert.dart';
+import 'package:insighttalk_frontend/pages/appointment/appointment_controller.dart';
 import 'package:intl/intl.dart';
 
 class BookAppointmentView extends StatefulWidget {
@@ -13,6 +16,10 @@ class BookAppointmentView extends StatefulWidget {
 
 class _BookAppointmentViewState extends State<BookAppointmentView> {
   final DsdExpertApis _dsdExpertApis = DsdExpertApis();
+  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
+
+  final DsdAppointmentController _dsdAppointmentController =
+      DsdAppointmentController();
   DsdExpert? expertData;
   List<DateTime> availableDates = [
     DateTime(2024, 8, 18),
@@ -189,7 +196,17 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                   ],
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    String userId = _itUserAuthSDK.getUser()!.uid;
+                    await _dsdAppointmentController.createAppointment(
+                        userId,
+                        widget.expertId,
+                        Timestamp.now(),
+                        "Kch to hai reason",
+                        "DSA",
+                        60,
+                        "20 min");
+                  },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24.0, vertical: 10.0),

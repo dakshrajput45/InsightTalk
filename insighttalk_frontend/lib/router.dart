@@ -5,7 +5,7 @@ import 'package:insighttalk_frontend/pages/auth/SignUp_view.dart';
 import 'package:insighttalk_frontend/pages/auth/login_view.dart';
 import 'package:insighttalk_frontend/pages/chat/chat_room_view.dart';
 import 'package:insighttalk_frontend/pages/chat/chat_view.dart';
-import 'package:insighttalk_frontend/pages/expert/book_appointment_view.dart';
+import 'package:insighttalk_frontend/pages/appointment/book_appointment_view.dart';
 import 'package:insighttalk_frontend/pages/expert/expert_profile_view.dart';
 import 'package:insighttalk_frontend/pages/expert/experts_view.dart';
 import 'package:insighttalk_frontend/pages/home.dart';

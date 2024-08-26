@@ -322,6 +322,7 @@ class _EditProfileViewState extends State<EditProfileView> {
       rethrow;
     }
   }
+
   bool _sendData = false;
   @override
   void initState() {
@@ -329,9 +330,10 @@ class _EditProfileViewState extends State<EditProfileView> {
     _fetchCategories();
     getExpertData();
   }
- var defaultImage =
+
+  var defaultImage =
       "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg";
-  
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -774,9 +776,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                             expertId: _itUserAuthSDK.getUser()!.uid,
                           )
                               .then((value) {
-                                setState(() {
-                          _sendData = false;
-                        });
+                            setState(() {
+                              _sendData = false;
+                            });
                             DsdToastMessages.success(context,
                                 text: "Profile updated successfully!");
                           });
