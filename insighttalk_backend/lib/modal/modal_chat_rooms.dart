@@ -21,7 +21,7 @@ class DsdChatRooms {
     this.expert,
   });
 
-  factory DsdChatRooms.fromJson(Map<String, dynamic> json, String id) {
+  factory DsdChatRooms.fromJson({required Map<String, dynamic> json,required String id}) {
     try {
       return DsdChatRooms(
         id: id,

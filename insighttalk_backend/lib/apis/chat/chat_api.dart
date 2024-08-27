@@ -67,11 +67,10 @@ class DsdChatApis {
       }
       List<DsdChatRooms> chatRooms = querySnapshot.docs.map((doc) {
         return DsdChatRooms.fromJson(
-          doc.data() as Map<String, dynamic>,
-          doc.id,
+          json: doc.data() as Map<String, dynamic>,
+          id: doc.id,
         );
       }).toList();
-
       return (
         chatRooms,
         lastDoc
@@ -110,7 +109,8 @@ class DsdChatApis {
       print(isUser);
       String token =
           isUser ? chatRoom.expert!.fcmToken! : chatRoom.user!.fcmToken!;
-      print(token);
+    
+      print("token = $token");
       dsdPushNotificationService.sendNotification(
           token, message.senderName!, message.text!);
     } catch (e) {

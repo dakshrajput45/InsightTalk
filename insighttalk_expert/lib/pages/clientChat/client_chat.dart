@@ -133,8 +133,6 @@ class _ClientChatViewState extends State<ClientChatView> {
                 });
 
                 scrollToBottom();
-
-                
               }
               break;
             case DocumentChangeType.modified:
@@ -151,7 +149,7 @@ class _ClientChatViewState extends State<ClientChatView> {
         .snapshots()
         .listen(
       (event) {
-        _chatRoom = DsdChatRooms.fromJson(event.data()!, event.id);
+        _chatRoom = DsdChatRooms.fromJson(json: event.data()!, id: event.id);
       },
     );
     if (_chatRoom?.user?.profileImage != null &&

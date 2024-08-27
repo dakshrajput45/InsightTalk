@@ -16,7 +16,11 @@ class ChatView extends StatefulWidget {
   final DsdChatRooms? room;
   final String? userName;
 
-  const ChatView({super.key,required this.roomId, required this.room, required this.userName});
+  const ChatView(
+      {super.key,
+      required this.roomId,
+      required this.room,
+      required this.userName});
 
   @override
   _ChatViewState createState() => _ChatViewState();
@@ -147,7 +151,7 @@ class _ChatViewState extends State<ChatView> {
         .snapshots()
         .listen(
       (event) {
-        _chatRoom = DsdChatRooms.fromJson(event.data()!, event.id);
+        _chatRoom = DsdChatRooms.fromJson(json: event.data()!, id: event.id);
       },
     );
   }
@@ -161,52 +165,52 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    return  _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          :Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: Row(
-          children: [
-            ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl: widget.room!.expert!.profileImage!,
-                    placeholder: (context, url) => const Center(
-                      child: SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.0,
+    return _isLoading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : Scaffold(
+            resizeToAvoidBottomInset: true,
+            appBar: AppBar(
+              title: Row(
+                children: [
+                  ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: widget.room!.expert!.profileImage!,
+                      placeholder: (context, url) => const Center(
+                        child: SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.0,
+                          ),
                         ),
                       ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                      fit: BoxFit.cover,
+                      width: 40,
+                      height: 40,
                     ),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                    fit: BoxFit.cover,
-                    width: 40,
-                    height: 40,
                   ),
-                ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "${_chatRoom?.expert!.expertName}".toUpperCase(),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${_chatRoom?.expert!.expertName}".toUpperCase(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-      body: Column(
+            body: Column(
               children: [
                 Expanded(
                   child: _messages.isNotEmpty
@@ -262,7 +266,7 @@ class _ChatViewState extends State<ChatView> {
                 )
               ],
             ),
-    );
+          );
   }
 
   Widget buildMessages() {

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
@@ -71,6 +72,9 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
     });
   }
 
+  var defaultImage =
+      "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg";
+
   @override
   Widget build(BuildContext context) {
     return _loading
@@ -85,88 +89,116 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Center(
-                        child: Column(children: [
-                      Stack(
-                        alignment: Alignment.center,
+                      child: Column(
                         children: [
-                          Align(
+                          Stack(
                             alignment: Alignment.center,
-                            child: CircleAvatar(
-                              radius: 8.sh,
-                              backgroundImage: expertData != null &&
-                                      expertData!.profileImage != null
-                                  ? NetworkImage(expertData!.profileImage!)
-                                  : const NetworkImage(
-                                      'https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg'),
-                            ),
-                          ),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: Padding(
-                              padding: EdgeInsets.only(bottom: 4.sh),
-                              child: PopupMenuButton<String>(
-                                onSelected: (String value) {
-                                  // Handle menu item selection
-                                  switch (value) {
-                                    case 'Edit Profile':
-                                      context.goNamed(routeNames.editprofile);
-                                      break;
-                                    case 'Settings':
-                                      // Navigate to settings page
-                                      break;
-                                    case 'Logout':
-                                      // Perform logout
-                                      _itUserAuthSDK.signOut();
-                                      context.goNamed(routeNames.login);
-                                      break;
-                                  }
-                                },
-                                itemBuilder: (BuildContext context) {
-                                  return {'Edit Profile', 'Settings', 'Logout'}
-                                      .map((String choice) {
-                                    return PopupMenuItem<String>(
-                                      value: choice,
-                                      child: Text(
-                                        choice,
-                                        style: TextStyle(
-                                          fontSize: 1.9.sh,
+                            children: [
+                              Align(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  height: 120,
+                                  width: 120,
+                                  margin: const EdgeInsets.only(
+                                      top: 10, left: 16, bottom: 10),
+                                  decoration: BoxDecoration(
+                                    shape:
+                                        BoxShape.circle, // Set shape to circle
+                                    color: Colors.grey.shade200,
+                                  ),
+                                  clipBehavior: Clip.hardEdge,
+                                  child: CachedNetworkImage(
+                                    imageUrl: expertData?.profileImage ??
+                                        defaultImage,
+                                    placeholder: (context, url) => const Center(
+                                      child: SizedBox(
+                                        height: 30,
+                                        width: 30,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.0,
                                         ),
                                       ),
-                                    );
-                                  }).toList();
-                                },
-                                icon: Icon(
-                                  Icons.more_vert,
-                                  size: 3.sh,
-                                  color: Colors.black,
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
-                            ),
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: Padding(
+                                  padding: EdgeInsets.only(bottom: 4.sh),
+                                  child: PopupMenuButton<String>(
+                                    onSelected: (String value) {
+                                      // Handle menu item selection
+                                      switch (value) {
+                                        case 'Edit Profile':
+                                          context
+                                              .goNamed(routeNames.editprofile);
+                                          break;
+                                        case 'Settings':
+                                          // Navigate to settings page
+                                          break;
+                                        case 'Logout':
+                                          // Perform logout
+                                          _itUserAuthSDK.signOut();
+                                          context.goNamed(routeNames.login);
+                                          break;
+                                      }
+                                    },
+                                    itemBuilder: (BuildContext context) {
+                                      return {
+                                        'Edit Profile',
+                                        'Settings',
+                                        'Logout'
+                                      }.map((String choice) {
+                                        return PopupMenuItem<String>(
+                                          value: choice,
+                                          child: Text(
+                                            choice,
+                                            style: TextStyle(
+                                              fontSize: 1.9.sh,
+                                            ),
+                                          ),
+                                        );
+                                      }).toList();
+                                    },
+                                    icon: Icon(
+                                      Icons.more_vert,
+                                      size: 3.sh,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            "${expertData?.expertName}".toUpperCase(),
+                            style: TextStyle(
+                                fontSize: 2.8.sh,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            "(" "${expertData?.expertise}" ")",
+                            style: TextStyle(
+                                fontSize: 2.3.sh,
+                                fontWeight: FontWeight.w500,
+                                color:
+                                    const Color.fromARGB(255, 255, 255, 255)),
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Text(
-                        "${expertData?.expertName}".toUpperCase(),
-                        style: TextStyle(
-                            fontSize: 2.8.sh,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Text(
-                        "(" "${expertData?.expertise}" ")",
-                        style: TextStyle(
-                            fontSize: 2.3.sh,
-                            fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(255, 255, 255, 255)),
-                      ),
-                    ])),
+                    ),
                     const SizedBox(
                       height: 30,
                     ),

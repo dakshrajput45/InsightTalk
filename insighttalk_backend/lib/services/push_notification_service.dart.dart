@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart' as auth;
 
@@ -43,14 +44,15 @@ class DsdPushNotificationService {
     return credentials.accessToken.data;
   }
 
-  void sendNotification(String token, String senderName,String text) async {
+  void sendNotification(String token, String senderName, String text) async {
     final String serverAccessTokenKey = await getAcessToken();
+
     String endpointFirebaseCloudMessaging =
         'https://fcm.googleapis.com/v1/projects/insight-talk-af3e1/messages:send';
 
     final Map<String, dynamic> message = {
       "message": {
-        "notification": {"title": "You have got a new message from $senderName", "body": text},
+        "notification": {"title": "New Message from $senderName", "body": text},
         "data": {},
         "token": token
       }
