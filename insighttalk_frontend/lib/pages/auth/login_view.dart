@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insighttalk_backend/helper/toast.dart';
@@ -16,7 +17,7 @@ class _LoginViewState extends State<LoginView> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
-
+  final CollectionReference usersCollection = FirebaseFirestore.instance.collection('userDetails');
   final bool _isNotValidate = false;
 
   void handleSignUp(int val) {
@@ -82,9 +83,7 @@ class _LoginViewState extends State<LoginView> {
                       errorText: _isNotValidate ? "Enter Proper Info" : null,
                       hintText: 'Password',
                       suffixIcon: IconButton(
-                        icon: Icon(_isHidden
-                            ? Icons.visibility_off
-                            : Icons.visibility),
+                        icon: Icon(_isHidden ? Icons.visibility_off : Icons.visibility),
                         onPressed: () {
                           setState(() {
                             _isHidden = !_isHidden;
@@ -99,11 +98,9 @@ class _LoginViewState extends State<LoginView> {
                     child: ElevatedButton(
                       onPressed: () async {
                         User? user = await _itUserAuthSDK.emailandPasswordLogIn(
-                            email: emailController.text.trim(),
-                            password: passwordController.text);
+                            email: emailController.text.trim(), password: passwordController.text);
                         if (user != null && mounted) {
-                          DsdToastMessages.success(context,
-                              text: "Email Login Successful");
+                          DsdToastMessages.success(context, text: "Email Login Successful");
                           handleSignUp(2);
                           context.goNamed(routeNames.experts);
                         } else {
@@ -146,11 +143,16 @@ class _LoginViewState extends State<LoginView> {
                         User? user = await _itUserAuthSDK.googleSignUp();
                         print('Google Log In function is called $mounted');
                         if (user != null && mounted) {
-                          DsdToastMessages.success(context,
-                              text: "Google Login Successful");
+                          final DocumentSnapshot userDoc =
+                              await usersCollection.doc(user.uid).get();
                           handleSignUp(2);
-                          await Future.delayed(const Duration(seconds: 2));
-                          context.goNamed(routeNames.experts);
+                          if (!userDoc.exists) {
+                            context.goNamed(routeNames.editprofileview);
+                          } else {
+                            DsdToastMessages.success(context, text: "Google Login Successful");
+                            await Future.delayed(const Duration(seconds: 2));
+                            context.goNamed(routeNames.experts);
+                          }
                         } else {
                           print("Google Login Failed");
                         }
@@ -167,13 +169,10 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       style: ButtonStyle(
                         padding: WidgetStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16.0),
+                          const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                         ),
-                        backgroundColor:
-                            WidgetStateProperty.all<Color>(Colors.white),
-                        foregroundColor:
-                            WidgetStateProperty.all<Color>(Colors.black),
+                        backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                        foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
                         shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
@@ -190,8 +189,7 @@ class _LoginViewState extends State<LoginView> {
                       TextButton(
                         onPressed: () {
                           handleSignUp(3);
-                          context.pushNamed(
-                              routeNames.signup); // Navigate to signup route
+                          context.pushNamed(routeNames.signup); // Navigate to signup route
                         },
                         child: const Text(
                           "Sign Up",
@@ -205,11 +203,10 @@ class _LoginViewState extends State<LoginView> {
                       TextButton(
                         onPressed: () {
                           // Add your Forgot Password logic here
-                          _itUserAuthSDK.getUser();
+                          print(_itUserAuthSDK.getUser());
                         },
                         onLongPress: () {
-                          DsdToastMessages.success(context,
-                              text: "Toast added");
+                          _itUserAuthSDK.signOut();
                         },
                         child: const Text(
                           "Forget Password",

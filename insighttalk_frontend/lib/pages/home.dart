@@ -46,6 +46,8 @@ class _HomeViewState extends State<HomeView> {
         actions: [
           IconButton(
               onPressed: () {
+                // _itUserAuthSDK.signOut();
+                // context.goNamed(routeNames.login);
                 context.pushNamed(routeNames.chatRooms);
               },
               icon: const Icon(Icons.chat_outlined))
@@ -92,7 +94,6 @@ class _HomeViewState extends State<HomeView> {
             activeIcon: Icon(Icons.payment),
             label: 'Payment Gateway',
           ),
-          
           BottomNavigationBarItem(
             activeIcon: Icon(Icons.person),
             icon: Icon(Icons.person_outline),
