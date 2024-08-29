@@ -60,7 +60,7 @@ class _HomeViewState extends State<HomeView> {
                 context.goNamed(routeNames.chatRooms);
                 break;
               case 2:
-                context.goNamed(routeNames.notification);
+                context.goNamed(routeNames.availability);
                 break;
               case 3:
                 context.goNamed(routeNames.expertprofile);
@@ -82,9 +82,9 @@ class _HomeViewState extends State<HomeView> {
             label: 'Client Chat',
           ),
           BottomNavigationBarItem(
-            activeIcon: Icon(Icons.notifications_active_rounded),
-            icon: Icon(Icons.notifications_none_rounded),
-            label: 'Notifications',
+            activeIcon: Icon(Icons.event_available_rounded),
+            icon: Icon(Icons.event_available_rounded),
+            label: 'Availability',
           ),
           BottomNavigationBarItem(
             activeIcon: Icon(Icons.person),
