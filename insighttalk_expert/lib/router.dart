@@ -8,7 +8,7 @@ import 'package:insighttalk_expert/pages/clientChat/client_chat_room.dart';
 import 'package:insighttalk_expert/pages/expertProfile/expert_profile_view.dart';
 import 'package:insighttalk_expert/pages/expertProfile/edit_profile_view.dart';
 import 'package:insighttalk_expert/pages/home.dart';
-import 'package:insighttalk_expert/pages/notifications/notification_view.dart';
+import 'package:insighttalk_expert/pages/availability/availability_view.dart';
 
 RouterConfig routerConfig = RouterConfig();
 RouteNames routeNames = RouteNames();
@@ -75,10 +75,10 @@ class RouterConfig {
                 builder: (context, state) => const CleintChatRoomView(),
               ),
               GoRoute(
-                path: '/notification',
-                name: routeNames.notification,
+                path: '/availability',
+                name: routeNames.availability,
                 pageBuilder: (context, state) =>
-                    const NoTransitionPage(child: NotificationView()),
+                    const NoTransitionPage(child: AvailabilityView()),
               ),
               GoRoute(
                 path: '/expertprofile',
@@ -102,7 +102,7 @@ class RouterConfig {
 
 class RouteNames {
   final String appointment = 'appointment';
-  final String notification = 'notification';
+  final String availability = 'availability';
   final String expertprofile = 'expertprofile';
   final String login = 'login';
   final String signup = 'signup';
