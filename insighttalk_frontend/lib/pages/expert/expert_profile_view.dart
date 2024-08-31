@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
@@ -18,6 +19,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
   final DsdExpertApis _dsdExpertApis = DsdExpertApis();
   List<DsdCategory>? categories = [];
   DsdExpert? expertData;
+  bool _loading = true;
   List<String> reviews = [
     "Great session, learned a lot from the expert. Highly recommend!",
     "The expert was very knowledgeable and helpful. Will book again.",
@@ -55,13 +57,25 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
   @override
   void initState() {
     super.initState();
-    getExpertData();
-    getCategory();
+    _loadData();
+  }
+  Future<void> _loadData() async {
+    await getCategory();
+    await getExpertData();
+    setState(() {
+      _loading = false;
+    });
   }
 
+  var defaultImage =
+      "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg";
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return _loading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : Scaffold(
         appBar: AppBar(
           elevation: 0.0,
         ),
@@ -83,13 +97,33 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
                             children: [
                               Align(
                                 alignment: Alignment.center,
-                                child: CircleAvatar(
-                                  radius: 8.sh,
-                                  backgroundImage: expertData != null &&
-                                          expertData!.profileImage != null
-                                      ? NetworkImage(expertData!.profileImage!)
-                                      : const NetworkImage(
-                                          'https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg'),
+                                child: Container(
+                                  height: 120,
+                                  width: 120,
+                                  margin: const EdgeInsets.only(
+                                      top: 10, left: 16, bottom: 10),
+                                  decoration: BoxDecoration(
+                                    shape:
+                                        BoxShape.circle, // Set shape to circle
+                                    color: Colors.grey.shade200,
+                                  ),
+                                  clipBehavior: Clip.hardEdge,
+                                  child: CachedNetworkImage(
+                                    imageUrl: expertData?.profileImage ??
+                                        defaultImage,
+                                    placeholder: (context, url) => const Center(
+                                      child: SizedBox(
+                                        height: 30,
+                                        width: 30,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.0,
+                                        ),
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             ],
@@ -380,7 +414,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
                 ElevatedButton(
                   onPressed: () => context.pushNamed(
                     routeNames.bookappointmentview,
-                    pathParameters: {'expertId': widget.expertId},
+                    extra: expertData,
                   ),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(

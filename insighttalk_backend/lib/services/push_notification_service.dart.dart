@@ -44,7 +44,8 @@ class DsdPushNotificationService {
     return credentials.accessToken.data;
   }
 
-  void sendNotification(String token, String senderName, String text) async {
+  void sendMessageNotification(
+      String token, String senderName, String text) async {
     final String serverAccessTokenKey = await getAcessToken();
 
     String endpointFirebaseCloudMessaging =
@@ -65,6 +66,70 @@ class DsdPushNotificationService {
         'Authorization': 'Bearer $serverAccessTokenKey'
       },
       body: jsonEncode(message),
+    );
+
+    if (response.statusCode == 200) {
+      print("Notification sent successfully");
+    } else {
+      print("Failed to send notification");
+      print("Response status code: ${response.statusCode}");
+      print("Response body: ${response.body}");
+    }
+  }
+
+  void sendAppointmentRequest(String token) async {
+    final String serverAccessTokenKey = await getAcessToken();
+
+    String endpointFirebaseCloudMessaging =
+        'https://fcm.googleapis.com/v1/projects/insight-talk-af3e1/messages:send';
+
+    final Map<String, dynamic> requestNotify = {
+      "message": {
+        "notification": {"title": "New Appointment Request","body":""},
+        "data": {},
+        "token": token
+      }
+    };
+
+    final http.Response response = await http.post(
+      Uri.parse(endpointFirebaseCloudMessaging),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $serverAccessTokenKey'
+      },
+      body: jsonEncode(requestNotify),
+    );
+
+    if (response.statusCode == 200) {
+      print("Notification sent successfully");
+    } else {
+      print("Failed to send notification");
+      print("Response status code: ${response.statusCode}");
+      print("Response body: ${response.body}");
+    }
+  }
+
+  void sendAppointmentConfirmation(String token) async {
+    final String serverAccessTokenKey = await getAcessToken();
+
+    String endpointFirebaseCloudMessaging =
+        'https://fcm.googleapis.com/v1/projects/insight-talk-af3e1/messages:send';
+
+    final Map<String, dynamic> requestNotify = {
+      "message": {
+        "notification": {"title": "Your Appointment is Confirmed","body":""},
+        "data": {},
+        "token": token
+      }
+    };
+
+    final http.Response response = await http.post(
+      Uri.parse(endpointFirebaseCloudMessaging),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $serverAccessTokenKey'
+      },
+      body: jsonEncode(requestNotify),
     );
 
     if (response.statusCode == 200) {

@@ -46,18 +46,15 @@ class DsdChatApis {
       Query query = _firestore.collection('chatRooms');
 
       if (isUser) {
-        query = query.where('userId',
-            isEqualTo: id); // Agar user hai toh userId ke basis pe query
+        query = query.where('userId', isEqualTo: id);
       } else {
-        query = query.where('expertId',
-            isEqualTo: id); // Agar expert hai toh expertId ke basis pe query
+        query = query.where('expertId', isEqualTo: id);
       }
 
       // query = query.orderBy('updatedAt', descending: true).limit(pageSize);
 
       if (lastDocumentSnapshot != null) {
-        query = query.startAfterDocument(
-            lastDocumentSnapshot); // Last document ke baad se query shuru karo
+        query = query.startAfterDocument(lastDocumentSnapshot);
       }
       final querySnapshot = await query.get();
       var lastDoc = lastDocumentSnapshot;
@@ -107,11 +104,10 @@ class DsdChatApis {
       bool isUser =
           message.senderName == chatRoom.user!.userName! ? true : false;
       print(isUser);
-      String token =
-          isUser ? chatRoom.expert!.fcmToken! : chatRoom.user!.fcmToken!;
-    
+      String token = isUser ? chatRoom.expert!.fcmToken! : chatRoom.user!.fcmToken!;
+
       print("token = $token");
-      dsdPushNotificationService.sendNotification(
+      dsdPushNotificationService.sendMessageNotification(
           token, message.senderName!, message.text!);
     } catch (e) {
       print("Error sending notification: $e");

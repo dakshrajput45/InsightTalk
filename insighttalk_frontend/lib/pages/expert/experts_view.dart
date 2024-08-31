@@ -61,13 +61,12 @@ class _ExpertsViewState extends State<ExpertsView> {
   void initState() {
     super.initState();
     _loadData();
-   
   }
 
   Future<void> _loadData() async {
     await fetchTopCategory();
     await getCategory();
-     setState(() {
+    setState(() {
       _loading = false;
     });
   }
@@ -228,6 +227,11 @@ class _ExpertsViewState extends State<ExpertsView> {
             ),
           );
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }
 
 class CategoryCardSection extends StatefulWidget {
@@ -241,6 +245,7 @@ class CategoryCardSection extends StatefulWidget {
 class _CategoryCardSectionState extends State<CategoryCardSection> {
   final DsdProfileController _dsdProfileController = DsdProfileController();
   List<DsdExpert> expertData = [];
+  bool _isLoading = true; // Add this to handle loading state
 
   @override
   void initState() {
@@ -256,9 +261,13 @@ class _CategoryCardSectionState extends State<CategoryCardSection> {
     try {
       List<DsdExpert>? data = await _dsdProfileController.fetchExpertData(
           categoryId: categoryTitle);
-      setState(() {
-        expertData = data!;
-      });
+      if (mounted) {
+        // Check if the widget is still mounted
+        setState(() {
+          expertData = data!;
+          _isLoading = false; // Update loading state
+        });
+      }
     } catch (e) {
       rethrow;
     }
@@ -289,24 +298,32 @@ class _CategoryCardSectionState extends State<CategoryCardSection> {
             ],
           ),
           const SizedBox(height: 5.0),
-          Expanded(
-            child: ListView.builder(
-              itemCount: expertData.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                final expert = expertData[index];
-                return ExpertCard(
-                  expertId: expert.id!,
-                  profilePhoto: expert.profileImage!,
-                  name: expert.expertName!,
-                  description: expert.expertise!,
-                  rating: expert.averageRating,
-                );
-              },
+          if (_isLoading) // Show a loading indicator while data is loading
+            const Center(child: CircularProgressIndicator())
+          else
+            Expanded(
+              child: ListView.builder(
+                itemCount: expertData.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  final expert = expertData[index];
+                  return ExpertCard(
+                    expertId: expert.id!,
+                    profilePhoto: expert.profileImage!,
+                    name: expert.expertName!,
+                    description: expert.expertise!,
+                    rating: expert.averageRating,
+                  );
+                },
+              ),
             ),
-          ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

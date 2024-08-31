@@ -38,18 +38,22 @@ class _UserProfileViewState extends State<UserProfileView> {
     await getUserData();
     await loadProfileImage();
 
-    setState(() {
-      _loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   Future<void> getUserData() async {
     try {
       ProfileData data = await _dsdProfileController.getProfileData();
-      setState(() {
-        categories = data.categories;
-        userData = data.user;
-      });
+      if (mounted) {
+        setState(() {
+          categories = data.categories;
+          userData = data.user;
+        });
+      }
     } catch (e) {
       rethrow;
     }
@@ -63,6 +67,7 @@ class _UserProfileViewState extends State<UserProfileView> {
 
   var defaultImage =
       "https://imgv3.fotor.com/images/blog-cover-image/10-profile-picture-ideas-to-make-you-stand-out.jpg";
+
   @override
   Widget build(BuildContext context) {
     return _loading
@@ -80,29 +85,26 @@ class _UserProfileViewState extends State<UserProfileView> {
                       height: 120,
                       width: 120,
                       margin:
-                          const EdgeInsets.only(top: 40, left:16, bottom: 10),
+                          const EdgeInsets.only(top: 40, left: 16, bottom: 10),
                       decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(20), 
-                        color: Colors.grey
-                            .shade200, 
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.grey.shade200,
                       ),
-                      clipBehavior:
-                          Clip.hardEdge, 
+                      clipBehavior: Clip.hardEdge,
                       child: CachedNetworkImage(
                         imageUrl: userData?.profileImage ?? defaultImage,
                         placeholder: (context, url) => const Center(
                           child: SizedBox(
-                            height: 30, 
-                            width: 30, 
+                            height: 30,
+                            width: 30,
                             child: CircularProgressIndicator(
-                              strokeWidth: 2.0, 
+                              strokeWidth: 2.0,
                             ),
                           ),
                         ),
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
-                        fit: BoxFit.cover, 
+                        fit: BoxFit.cover,
                       ),
                     ),
                     const Spacer(),
@@ -304,5 +306,10 @@ class _UserProfileViewState extends State<UserProfileView> {
               ],
             ),
           );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

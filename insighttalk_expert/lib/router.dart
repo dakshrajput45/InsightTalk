@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/modal/modal_chat_rooms.dart';
 import 'package:insighttalk_expert/pages/appointment/appointment_view.dart';
 import 'package:insighttalk_expert/pages/auth/login_view.dart';
@@ -12,7 +13,7 @@ import 'package:insighttalk_expert/pages/notifications/notification_view.dart';
 
 RouterConfig routerConfig = RouterConfig();
 RouteNames routeNames = RouteNames();
-
+final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
 int isLoggedIn = 1;
 void updateLoginStatus(int loggedIn) {
   isLoggedIn = loggedIn;
@@ -21,6 +22,7 @@ void updateLoginStatus(int loggedIn) {
 class RouterConfig {
   GoRouter getRouter() => _router;
   final GoRouter _router = GoRouter(
+    initialLocation: _itUserAuthSDK.getUser() == null ? "/login" : "/",
     routes: [
       GoRoute(
         path: '/login',
@@ -67,7 +69,7 @@ class RouterConfig {
                 path: '/',
                 name: routeNames.appointment,
                 pageBuilder: (context, state) =>
-                    const NoTransitionPage(child: AppointmentView()),
+                    const NoTransitionPage(child: AppointmentsView()),
               ),
               GoRoute(
                 path: '/chatRooms',
@@ -91,12 +93,6 @@ class RouterConfig {
         ],
       )
     ],
-    redirect: (context, state) {
-      if (isLoggedIn == 1) {
-        return ("/login");
-      }
-      return null;
-    },
   );
 }
 
