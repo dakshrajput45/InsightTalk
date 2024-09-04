@@ -13,7 +13,7 @@ class DsdExpert {
   String? profileImage; // Changed to store a single image URL
   int? sumOfRatings; // Sum of all ratings
   int? numberOfRatings; // Number of ratings
-  Map<String, List<TimeSlot>>? availability;
+  Map<DateTime, List<Map<String, DateTime>>>? availability;
 
   DsdExpert({
     this.expertName,
@@ -42,7 +42,9 @@ class DsdExpert {
         email: json['email'],
         expertise: json['expertise'],
         fcmToken: json['fcmToken'],
-        dateOfBirth: (json['dateOfBirth'] != null) ? (json['dateOfBirth'] as Timestamp).toDate() : DateTime.now(),
+        dateOfBirth: (json['dateOfBirth'] != null)
+            ? (json['dateOfBirth'] as Timestamp).toDate()
+            : DateTime.now(),
         about: json['about'],
         category: List<String>.from(json['category'] ?? []),
         address: json['address'] != null
@@ -53,11 +55,18 @@ class DsdExpert {
         numberOfRatings:
             json['numberOfRatings'] ?? 0, // Parse number of ratings
         availability: (json['availability'] as Map<String, dynamic>?)?.map(
-            (day, slots) => MapEntry(
-                day,
-                (slots as List)
-                    .map((slot) => TimeSlot.fromMap(slot))
-                    .toList())),
+          (date, slots) => MapEntry(
+            (date as Timestamp).toDate(),
+            (slots as List).map((slot) {
+              return (slot as Map<String, dynamic>).map(
+                (timeType, time) => MapEntry(
+                  timeType,
+                  (time as Timestamp).toDate(),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
       );
     } catch (e) {
       print(e);
@@ -84,8 +93,16 @@ class DsdExpert {
       if (numberOfRatings != null)
         'numberOfRatings':
             numberOfRatings, // Include number of ratings in JSON output
-      'availability': availability?.map((day, slots) =>
-          MapEntry(day, slots.map((slot) => slot.toMap()).toList())),
+      'availability': availability?.map((date, slots) {
+        return MapEntry(
+          Timestamp.fromDate(date),
+          slots.map((slot) {
+            return slot.map((timeType, time) {
+              return MapEntry(timeType, Timestamp.fromDate(time));
+            });
+          }).toList(),
+        );
+      }),
     };
   }
 
@@ -122,26 +139,4 @@ class DsdExpertAddress {
       if (city != null) 'city': city,
     };
   }
-}
-
-class TimeSlot {
-  String startTime;
-  String endTime;
-
-  TimeSlot({required this.startTime, required this.endTime});
-
-  Map<String, dynamic> toMap() {
-    return {
-      'startTime': startTime,
-      'endTime': endTime,
-    };
-  }
-
-  factory TimeSlot.fromMap(Map<String, dynamic> map) {
-    return TimeSlot(
-      startTime: map['startTime'],
-      endTime: map['endTime'],
-    );
-  }
-  String get formattedTime => "$startTime - $endTime";
 }

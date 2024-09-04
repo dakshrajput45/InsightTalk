@@ -195,80 +195,8 @@ class _EditProfileViewState extends State<EditProfileView> {
 
   List<String> _availableCategories = [];
 
-  final Map<String, bool> days = {
-    'Monday': false,
-    'Tuesday': false,
-    'Wednesday': false,
-    'Thursday': false,
-    'Friday': false,
-    'Saturday': false,
-    'Sunday': false,
-  };
-
-  final Map<String, List<Map<String, DateTime>>> selectedTimes = {
-    'Monday': [],
-    'Tuesday': [],
-    'Wednesday': [],
-    'Thursday': [],
-    'Friday': [],
-    'Saturday': [],
-    'Sunday': [],
-  };
-
-  DateTime _startTime = DateTime.now();
-  DateTime _endTime = DateTime.now();
-
   bool validateTimes(DateTime startTime, DateTime endTime) {
     return endTime.isAfter(startTime.add(const Duration(minutes: 30)));
-  }
-
-  Future<void> _showTimePickerSpinner(
-      BuildContext context, bool isStartTime) async {
-    DateTime tempTime = DateTime.now();
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(isStartTime ? 'Select Start Time' : 'Select End Time'),
-          content: TimePickerSpinner(
-            is24HourMode: false,
-            normalTextStyle:
-                const TextStyle(fontSize: 22, color: Colors.black54),
-            highlightedTextStyle:
-                const TextStyle(fontSize: 22, color: Colors.black),
-            spacing: 50,
-            itemHeight: 60,
-            isForce2Digits: true,
-            onTimeChange: (time) {
-              setState(() {
-                tempTime = time;
-              });
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  if (isStartTime) {
-                    _startTime = tempTime;
-                  } else {
-                    _endTime = tempTime;
-                  }
-                });
-                Navigator.pop(context);
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   Future<void> selectedDOB() async {
