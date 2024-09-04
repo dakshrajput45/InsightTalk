@@ -179,7 +179,7 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                       decoration: BoxDecoration(
                         color: currentEditingDate == date
                             ? Colors.blue
-                            : Color.fromARGB(255, 56, 191, 245),
+                            : const Color.fromARGB(255, 56, 191, 245),
                         shape: BoxShape.circle,
                       ),
                       child: Text(
@@ -289,7 +289,7 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 0),
                             decoration: BoxDecoration(
-                              color: Color.fromRGBO(173, 239, 255, 1),
+                              color: const Color.fromRGBO(173, 239, 255, 1),
                               border:
                                   Border.all(color: Colors.blue, width: 2.0),
                               borderRadius: BorderRadius.circular(20),
@@ -316,7 +316,7 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 0),
                             decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 255, 191, 186),
+                              color: const Color.fromARGB(255, 255, 191, 186),
                               border: Border.all(color: Colors.red, width: 2.0),
                               borderRadius: BorderRadius.circular(20),
                             ),
