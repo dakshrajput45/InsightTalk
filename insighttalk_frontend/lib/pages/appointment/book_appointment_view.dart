@@ -64,193 +64,191 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            appBar: AppBar(
-              title: const Text(
-                'Appointment',
-              ),
-              centerTitle: true,
-            ),
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Colors.black, width: 1.0)),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(0),
-                          child: CachedNetworkImage(
-                            imageUrl: widget.expertData.profileImage!,
-                            placeholder: (context, url) => const Center(
-                              child: SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.0,
-                                ),
-                              ),
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                            fit: BoxFit.cover,
-                            width: 140,
-                            height: 140,
+      appBar: AppBar(
+        title: const Text(
+          'Appointment',
+        ),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 1.0)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(0),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.expertData.profileImage!,
+                      placeholder: (context, url) => const Center(
+                        child: SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.0,
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        width: 10,
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                      fit: BoxFit.cover,
+                      width: 140,
+                      height: 140,
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Flexible(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.expertData.expertName ?? 'Unknown Expert',
+                        style: const TextStyle(
+                            fontSize: 28, fontWeight: FontWeight.w600),
                       ),
-                      Flexible(
-                        flex: 3,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.expertData.expertName ?? 'Unknown Expert',
-                              style: const TextStyle(
-                                  fontSize: 28, fontWeight: FontWeight.w600),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        widget.expertData.expertise ?? 'Unknown',
+                        style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      const Row(
+                        children: [
+                          Icon(
+                            Icons.star,
+                            color: Color.fromARGB(255, 44, 184, 240),
+                            size: 20.0,
+                          ),
+                          SizedBox(
+                            width: 4.0,
+                          ),
+                          Text(
+                            '0.0',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 44, 184, 240),
                             ),
-                            const SizedBox(
-                              height: 4,
-                            ),
-                            Text(
-                              widget.expertData.expertise ?? 'Unknown',
-                              style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.grey),
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            const Row(
-                              children: [
-                                Icon(
-                                  Icons.star,
-                                  color: Color.fromARGB(255, 44, 184, 240),
-                                  size: 20.0,
-                                ),
-                                SizedBox(
-                                  width: 4.0,
-                                ),
-                                Text(
-                                  '0.0',
-                                  style: TextStyle(
-                                    color: Color.fromARGB(255, 44, 184, 240),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 20,
+                )
+              ],
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const Text("Select Category",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+            const SizedBox(
+              height: 10,
+            ),
+            CategorySelector(
+              categories: widget.expertData.category!,
+              onCategorySelected: (category) {
+                setState(() {
+                  selectedCategory = category; // Update selected category
+                });
+              },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const Text("Select Date & Time",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+            const SizedBox(
+              height: 20,
+            ),
+            DateTimeSelector(),
+            const SizedBox(
+              height: 20,
+            ),
+            const Text("Specify Reason",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+            const SizedBox(
+              height: 10,
+            ),
+            TextField(
+              decoration:
+                  const InputDecoration(icon: Icon(Icons.note_alt_outlined)),
+              controller: reasonController,
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        notchMargin: 4.0,
+        elevation: 10.0,
+        color: Colors.white,
+        shape: const CircularNotchedRectangle(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Total",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey),
                   ),
-                  const Text("Select Category",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  CategorySelector(
-                      categories: widget.expertData.category!,
-                      onCategorySelected: (category) {
-                      setState(() {
-                        selectedCategory = category; // Update selected category
-                      });
-                    },),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Text("Select Date & Time",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  DateTimeSelector(),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Text("Specify Reason",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    decoration: const InputDecoration(
-                        icon: Icon(Icons.note_alt_outlined)),
-                    controller: reasonController,
-                  ),
+                  Text("₹ 60.00", style: TextStyle(fontSize: 20)),
                 ],
               ),
-            ),
-            bottomNavigationBar: BottomAppBar(
-              notchMargin: 4.0,
-              elevation: 10.0,
-              color: Colors.white,
-              shape: const CircularNotchedRectangle(),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Total",
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.grey),
-                        ),
-                        Text("₹ 60.00", style: TextStyle(fontSize: 20)),
-                      ],
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        String userId = _itUserAuthSDK.getUser()!.uid;
-                        await _dsdAppointmentController.createAppointment(
-                            userId,
-                            widget.expertData.id!,
-                            Timestamp.now(),
-                            "Kch to hai reason",
-                            [selectedCategory],
-                            60,
-                            "20 min");
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24.0, vertical: 10.0),
-                        textStyle: const TextStyle(fontSize: 22),
-                      ),
-                      child: const Text("Booking"),
-                    ),
-                  ],
+              ElevatedButton(
+                onPressed: () async {
+                  String userId = _itUserAuthSDK.getUser()!.uid;
+                  await _dsdAppointmentController.createAppointment(
+                      userId,
+                      widget.expertData.id!,
+                      Timestamp.now(),
+                      reasonController.text,
+                      [selectedCategory],
+                      60,
+                      "20 min");
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 10.0),
+                  textStyle: const TextStyle(fontSize: 22),
                 ),
+                child: const Text("Booking"),
               ),
-            ));
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
 class CategorySelector extends StatefulWidget {
   final List<String> categories;
-  final ValueChanged<String> onCategorySelected; // Callback for category selection
+  final ValueChanged<String>
+      onCategorySelected; // Callback for category selection
 
-  CategorySelector({
+  const CategorySelector({
     super.key,
     required this.categories,
     required this.onCategorySelected, // Accept the callback in the constructor
@@ -271,50 +269,72 @@ class _CategorySelectorState extends State<CategorySelector> {
       child: Wrap(
         spacing: 8.0,
         runSpacing: 8.0,
-        children: List.generate(widget.categories.length, (index) {
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                if (selectedIndex == index) {
-                  selectedIndex = -1;
-                  selectedCategory = '';
-                } else {
-                  selectedIndex = index;
-                  selectedCategory = widget.categories[index];
-                }
-                widget.onCategorySelected(selectedCategory); // Notify parent of selection
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: selectedIndex == index
-                    ? const Color.fromRGBO(173, 239, 255, 1)
-                    : Colors.white,
-                border: selectedIndex == index
-                    ? Border.all(color: Colors.blue, width: 2.0)
-                    : Border.all(color: Colors.grey, width: 2.0),
-                borderRadius: BorderRadius.circular(20),
+        children: List.generate(
+          widget.categories.length,
+          (index) {
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (selectedIndex == index) {
+                    selectedIndex = -1;
+                    selectedCategory = '';
+                  } else {
+                    selectedIndex = index;
+                    selectedCategory = widget.categories[index];
+                  }
+                  widget.onCategorySelected(
+                      selectedCategory); // Notify parent of selection
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: selectedIndex == index
+                      ? const Color.fromRGBO(
+                          173,
+                          239,
+                          255,
+                          1,
+                        )
+                      : Colors.white,
+                  border: selectedIndex == index
+                      ? Border.all(
+                          color: Colors.blue,
+                          width: 2.0,
+                        )
+                      : Border.all(
+                          color: Colors.grey,
+                          width: 2.0,
+                        ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  widget.categories[index],
+                  style: selectedIndex == index
+                      ? const TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w500,
+                        )
+                      : const TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w500,
+                        ), // Text color
+                ),
               ),
-              child: Text(
-                widget.categories[index],
-                style: selectedIndex == index
-                    ? const TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.w500)
-                    : const TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500), // Text color
-              ),
-            ),
-          );
-        }),
+            );
+          },
+        ),
       ),
     );
   }
 }
 
-
 class DateTimeSelector extends StatefulWidget {
+  const DateTimeSelector({super.key});
+
   @override
   _DateTimeSelectorState createState() => _DateTimeSelectorState();
 }

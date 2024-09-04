@@ -140,4 +140,36 @@ class DsdPushNotificationService {
       print("Response body: ${response.body}");
     }
   }
+
+  void sendAppointmentLinkAdded(String token) async {
+    final String serverAccessTokenKey = await getAcessToken();
+
+    String endpointFirebaseCloudMessaging =
+        'https://fcm.googleapis.com/v1/projects/insight-talk-af3e1/messages:send';
+
+    final Map<String, dynamic> requestNotify = {
+      "message": {
+        "notification": {"title": "Link is added you can join the meeting on time of placement","body":""},
+        "data": {},
+        "token": token
+      }
+    };
+
+    final http.Response response = await http.post(
+      Uri.parse(endpointFirebaseCloudMessaging),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $serverAccessTokenKey'
+      },
+      body: jsonEncode(requestNotify),
+    );
+
+    if (response.statusCode == 200) {
+      print("Notification sent successfully");
+    } else {
+      print("Failed to send notification");
+      print("Response status code: ${response.statusCode}");
+      print("Response body: ${response.body}");
+    }
+  }
 }

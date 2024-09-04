@@ -122,15 +122,17 @@ class DsdAppointmentApis {
     }
   }
 
-  Future<void> updateConfirmation(String appointmentId, String link) async {
+  Future<void> updateConfirmation(String appointmentId, String link, String userId) async {
     try {
-      DocumentReference docRef = _db.collection(_collectionPath).doc(appointmentId);
+      DocumentReference docRef =
+          _db.collection(_collectionPath).doc(appointmentId);
 
       await docRef.update({
         'confirmation': true,
-        'link': link,
+        'linkAdded': link,
       });
-
+      var token = await _token.getUserFcmToken(userId);
+      _dsdPushNotificationService.sendAppointmentLinkAdded(token!);
       print('Document updated successfully.');
     } catch (e) {
       print('Error updating document: $e');

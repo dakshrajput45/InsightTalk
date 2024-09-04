@@ -38,6 +38,78 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
     );
   }
 
+  void _showAppointmentDetails(
+      BuildContext context, DsdAppointment appointment) {
+    final formKey = GlobalKey<FormState>();
+    final TextEditingController linkController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  'Appointment Details',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Reason: ${appointment.reason ?? 'No reason provided'}',
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Link:',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 6),
+                TextFormField(
+                  controller: linkController,
+                  decoration: const InputDecoration(
+                    hintText: 'Please enter a Google Meet link',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a link';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    textStyle: const TextStyle(fontSize: 14),
+                    minimumSize: const Size(100, 40),
+                    foregroundColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    if (formKey.currentState?.validate() ?? false) {
+                      String link = linkController.text;
+                      await _dsdAppointmentController.updateConfirmation(appointment.id!, link,appointment.userId!);
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return _isLoading
@@ -57,12 +129,7 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                             vertical: 8, horizontal: 12),
                         child: InkWell(
                           onTap: () {
-                            // context.pushNamed(
-                            //   routeNames.addNotes,
-                            //   pathParameters: {
-                            //     "id": appointment.id!,
-                            //   },
-                            // );
+                            _showAppointmentDetails(context, appointment);
                           },
                           child: Column(
                             children: <Widget>[
@@ -238,7 +305,10 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                               ),
                                             ),
                                             onPressed: () {
-                                              // markComplete(appointment);
+                                              if (!appointment.confirmation!) {
+                                                _showAppointmentDetails(
+                                                    context, appointment);
+                                              }
                                             },
                                             label: !appointment.confirmation!
                                                 ? const Text(
@@ -246,17 +316,11 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                                     style:
                                                         TextStyle(fontSize: 18),
                                                   )
-                                                : appointment.linkAdded == ""
-                                                    ? const Text(
-                                                        'Add Link',
-                                                        style: TextStyle(
-                                                            fontSize: 18),
-                                                      )
-                                                    : const Text(
-                                                        'Click to join Meeting',
-                                                        style: TextStyle(
-                                                            fontSize: 18),
-                                                      ),
+                                                : const Text(
+                                                    'Click to join Meeting',
+                                                    style:
+                                                        TextStyle(fontSize: 18),
+                                                  ),
                                             icon: const Icon(
                                               Icons.done_all,
                                               size: 20,
@@ -280,12 +344,10 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.error_outline,
                           size: 100,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHighest,
+                          color: Colors.blue,
                         ),
                         Text(getNoAppointmentTitle(widget.dateTimeFilter)),
                       ],
