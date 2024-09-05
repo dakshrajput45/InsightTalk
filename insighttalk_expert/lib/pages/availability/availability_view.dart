@@ -1,6 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
+import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
+import 'package:insighttalk_backend/modal/modal_expert.dart';
+import 'package:insighttalk_expert/pages/expertProfile/edit_expert_profile_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
+
+final DsdExpertProfileController _dsdProfileController =
+    DsdExpertProfileController();
 
 class AvailabilityView extends StatefulWidget {
   const AvailabilityView({super.key});
@@ -12,13 +20,13 @@ class AvailabilityView extends StatefulWidget {
 class _AvailabilityViewState extends State<AvailabilityView> {
   List<DateTime> selectedDates = [];
   DateTime today = DateTime.now();
-
   late DateTime firstDay;
   late DateTime lastDay;
   DateTime focusedDay = DateTime.now();
   DateTime? currentEditingDate;
+  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
 
-  final Map<DateTime, List<Map<String, DateTime>>> dateWiseTimeslots = {};
+  Map<DateTime, List<Map<String, DateTime>>> dateWiseTimeslots = {};
 
   @override
   void initState() {
@@ -344,8 +352,35 @@ class _AvailabilityViewState extends State<AvailabilityView> {
               padding: const EdgeInsets.all(16.0),
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  // Save logic
+                onPressed: () async {
+                  try {
+                    Map<DateTime, List<Map<String, DateTime>>>
+                        correctedDateWiseTimeslots = {};
+
+                    dateWiseTimeslots.forEach((date, timeslots) {
+                      correctedDateWiseTimeslots[date] =
+                          timeslots.map((timeslot) {
+                        return {
+                          "start": (timeslot["start"] is Timestamp)
+                              ? (timeslot["start"] as Timestamp)
+                                  .toDate() // Convert to DateTime
+                              : timeslot["start"]!,
+                          "end": (timeslot["end"] is Timestamp)
+                              ? (timeslot["end"] as Timestamp)
+                                  .toDate() // Convert to DateTime
+                              : timeslot["end"]!,
+                        };
+                      }).toList();
+                    });
+                    await _dsdProfileController.updateExpert(
+                      expert:
+                          DsdExpert(availability: correctedDateWiseTimeslots),
+                      expertId: _itUserAuthSDK.getUser()!.uid,
+                    );
+                    print("Ho gya save availability");
+                  } catch (e) {
+                    rethrow;
+                  }
                 },
                 child: const Text('Save'),
               ),
