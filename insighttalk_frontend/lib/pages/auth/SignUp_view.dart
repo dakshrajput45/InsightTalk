@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/helper/toast.dart';
 import 'package:insighttalk_frontend/router.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 
@@ -17,6 +19,7 @@ class _SignUpViewState extends State<SignUpView> {
   TextEditingController confirmPasswordController = TextEditingController();
   final bool _isNotValidate = false;
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
+  final CollectionReference usersCollection = FirebaseFirestore.instance.collection('userDetails');
 
   bool _isHidden = true;
   @override
@@ -42,10 +45,7 @@ class _SignUpViewState extends State<SignUpView> {
             padding: const EdgeInsets.only(left: 35, top: 100),
             child: const Text(
               'SignUp To Insight Talk',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 33,
-                  fontWeight: FontWeight.w700),
+              style: TextStyle(color: Colors.black, fontSize: 33, fontWeight: FontWeight.w700),
             ),
           ),
           SingleChildScrollView(
@@ -85,9 +85,7 @@ class _SignUpViewState extends State<SignUpView> {
                       errorText: _isNotValidate ? "Enter Proper Info" : null,
                       hintText: 'Password',
                       suffixIcon: IconButton(
-                        icon: Icon(_isHidden
-                            ? Icons.visibility_off
-                            : Icons.visibility),
+                        icon: Icon(_isHidden ? Icons.visibility_off : Icons.visibility),
                         onPressed: () {
                           setState(() {
                             _isHidden = !_isHidden;
@@ -114,15 +112,20 @@ class _SignUpViewState extends State<SignUpView> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (passwordController.text ==
-                            confirmPasswordController.text) {
-                          User? user =
-                              await _itUserAuthSDK.emailandPasswordSignUp(
-                                  email: emailController.text.trim(),
-                                  password: passwordController.text);
+                        if (passwordController.text == confirmPasswordController.text) {
+                          User? user = await _itUserAuthSDK.emailandPasswordSignUp(
+                              email: emailController.text.trim(),
+                              password: passwordController.text);
                           if (user != null && mounted) {
-                            context.goNamed(routeNames.editprofileview);
-                            // context.goNamed(routeNames.experts);
+                            final DocumentSnapshot userDoc =
+                                await usersCollection.doc(user.uid).get();
+                            if (!userDoc.exists) {
+                              context.goNamed(routeNames.editprofileview);
+                            } else {
+                              DsdToastMessages.error(context,
+                                  text: "User with this email already exist (Try Sign In)");
+                              // context.goNamed(routeNames.signup);
+                            }
                           } else {
                             print("Sign Up Failed");
                           }
@@ -169,8 +172,13 @@ class _SignUpViewState extends State<SignUpView> {
                         // Google Sign Up Function Added here (Same function used for Log In)
                         User? user = await _itUserAuthSDK.googleSignUp();
                         if (user != null && mounted) {
-                          context.goNamed(routeNames.editprofileview);
-                          // const ProfileScreen();
+                          final DocumentSnapshot userDoc =
+                              await usersCollection.doc(user.uid).get();
+                          if (!userDoc.exists) {
+                            context.goNamed(routeNames.editprofileview);
+                          } else {
+                            context.goNamed(routeNames.experts);
+                          }
                         } else {
                           print("Google Login Failed");
                         }
@@ -187,13 +195,10 @@ class _SignUpViewState extends State<SignUpView> {
                       ),
                       style: ButtonStyle(
                         padding: WidgetStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16.0),
+                          const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                         ),
-                        backgroundColor:
-                            WidgetStateProperty.all<Color>(Colors.white),
-                        foregroundColor:
-                            WidgetStateProperty.all<Color>(Colors.black),
+                        backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                        foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
                         shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
