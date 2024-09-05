@@ -7,55 +7,75 @@ class DsdAppointment {
   String? chatRoomId;
   Timestamp? createdAt;
   Timestamp? appointmentTime;
-  String? duaration;
+  String? duration;
   int? fee;
   String? reason;
-  String? category;
+  List<String>? category;
+  String? linkAdded;
+  bool? confirmation;
+  bool? canceled;
+  String? name;
+  String? profileImage;
 
-  DsdAppointment({
-    this.id,
-    required this.expertId,
-    required this.userId,
-    this.chatRoomId,
-    required this.createdAt,
-    required this.appointmentTime,
-    required this.duaration,
-    required this.fee,
-    required this.reason,
-    required this.category,
-  });
+  DsdAppointment(
+      {this.id,
+      this.expertId,
+      this.userId,
+      this.chatRoomId,
+      this.createdAt,
+      this.appointmentTime,
+      this.duration,
+      this.fee,
+      this.reason,
+      this.category,
+      this.linkAdded,
+      this.confirmation,
+      this.canceled,
+      this.name,
+      this.profileImage});
 
-  factory DsdAppointment.fromJson({required Map<String, dynamic> json,required String id}) {
-    try {
-      return DsdAppointment(
-        id: id,
-        expertId: json['expert'] as String,
-        userId: json['user'] as String,
-        chatRoomId: json['chatRoomId'] as String,
-        createdAt: json['createdAt'] as Timestamp?,
-        appointmentTime: json['appointmentTime'] as Timestamp?,
-        duaration: json['duaration'] as String?,
-        fee: json['fee'] as int?,
-        reason: json['reason'] as String?,
-        category: json['category'] as String?,
-      );
-    } catch (e) {
-      rethrow;
-    }
+  // fromJson method
+  factory DsdAppointment.fromJson(
+      {required Map<String, dynamic> json, required String id}) {
+    return DsdAppointment(
+      id: id,
+      expertId: json['expertId'] as String?,
+      userId: json['userId'] as String?,
+      chatRoomId: json['chatRoomId'] as String?,
+      createdAt:
+          json['createdAt'] != null ? json['createdAt'] as Timestamp : null,
+      appointmentTime: json['appointmentTime'] != null
+          ? json['appointmentTime'] as Timestamp
+          : null,
+      duration: json['duration'] as String?,
+      fee: json['fee'] as int?,
+      reason: json['reason'] as String?,
+      category:
+          json['category'] != null ? List<String>.from(json['category']) : null,
+      linkAdded: json['linkAdded'] as String?,
+      confirmation: json['confirmation'] as bool?,
+      canceled: json['canceled'] as bool?,
+      name: json['name'] as String?,
+      profileImage: json['profileImage'] as String?,
+    );
   }
 
-  Map<String, dynamic> toJson({bool withId = false}) {
+  // toJson method for converting the model to a Map<String, dynamic>
+  Map<String, dynamic> toJson({withId = false}) {
     return {
-      if (withId && id != null) 'id': id,
-      if (expertId != null) 'expertId': expertId,
-      if (userId != null) 'userId': userId,
-      if (chatRoomId != null) 'chatRoom': chatRoomId,
-      if (createdAt != null) 'createdAt': createdAt,
-      if (appointmentTime != null) 'appointmentTime': appointmentTime,
-      if (duaration != null) 'duaration': duaration,
-      if (fee != null) 'fee': fee,
-      if (reason != null) 'reason': reason,
-      if (category != null) 'category': category,
+      'id': id,
+      'expertId': expertId,
+      'userId': userId,
+      'chatRoomId': chatRoomId,
+      'createdAt': createdAt,
+      'appointmentTime': appointmentTime,
+      'duration': duration,
+      'fee': fee,
+      'reason': reason,
+      'category': category,
+      'linkAdded': linkAdded,
+      'confirmation': confirmation,
+      'canceled': canceled
     };
   }
 }

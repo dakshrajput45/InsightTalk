@@ -1,5 +1,7 @@
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/modal/modal_chat_rooms.dart';
+import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_frontend/pages/appointment/appointment_view.dart';
 import 'package:insighttalk_frontend/pages/auth/SignUp_view.dart';
 import 'package:insighttalk_frontend/pages/auth/login_view.dart';
@@ -20,13 +22,14 @@ void updateLoginStatus(int loggedIn) {
   isLoggedIn = loggedIn;
 }
 
+final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
 RouterConfig routerConfig = RouterConfig();
 RouteNames routeNames = RouteNames();
 
 class RouterConfig {
   GoRouter getRouter() => _router;
   final GoRouter _router = GoRouter(
-    // Define routes
+    initialLocation: _itUserAuthSDK.getUser() == null ? "/login" : "/",
     routes: [
       GoRoute(
         path: '/editprofileview',
@@ -44,12 +47,12 @@ class RouterConfig {
         },
       ),
       GoRoute(
-        path: '/bookappointmentview/:expertId',
+        path: '/bookappointmentview',
         name: routeNames.bookappointmentview,
         builder: (context, state) {
-          final expertId = state.pathParameters['expertId']!;
+          final expertData = state.extra as DsdExpert;
           return BookAppointmentView(
-            expertId: expertId,
+            expertData: expertData,
           );
         },
       ),
@@ -117,7 +120,7 @@ class RouterConfig {
                 path: '/appointment',
                 name: routeNames.appointment,
                 pageBuilder: (context, state) =>
-                    const NoTransitionPage(child: AppointmentView()),
+                    const NoTransitionPage(child: AppointmentsView()),
               ),
               GoRoute(
                 path: '/paymentgateway',
@@ -125,7 +128,6 @@ class RouterConfig {
                 pageBuilder: (context, state) =>
                     const NoTransitionPage(child: PaymentGatewayView()),
               ),
-              
               GoRoute(
                 path: '/userprofile',
                 name: routeNames.userprofile,
@@ -137,13 +139,6 @@ class RouterConfig {
         ],
       )
     ],
-    // Redirect function if route not found or for other global redirection needs
-    redirect: (context, state) {
-      if (isLoggedIn == 1) {
-        return ("/login");
-      }
-      return null;
-    },
   );
 }
 
@@ -151,7 +146,6 @@ class RouteNames {
   final String experts = 'experts';
   final String appointment = 'appointment';
   final String paymentgateway = 'paymentgateway';
-  
   final String userprofile = 'userprofile';
   final String login = 'login';
   final String signup = 'signup';

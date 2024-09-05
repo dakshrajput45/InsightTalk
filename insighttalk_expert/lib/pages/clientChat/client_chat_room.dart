@@ -29,17 +29,18 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
   }
 
   Future<void> openChatRoom(BuildContext context,
-    {required String chatRoomId, required String userName, required DsdChatRooms chatRoom}) async {
+      {required String chatRoomId,
+      required String userName,
+      required DsdChatRooms chatRoom}) async {
+    await context.pushNamed(routeNames.chat, pathParameters: {
+      "id": chatRoomId
+    }, extra: {
+      "userName": userName,
+      "chatRoom": chatRoom, // Pass the object directly
+    });
 
-  await context.pushNamed(routeNames.chat,
-      pathParameters: {"id": chatRoomId},
-      extra: {
-        "userName": userName,
-        "chatRoom": chatRoom, // Pass the object directly
-      });
-
-  chatController.logTimeToSharedPreference(chatRoomId);
-}
+    chatController.logTimeToSharedPreference(chatRoomId);
+  }
 
   Future<void> _loadData() async {
     setState(() {
@@ -71,93 +72,93 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
               child: CircularProgressIndicator(),
             )
           : chatController.myChatRooms.isNotEmpty
-              ? ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: chatController.myChatRooms.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    var chatRoom = chatController.myChatRooms[index];
-                    var isNewMessage = _isNewMessage(chatRoom);
-                    return Column(
-                      children: [
-                        InkWell(
-                          onTap: () async {
-                            await openChatRoom(context,
-                                chatRoomId: chatRoom.id!,
-                                chatRoom: chatRoom,
-                                userName: chatRoom.expert!.expertName!);
-                            await _loadData();
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 16),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 12),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  foregroundImage: CachedNetworkImageProvider(
-                                    chatRoom.user!.profileImage!,
+              ? Container(
+                margin: const EdgeInsets.symmetric(vertical: 20),
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: chatController.myChatRooms.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      var chatRoom = chatController.myChatRooms[index];
+                      var isNewMessage = _isNewMessage(chatRoom);
+                      return Column(
+                        children: [
+                          InkWell(
+                            onTap: () async {
+                              await openChatRoom(context,
+                                  chatRoomId: chatRoom.id!,
+                                  chatRoom: chatRoom,
+                                  userName: chatRoom.expert!.expertName!);
+                              await _loadData();
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 5),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 2, horizontal: 12),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    foregroundImage: CachedNetworkImageProvider(
+                                      chatRoom.user!.profileImage!,
+                                    ),
+                                    child: const Icon(Icons.person),
                                   ),
-                                  child: const Icon(Icons.person),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  flex: 2,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                            chatRoom.user!.userName!
+                                                .toUpperCase(),
+                                            style: const TextStyle(
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            )),
+                                        const SizedBox(height: 4),
+                                        if (chatRoom.lastMessage != null)
+                                          Text(
+                                            chatRoom.lastMessage!.text!
+                                                .toUpperCase(),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                  Column(
                                     children: [
-                                      Text(
-                                          chatRoom.user!.userName!
-                                              .toUpperCase(),
-                                          style: const TextStyle(
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          )),
-                                      const SizedBox(height: 4),
                                       if (chatRoom.lastMessage != null)
                                         Text(
-                                          chatRoom.lastMessage!.text!
-                                              .toUpperCase(),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
+                                          chatRoom.lastMessage!.time!
+                                              .toDate()
+                                              .dateFormatter("dd MMM"),
+                                        ),
+                                      if (isNewMessage)
+                                        Icon(
+                                          Icons.circle_notifications_rounded,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          size: 20,
                                         ),
                                     ],
                                   ),
-                                ),
-                                Column(
-                                  children: [
-                                    if (chatRoom.lastMessage != null)
-                                      Text(
-                                        chatRoom.lastMessage!.time!
-                                            .toDate()
-                                            .dateFormatter("dd MMM"),
-                                      ),
-                                    if (isNewMessage)
-                                      Icon(
-                                        Icons.circle_notifications_rounded,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        size: 20,
-                                      ),
-                                  ],
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        Divider(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHigh,
-                        ),
-                      ],
-                    );
-                  },
-                )
+                          const Divider(
+                            color: Colors.grey)
+                        ],
+                      );
+                    },
+                  ),
+              )
               : _buildEmptyState(),
     );
   }
