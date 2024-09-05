@@ -19,6 +19,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
   final DsdExpertApis _dsdExpertApis = DsdExpertApis();
   List<DsdCategory>? categories = [];
   DsdExpert? expertData;
+  var _razorpay = Razorpay();
   bool _loading = true;
   List<String> reviews = [
     "Great session, learned a lot from the expert. Highly recommend!",
@@ -329,7 +330,9 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
                       children: [
                         const Text("₹ 60.00", style: TextStyle(fontSize: 20)),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+
+                          },
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             minimumSize: const Size(0, 0),
