@@ -84,12 +84,10 @@ class _UserProfileViewState extends State<UserProfileView> {
                     Container(
                       height: 120,
                       width: 120,
-<<<<<<< HEAD
-                      margin: const EdgeInsets.only(top: 40, left: 16, bottom: 10),
-=======
+
                       margin:
                           const EdgeInsets.only(top: 40, left: 16, bottom: 10),
->>>>>>> 1f95a0849fe0e3ee36d0a2806306cc583147f098
+
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         color: Colors.grey.shade200,
@@ -106,12 +104,10 @@ class _UserProfileViewState extends State<UserProfileView> {
                             ),
                           ),
                         ),
-<<<<<<< HEAD
-                        errorWidget: (context, url, error) => const Icon(Icons.error),
-=======
+
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
->>>>>>> 1f95a0849fe0e3ee36d0a2806306cc583147f098
+
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -309,10 +305,6 @@ class _UserProfileViewState extends State<UserProfileView> {
 
   @override
   void dispose() {
-<<<<<<< HEAD
-    // Cancel timers, close streams, etc.
-=======
->>>>>>> 1f95a0849fe0e3ee36d0a2806306cc583147f098
     super.dispose();
   }
 }
