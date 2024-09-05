@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_frontend/router.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 

@@ -22,13 +22,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: ResponsiveSizer(builder: (context, orientation, screenType) {
-      return MaterialApp.router(
-        title: 'Insight Talk User App',
-        debugShowCheckedModeBanner: false,
-        theme: appTheme,
-        routerConfig: routerConfig.getRouter(),
-      );
-    }));
+      child: ResponsiveSizer(
+        builder: (context, orientation, screenType) {
+          return MaterialApp.router(
+            title: 'Insight Talk User App',
+            debugShowCheckedModeBanner: false,
+            theme: appTheme,
+            routerConfig: routerConfig.getRouter(),
+          );
+        },
+      ),
+    );
   }
 }

@@ -21,19 +21,19 @@ class TTextFieldFormTheme {
       ),
       borderRadius: BorderRadius.circular(10), // Color for focused state
     ),
-    errorBorder: OutlineInputBorder(
-      borderSide: const BorderSide(
-        color: Colors.red,
-        width: 2.0,
-      ),
-      borderRadius: BorderRadius.circular(10), // Color for error state
-    ),
-    focusedErrorBorder: OutlineInputBorder(
-      borderSide: const BorderSide(
-        color: Colors.redAccent,
-        width: 2.0,
-      ),
-      borderRadius: BorderRadius.circular(10), // Color for focused error state
-    ),
+    // errorBorder: OutlineInputBorder(
+    //   borderSide: const BorderSide(
+    //     color: Colors.red,
+    //     width: 2.0,
+    //   ),
+    //   borderRadius: BorderRadius.circular(10), // Color for error state
+    // ),
+    // focusedErrorBorder: OutlineInputBorder(
+    //   borderSide: const BorderSide(
+    //     color: Colors.redAccent,
+    //     width: 2.0,
+    //   ),
+    //   borderRadius: BorderRadius.circular(10), // Color for focused error state
+    // ),
   );
 }
