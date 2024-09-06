@@ -236,7 +236,7 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                             onPressed: () {
                                               // markComplete(appointment);
                                             },
-                                            label: appointment.confirmation!
+                                            label: !appointment.confirmation!
                                                 ? const Text(
                                                     "Wait for Confirmation",
                                                     style:

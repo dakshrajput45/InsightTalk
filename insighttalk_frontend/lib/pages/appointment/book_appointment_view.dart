@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-
 import 'package:flutter/services.dart';
 
 import 'package:go_router/go_router.dart';
@@ -22,7 +21,6 @@ import 'package:insighttalk_backend/services/payment_service.dart';
 
 import 'package:lottie/lottie.dart';
 
-
 class BookAppointmentView extends StatefulWidget {
   final DsdExpert expertData;
   const BookAppointmentView({required this.expertData, super.key});
@@ -39,7 +37,8 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
   Timestamp? appointmentTime;
   final int _maxCharacters = 500;
 
-  final DsdAppointmentController _dsdAppointmentController = DsdAppointmentController();
+  final DsdAppointmentController _dsdAppointmentController =
+      DsdAppointmentController();
   List<DateTime> availableDates = [
     DateTime(2024, 8, 18),
     DateTime(2024, 8, 22),
@@ -47,7 +46,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
     DateTime(2024, 8, 25),
     DateTime(2024, 9, 1),
   ];
-  TextEditingController _reasonController = TextEditingController();
+  TextEditingController reasonController = TextEditingController();
   List<DateTime> availableTimeSlots = [];
   // Future<void> getExpertData() async {
   //   try {
@@ -98,7 +97,8 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1.0)),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 1.0)),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(0),
                     child: CachedNetworkImage(
@@ -112,7 +112,8 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                           ),
                         ),
                       ),
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
                       fit: BoxFit.cover,
                       width: 140,
                       height: 140,
@@ -129,7 +130,8 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                     children: [
                       Text(
                         widget.expertData.expertName ?? 'Unknown Expert',
-                        style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                            fontSize: 28, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(
                         height: 4,
@@ -137,7 +139,9 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                       Text(
                         widget.expertData.expertise ?? 'Unknown',
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey),
                       ),
                       const SizedBox(
                         height: 15,
@@ -209,12 +213,12 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
             const SizedBox(
               height: 10,
             ),
-            DateTimeSelector(
-              availability: widget.expertData.availability,
-              onAppointmentSelected: (Timestamp appointmentTimestamp) {
-                appointmentTime = appointmentTimestamp;
-              },
-            ),
+            // DateTimeSelector(
+            //   //availability: widget.expertData.availability,
+            //   onAppointmentSelected: (Timestamp appointmentTimestamp) {
+            //     appointmentTime = appointmentTimestamp;
+            //   },
+            // ),
 
             const SizedBox(
               height: 20,
@@ -225,16 +229,12 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
               height: 10,
             ),
 
-            TextField(
-              decoration: const InputDecoration(icon: Icon(Icons.note_alt_outlined)),
-              controller: reasonController,
-
             TextFormField(
               maxLines: 2,
               inputFormatters: [
                 LengthLimitingTextInputFormatter(500),
               ],
-              controller: _reasonController,
+              controller: reasonController,
               decoration: InputDecoration(
                 icon: const Icon(Icons.note_alt_outlined),
                 suffixIcon: Builder(
@@ -242,7 +242,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                     return Padding(
                       padding: const EdgeInsets.only(top: 45.0, right: 10.0),
                       child: Text(
-                        '${_reasonController.text.length}/$_maxCharacters',
+                        '${reasonController.text.length}/$_maxCharacters',
                         style: const TextStyle(color: Colors.grey),
                       ),
                     );
@@ -258,7 +258,6 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                 }
                 return null;
               },
-
             ),
           ],
         ),
@@ -279,7 +278,10 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                 children: [
                   const Text(
                     "Total",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: Colors.grey),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey),
                   ),
                   Text("₹ $price", style: const TextStyle(fontSize: 20)),
                 ],
@@ -287,8 +289,10 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
               ElevatedButton(
                 onPressed: () async {
                   PaymentService _paymentService = PaymentService();
-                  final order = DsdOrder(amount: 6000, currency: "INR", receipt: 'receipt_12345');
-                  final orderDetails = await _paymentService.createOrder(order: order);
+                  final order = DsdOrder(
+                      amount: 6000, currency: "INR", receipt: 'receipt_12345');
+                  final orderDetails =
+                      await _paymentService.createOrder(order: order);
                   // print("Order ID : ${orderDetails!['id']}");
                   if (orderDetails != null) {
                     DsdCheckout? checkout = _paymentService.createCheckout(
@@ -307,15 +311,15 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                       userId,
                       widget.expertData.id!,
                       Timestamp.now(),
-                      _reasonController.text,
+                      reasonController.text,
                       [selectedCategory],
                       60,
                       "20 min");
                   _showBookingConfirmationDialog();
-
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 10.0),
                   textStyle: const TextStyle(fontSize: 22),
                 ),
                 child: const Text("Booking"),
@@ -369,7 +373,8 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
 
 class CategorySelector extends StatefulWidget {
   final List<String> categories;
-  final ValueChanged<String> onCategorySelected; // Callback for category selection
+  final ValueChanged<String>
+      onCategorySelected; // Callback for category selection
 
   const CategorySelector({
     super.key,
@@ -405,7 +410,8 @@ class _CategorySelectorState extends State<CategorySelector> {
                     selectedIndex = index;
                     selectedCategory = widget.categories[index];
                   }
-                  widget.onCategorySelected(selectedCategory); // Notify parent of selection
+                  widget.onCategorySelected(
+                      selectedCategory); // Notify parent of selection
                 });
               },
               child: Container(
@@ -468,11 +474,9 @@ class DurationSelector extends StatefulWidget {
   _DurationSelectorState createState() => _DurationSelectorState();
 }
 
-
 class _DurationSelectorState extends State<DurationSelector> {
   int selectedIndex = -1;
   int selectedDuration = 0;
-
 
   @override
   Widget build(BuildContext context) {
@@ -499,11 +503,9 @@ class _DurationSelectorState extends State<DurationSelector> {
                 });
               },
               child: Container(
-
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,
-
                 ),
                 decoration: BoxDecoration(
                   color: selectedIndex == index
@@ -526,7 +528,6 @@ class _DurationSelectorState extends State<DurationSelector> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-
                   '${widget.durations[index]} min',
                   style: selectedIndex == index
                       ? const TextStyle(
@@ -537,7 +538,6 @@ class _DurationSelectorState extends State<DurationSelector> {
                           color: Colors.grey,
                           fontWeight: FontWeight.w500,
                         ), // Text color
-
                 ),
               ),
             );
@@ -596,7 +596,6 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
-
             ),
           ),
         )
