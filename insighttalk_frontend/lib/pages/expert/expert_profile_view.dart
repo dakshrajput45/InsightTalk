@@ -19,6 +19,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
   final DsdExpertApis _dsdExpertApis = DsdExpertApis();
   List<DsdCategory>? categories = [];
   DsdExpert? expertData;
+
   bool _loading = true;
   List<String> reviews = [
     "Great session, learned a lot from the expert. Highly recommend!",
@@ -88,228 +89,202 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
                     padding: EdgeInsets.all(3.sw),
                     child: CustomPaint(
                       painter: PolkaDotPainter(),
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Center(
-                                child: Column(children: [
-                              Stack(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Center(
+                            child: Column(children: [
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Align(
                                 alignment: Alignment.center,
-                                children: [
-                                  Align(
-                                    alignment: Alignment.center,
-                                    child: Container(
-                                      height: 120,
-                                      width: 120,
-                                      margin: const EdgeInsets.only(
-                                          top: 10, left: 16, bottom: 10),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape
-                                            .circle, // Set shape to circle
-                                        color: Colors.grey.shade200,
+                                child: Container(
+                                  height: 120,
+                                  width: 120,
+                                  margin: const EdgeInsets.only(top: 10, left: 16, bottom: 10),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle, // Set shape to circle
+                                    color: Colors.grey.shade200,
+                                  ),
+                                  clipBehavior: Clip.hardEdge,
+                                  child: CachedNetworkImage(
+                                    imageUrl: expertData?.profileImage ?? defaultImage,
+                                    placeholder: (context, url) => const Center(
+                                      child: SizedBox(
+                                        height: 30,
+                                        width: 30,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.0,
+                                        ),
                                       ),
-                                      clipBehavior: Clip.hardEdge,
-                                      child: CachedNetworkImage(
-                                        imageUrl: expertData?.profileImage ??
-                                            defaultImage,
-                                        placeholder: (context, url) =>
-                                            const Center(
-                                          child: SizedBox(
-                                            height: 30,
-                                            width: 30,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2.0,
-                                            ),
+                                    ),
+                                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            "${expertData?.expertName}",
+                            style: TextStyle(
+                                fontSize: 2.8.sh, fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            "(" "${expertData?.expertise}" ")",
+                            style: TextStyle(
+                                fontSize: 2.3.sh,
+                                fontWeight: FontWeight.w500,
+                                color: const Color.fromARGB(255, 255, 255, 255)),
+                          ),
+                        ])),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 1.5.sw, vertical: 1.sw),
+                          padding: EdgeInsets.all(3.sw),
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 1.0, color: Colors.grey),
+                            borderRadius: const BorderRadius.all(Radius.circular(20)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "About",
+                                style: TextStyle(fontSize: 2.5.sh, fontWeight: FontWeight.w500),
+                              ),
+                              SizedBox(height: 1.5.sh),
+                              Text(
+                                "${expertData?.about}",
+                                style: TextStyle(
+                                  fontSize: 2.sh,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "My Expertise Areas",
+                                style: TextStyle(fontSize: 2.5.sh, fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        if (categories != null && categories!.isNotEmpty)
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: GridView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3, // Number of columns
+                                crossAxisSpacing: 10.0,
+                                mainAxisSpacing: 10.0,
+                              ),
+                              itemCount: categories!.length,
+                              itemBuilder: (context, index) {
+                                final category = categories![index];
+                                return Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Image.network(
+                                            category.categoryImage!,
+                                            fit: BoxFit.cover,
                                           ),
                                         ),
-                                        errorWidget: (context, url, error) =>
-                                            const Icon(Icons.error),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                "${expertData?.expertName}",
-                                style: TextStyle(
-                                    fontSize: 2.8.sh,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                "(" "${expertData?.expertise}" ")",
-                                style: TextStyle(
-                                    fontSize: 2.3.sh,
-                                    fontWeight: FontWeight.w500,
-                                    color: const Color.fromARGB(
-                                        255, 255, 255, 255)),
-                              ),
-                            ])),
-                            const SizedBox(
-                              height: 30,
-                            ),
-                            Container(
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 1.5.sw, vertical: 1.sw),
-                              padding: EdgeInsets.all(3.sw),
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(width: 1.0, color: Colors.grey),
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(20)),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    "About",
-                                    style: TextStyle(
-                                        fontSize: 2.5.sh,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  SizedBox(height: 1.5.sh),
-                                  Text(
-                                    "${expertData?.about}",
-                                    style: TextStyle(
-                                      fontSize: 2.sh,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "My Expertise Areas",
-                                    style: TextStyle(
-                                        fontSize: 2.5.sh,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            if (categories != null && categories!.isNotEmpty)
-                              Container(
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 10.0),
-                                child: GridView.builder(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3, // Number of columns
-                                    crossAxisSpacing: 10.0,
-                                    mainAxisSpacing: 10.0,
-                                  ),
-                                  itemCount: categories!.length,
-                                  itemBuilder: (context, index) {
-                                    final category = categories![index];
-                                    return Card(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Expanded(
-                                              child: Image.network(
-                                                category.categoryImage!,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 10.0),
-                                            Text(
-                                              category.categoryTitle!,
-                                              style: TextStyle(
-                                                fontSize: 1.9.sh,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ],
+                                        const SizedBox(height: 10.0),
+                                        Text(
+                                          category.categoryTitle!,
+                                          style: TextStyle(
+                                            fontSize: 1.9.sh,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          textAlign: TextAlign.center,
                                         ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              )
-                            else
-                              const Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SizedBox(height: 100),
-                                    Text(
-                                      "No Categories Selected Please Add Some",
-                                      style: TextStyle(
-                                        fontSize: 20.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    SizedBox(height: 100),
-                                  ],
-                                ),
-                              ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                "Reviews",
-                                style: TextStyle(
-                                    fontSize: 2.5.sh,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                            ...List.generate(reviews.length, (index) {
-                              final review = reviews[index];
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 5, horizontal: 10),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    elevation: 3,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        review,
-                                        style: TextStyle(fontSize: 2.sh),
-                                      ),
+                                      ],
                                     ),
                                   ),
+                                );
+                              },
+                            ),
+                          )
+                        else
+                          const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(height: 100),
+                                Text(
+                                  "No Categories Selected Please Add Some",
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
-                              );
-                            }),
-                          ]),
+                                SizedBox(height: 100),
+                              ],
+                            ),
+                          ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            "Reviews",
+                            style: TextStyle(fontSize: 2.5.sh, fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        ...List.generate(reviews.length, (index) {
+                          final review = reviews[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                elevation: 3,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    review,
+                                    style: TextStyle(fontSize: 2.sh),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                      ]),
                     ),
                   ),
             bottomNavigationBar: BottomAppBar(
@@ -318,8 +293,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
               color: Colors.white,
               shape: const CircularNotchedRectangle(),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -329,7 +303,9 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
                       children: [
                         const Text("₹ 60.00", style: TextStyle(fontSize: 20)),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            
+                          },
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             minimumSize: const Size(0, 0),
@@ -344,8 +320,7 @@ class _ExpertProfileViewState extends State<ExpertProfileView> {
                         extra: expertData,
                       ),
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24.0, vertical: 10.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
                         textStyle: const TextStyle(fontSize: 22),
                       ),
                       child: const Text("Book Now"),
