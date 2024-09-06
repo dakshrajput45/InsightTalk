@@ -1,11 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+
 import 'package:insighttalk_backend/apis/availablity/availablity_sdk.dart';
 import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/helper/toast.dart';
 import 'package:insighttalk_backend/modal/modal_availablity.dart';
+
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
+
+final DsdExpertProfileController _dsdProfileController =
+    DsdExpertProfileController();
 
 class AvailabilityView extends StatefulWidget {
   const AvailabilityView({super.key});
@@ -19,13 +26,17 @@ class _AvailabilityViewState extends State<AvailabilityView> {
   final DsdAvailablitySDK _availablitySDK = DsdAvailablitySDK();
   List<DateTime> selectedDates = [];
   DateTime today = DateTime.now();
+
   bool _loading = true;
   bool _sendData = false;
+
 
   late DateTime firstDay;
   late DateTime lastDay;
   DateTime focusedDay = DateTime.now();
   DateTime? currentEditingDate;
+  final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
+
 
   Map<DateTime, List<AvailabilitySlot>> dateWiseTimeslots = {};
 
@@ -50,6 +61,7 @@ class _AvailabilityViewState extends State<AvailabilityView> {
       });
     }
   }
+
 
   @override
   void initState() {
@@ -432,8 +444,10 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                             )
                           : const Text('Save'),
                     ),
+
                   ),
                 ],
+
               ),
             ),
           );
