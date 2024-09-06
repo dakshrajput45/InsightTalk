@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/apis/chat/chat_api.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/helper/extension.dart';
 import 'package:insighttalk_backend/modal/modal_chat_rooms.dart';
@@ -18,6 +19,7 @@ class CleintChatRoomView extends StatefulWidget {
 class _CleintChatRoomViewState extends State<CleintChatRoomView> {
   bool _loading = false;
   DsdChatController chatController = DsdChatController();
+  final DsdChatApis _dsdChatApis = DsdChatApis();
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   SharedPreferences? _prefs;
 
@@ -30,12 +32,10 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
 
   Future<void> openChatRoom(BuildContext context,
       {required String chatRoomId,
-      required String userName,
       required DsdChatRooms chatRoom}) async {
     await context.pushNamed(routeNames.chat, pathParameters: {
       "id": chatRoomId
     }, extra: {
-      "userName": userName,
       "chatRoom": chatRoom, // Pass the object directly
     });
 
@@ -46,9 +46,21 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
     setState(() {
       _loading = true;
     });
+
     await chatController.initializeSharedPreference();
+
+    var userId = _itUserAuthSDK.getUser()!.uid;
+
     await chatController.fetchChatRooms(
-        hardReset: true, userId: _itUserAuthSDK.getUser()!.uid);
+        hardReset: true, userId: userId);
+
+    // Fetch name and profile image for each chat room
+    for (var chatRoom in chatController.myChatRooms) {
+      var details = await _dsdChatApis.fetchNameAndImage(chatRoom.userId!, true);
+      chatRoom.name = details.$1;
+      chatRoom.profileImage = details.$2;
+    }
+
     setState(() {
       _loading = false;
     });
@@ -86,8 +98,7 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
                             onTap: () async {
                               await openChatRoom(context,
                                   chatRoomId: chatRoom.id!,
-                                  chatRoom: chatRoom,
-                                  userName: chatRoom.expert!.expertName!);
+                                  chatRoom: chatRoom);
                               await _loadData();
                             },
                             child: Container(
@@ -100,7 +111,7 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
                                 children: [
                                   CircleAvatar(
                                     foregroundImage: CachedNetworkImageProvider(
-                                      chatRoom.user!.profileImage!,
+                                      chatRoom.profileImage!,
                                     ),
                                     child: const Icon(Icons.person),
                                   ),
@@ -112,7 +123,7 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                            chatRoom.user!.userName!
+                                            chatRoom.name!
                                                 .toUpperCase(),
                                             style: const TextStyle(
                                               fontSize: 16.0,

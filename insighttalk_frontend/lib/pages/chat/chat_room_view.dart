@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/apis/chat/chat_api.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/helper/extension.dart';
 import 'package:insighttalk_backend/modal/modal_chat_rooms.dart';
@@ -18,6 +19,7 @@ class ChatRoomsView extends StatefulWidget {
 class _ChatRoomsViewState extends State<ChatRoomsView> {
   bool _loading = false;
   DsdChatController chatController = DsdChatController();
+  DsdChatApis _dsdChatApis = DsdChatApis();
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   SharedPreferences? _prefs;
 
@@ -27,22 +29,19 @@ class _ChatRoomsViewState extends State<ChatRoomsView> {
     chatController.initializeSharedPreference();
     _loadData();
   }
-  
+
   // Navigating to the chat room
-Future<void> openChatRoom(BuildContext context,
-    {required String chatRoomId, required String userName, required DsdChatRooms chatRoom}) async {
+  Future<void> openChatRoom(BuildContext context,
+      {required String chatRoomId, required DsdChatRooms chatRoom}) async {
+    await context.pushNamed(routeNames.chat, pathParameters: {
+      "id": chatRoomId
+    }, extra: {
+      "chatRoom": chatRoom,
+    });
 
-  await context.pushNamed(routeNames.chat,
-      pathParameters: {"id": chatRoomId},
-      extra: {
-        "userName": userName,
-        "chatRoom": chatRoom, // Pass the object directly
-      });
+    chatController.logTimeToSharedPreference(chatRoomId);
+  }
 
-  chatController.logTimeToSharedPreference(chatRoomId);
-}
-
-  
   Future<void> _loadData() async {
     setState(() {
       _loading = true;
@@ -50,6 +49,17 @@ Future<void> openChatRoom(BuildContext context,
     await chatController.initializeSharedPreference();
     await chatController.fetchChatRooms(
         hardReset: true, userId: _itUserAuthSDK.getUser()!.uid);
+
+    // Fetch name and profile image for each chat room
+    if (chatController.myChatRooms != null) {
+      for (var chatRoom in chatController.myChatRooms) {
+        var details =
+            await _dsdChatApis.fetchNameAndImage(chatRoom.expertId!, false);
+        chatRoom.name = details.$1;
+        chatRoom.profileImage = details.$2;
+      }
+    }
+
     setState(() {
       _loading = false;
     });
@@ -88,9 +98,9 @@ Future<void> openChatRoom(BuildContext context,
                         InkWell(
                           onTap: () async {
                             await openChatRoom(context,
-                                chatRoomId: chatRoom.id!,
+                                chatRoomId: chatRoom.id!, 
                                 chatRoom: chatRoom,
-                                userName: chatRoom.user!.userName!);
+                                );
                             await _loadData();
                           },
                           child: Container(
@@ -103,7 +113,7 @@ Future<void> openChatRoom(BuildContext context,
                               children: [
                                 CircleAvatar(
                                   foregroundImage: CachedNetworkImageProvider(
-                                    chatRoom.expert!.profileImage!,
+                                    chatRoom.profileImage!,
                                   ),
                                   child: const Icon(Icons.person),
                                 ),
@@ -114,8 +124,7 @@ Future<void> openChatRoom(BuildContext context,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        chatRoom.expert!.expertName!.toUpperCase(),
+                                      Text(chatRoom.name!.toUpperCase(),
                                           style: const TextStyle(
                                             fontSize: 16.0,
                                             fontWeight: FontWeight.bold,

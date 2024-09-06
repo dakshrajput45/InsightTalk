@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/services/notification_services.dart';
+import 'package:insighttalk_backend/apis/availablity/availablity_sdk.dart';
 import 'package:insighttalk_expert/main.dart';
 import 'package:insighttalk_expert/router.dart';
 
@@ -22,12 +23,15 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   int _selectedIndex = 0;
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
+  final DsdAvailablitySDK _dsdAvailablitySDK = DsdAvailablitySDK();
 
   @override
   void initState() {
-    if (_itUserAuthSDK.getUser()?.uid != null) {
+    String? id = _itUserAuthSDK.getUser()?.uid;
+    if (id != null) {
+      _dsdAvailablitySDK.removeOldAvailability(id);
       dsdNotificationService = DsdNotificationService(
-        uid: _itUserAuthSDK.getUser()!.uid,
+        uid: id,
         context: context,
       );
     }

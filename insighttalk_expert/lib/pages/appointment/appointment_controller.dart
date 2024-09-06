@@ -40,9 +40,9 @@ class DsdAppointmentController {
     }
   }
 
-  Future<void> updateConfirmation(String appointmentId, String link,String userId) async {
+  Future<void> updateConfirmation(String appointmentId, String link,String userId,String expertId) async {
     try {
-      await _dsdAppointmentApis.updateConfirmation(appointmentId, link,userId);
+      await _dsdAppointmentApis.updateConfirmation(appointmentId, link,userId,expertId);
     } catch (e) {
       rethrow;
     }

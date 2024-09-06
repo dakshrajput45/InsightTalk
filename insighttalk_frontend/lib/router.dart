@@ -87,14 +87,12 @@ class RouterConfig {
         pageBuilder: (context, state) {
           final Map<String, dynamic> extras =
               state.extra as Map<String, dynamic>;
-          final String? userName = extras['userName'];
           final DsdChatRooms? room = extras['chatRoom'];
 
           return NoTransitionPage(
             child: ChatView(
               roomId: state.pathParameters["id"],
               room: room,
-              userName: userName,
             ),
           );
         },

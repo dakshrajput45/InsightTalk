@@ -545,8 +545,10 @@ class _EditProfileViewState extends State<EditProfileView> {
                           await updateCategories(
                               _categories, _itUserAuthSDK.getUser()!.uid);
                           if (firstTime == true) {
+                            // ignore: use_build_context_synchronously
                             context.goNamed(routeNames.expertprofile);
                           } else {
+                            // ignore: use_build_context_synchronously
                             context.goNamed(routeNames.appointment);
                           }
                         }
