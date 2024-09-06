@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:insighttalk_backend/apis/chat/chat_api.dart';
 import 'package:insighttalk_backend/helper/extension.dart';
 import 'package:insighttalk_backend/modal/modal_chat_rooms.dart';
 import 'package:insighttalk_backend/modal/modal_message.dart';
@@ -14,13 +15,8 @@ import 'package:insighttalk_backend/widegts/chat/message_view.dart';
 class ChatView extends StatefulWidget {
   final String? roomId;
   final DsdChatRooms? room;
-  final String? userName;
 
-  const ChatView(
-      {super.key,
-      required this.roomId,
-      required this.room,
-      required this.userName});
+  const ChatView({super.key, required this.roomId, required this.room});
 
   @override
   _ChatViewState createState() => _ChatViewState();
@@ -30,9 +26,11 @@ class _ChatViewState extends State<ChatView> {
   TextEditingController senderMessageController = TextEditingController();
   final ScrollController _listViewController = ScrollController();
   final DsdChatController _dsdChatController = DsdChatController();
+  final DsdChatApis _dsdChatApis = DsdChatApis();
   late Stream<QuerySnapshot> _messageStream;
   bool _isLoading = false;
   DsdChatRooms? _chatRoom;
+  var senderName;
 
   final List<DsdMessage> _messages = [];
   final Timestamp screenLoadTime = Timestamp.now();
@@ -42,7 +40,10 @@ class _ChatViewState extends State<ChatView> {
     if (text.isEmpty) return;
 
     DsdMessage message = DsdMessage(
-        text: text, time: Timestamp.now(), senderName: widget.userName);
+        text: text,
+        time: Timestamp.now(),
+        senderName: senderName,
+        senderId: widget.room!.userId!);
     _dsdChatController.sendMessage(
       message: message,
       room: widget.room!,
@@ -79,6 +80,12 @@ class _ChatViewState extends State<ChatView> {
     );
   }
 
+  Future<void> loadData() async {
+    var name =
+        await _dsdChatApis.fetchNameAndImage(widget.room!.userId!, false);
+    senderName = name.$1;
+  }
+
   Future<void> loadOldMessages(
       {bool hardReset = false,
       bool scrollBottom = false,
@@ -111,6 +118,7 @@ class _ChatViewState extends State<ChatView> {
   @override
   void initState() {
     super.initState();
+    loadData();
     loadOldMessages(hardReset: true, showLoader: true, scrollBottom: true);
     _messageStream = FirebaseFirestore.instance
         .collection('chatRooms')
@@ -176,7 +184,7 @@ class _ChatViewState extends State<ChatView> {
                 children: [
                   ClipOval(
                     child: CachedNetworkImage(
-                      imageUrl: widget.room!.expert!.profileImage!,
+                      imageUrl: widget.room!.profileImage!,
                       placeholder: (context, url) => const Center(
                         child: SizedBox(
                           height: 20,
@@ -199,7 +207,7 @@ class _ChatViewState extends State<ChatView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "${_chatRoom?.expert!.expertName}".toUpperCase(),
+                          widget.room!.name!.toUpperCase(),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -287,7 +295,7 @@ class _ChatViewState extends State<ChatView> {
         itemCount: _messages.length,
         itemBuilder: (context, index) {
           final message = _messages[index];
-          final selfMessage = message.senderName == widget.userName;
+          final selfMessage = message.senderName == senderName;
           final bgColor = selfMessage
               ? Theme.of(context).colorScheme.primary
               : const Color.fromARGB(255, 202, 202, 202);

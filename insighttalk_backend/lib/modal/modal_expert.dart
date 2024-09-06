@@ -13,8 +13,7 @@ class DsdExpert {
   String? profileImage; // Changed to store a single image URL
   int? sumOfRatings; // Sum of all ratings
   int? numberOfRatings; // Number of ratings
-  Map<DateTime, List<Map<String, DateTime>>>? availability;
-
+  
   DsdExpert({
     this.expertName,
     this.id,
@@ -28,7 +27,6 @@ class DsdExpert {
     this.fcmToken,
     this.numberOfRatings = 0,
     this.sumOfRatings = 0,
-    this.availability,
   });
 
   factory DsdExpert.fromJson({
@@ -54,19 +52,6 @@ class DsdExpert {
         sumOfRatings: json['sumOfRatings'] ?? 0, // Parse sum of ratings
         numberOfRatings:
             json['numberOfRatings'] ?? 0, // Parse number of ratings
-        availability: (json['availability'] as Map<String, dynamic>?)?.map(
-          (date, slots) => MapEntry(
-            (date as Timestamp).toDate(),
-            (slots as List).map((slot) {
-              return (slot as Map<String, dynamic>).map(
-                (timeType, time) => MapEntry(
-                  timeType,
-                  (time as Timestamp).toDate(),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
       );
     } catch (e) {
       print(e);
@@ -86,23 +71,11 @@ class DsdExpert {
       if (withId) 'id': id,
       if (category != null) 'category': category,
       if (profileImage != null)
-        'profileImage':
-            profileImage, // Include profile image URL in JSON output
+        'profileImage': profileImage, // Include profile image URL
       if (sumOfRatings != null)
-        'sumOfRatings': sumOfRatings, // Include sum of ratings in JSON output
+        'sumOfRatings': sumOfRatings, // Include sum of ratings
       if (numberOfRatings != null)
-        'numberOfRatings':
-            numberOfRatings, // Include number of ratings in JSON output
-      'availability': availability?.map((date, slots) {
-        return MapEntry(
-          Timestamp.fromDate(date),
-          slots.map((slot) {
-            return slot.map((timeType, time) {
-              return MapEntry(timeType, Timestamp.fromDate(time));
-            });
-          }).toList(),
-        );
-      }),
+        'numberOfRatings': numberOfRatings, // Include number of ratings
     };
   }
 

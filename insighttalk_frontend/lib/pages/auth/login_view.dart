@@ -17,8 +17,10 @@ class _LoginViewState extends State<LoginView> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
-  final CollectionReference usersCollection = FirebaseFirestore.instance.collection('userDetails');
+  final CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('userDetails');
   final bool _isNotValidate = false;
+  bool _loggin = false, _logginGoogle = false;
 
   void handleSignUp(int val) {
     updateLoginStatus(val);
@@ -83,7 +85,9 @@ class _LoginViewState extends State<LoginView> {
                       errorText: _isNotValidate ? "Enter Proper Info" : null,
                       hintText: 'Password',
                       suffixIcon: IconButton(
-                        icon: Icon(_isHidden ? Icons.visibility_off : Icons.visibility),
+                        icon: Icon(_isHidden
+                            ? Icons.visibility_off
+                            : Icons.visibility),
                         onPressed: () {
                           setState(() {
                             _isHidden = !_isHidden;
@@ -97,18 +101,34 @@ class _LoginViewState extends State<LoginView> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
+                        setState(() {
+                          _loggin = true;
+                        });
                         User? user = await _itUserAuthSDK.emailandPasswordLogIn(
-                            email: emailController.text.trim(), password: passwordController.text);
+                            email: emailController.text.trim(),
+                            password: passwordController.text);
                         if (user != null && mounted) {
-                          DsdToastMessages.success(context, text: "Email Login Successful");
+                          DsdToastMessages.success(context,
+                              text: "Email Login Successful");
                           handleSignUp(2);
                           context.goNamed(routeNames.experts);
                         } else {
                           print("Login Failed");
                         }
+                        setState(() {
+                          _loggin = false;
+                        });
                         // Navigate to experts route
                       },
-                      child: const Text("Log In"),
+                      child: _loggin
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text('Log In'),
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -140,6 +160,9 @@ class _LoginViewState extends State<LoginView> {
                     child: ElevatedButton.icon(
                       onPressed: () async {
                         // Google Log In Function Added here (Same function used for Sign Up)
+                        setState(() {
+                          _logginGoogle = true;
+                        });
                         User? user = await _itUserAuthSDK.googleSignUp();
                         print('Google Log In function is called $mounted');
                         if (user != null && mounted) {
@@ -149,30 +172,47 @@ class _LoginViewState extends State<LoginView> {
                           if (!userDoc.exists) {
                             context.goNamed(routeNames.editprofileview);
                           } else {
-                            DsdToastMessages.success(context, text: "Google Login Successful");
+                            DsdToastMessages.success(context,
+                                text: "Google Login Successful");
                             await Future.delayed(const Duration(seconds: 2));
                             context.goNamed(routeNames.experts);
                           }
                         } else {
                           print("Google Login Failed");
                         }
+                        setState(() {
+                          _logginGoogle = false;
+                        });
                         // Navigate to experts route
                       },
-                      icon: Image.asset(
-                        'assets/images/search.png',
-                        height: 24.0,
-                        width: 24.0,
-                      ),
-                      label: const Text(
+                      icon: _logginGoogle
+                          ? const SizedBox.shrink()
+                          : Image.asset(
+                              'assets/images/search.png',
+                              height: 24.0,
+                              width: 24.0,
+                            ),
+                      label:  _logginGoogle
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.black,
+                              ),
+                            )
+                          : const Text(
                         'Log in with Google',
                         style: TextStyle(fontSize: 18.0),
                       ),
                       style: ButtonStyle(
                         padding: WidgetStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                          const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
                         ),
-                        backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                        foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+                        backgroundColor:
+                            WidgetStateProperty.all<Color>(Colors.white),
+                        foregroundColor:
+                            WidgetStateProperty.all<Color>(Colors.black),
                         shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
@@ -189,7 +229,8 @@ class _LoginViewState extends State<LoginView> {
                       TextButton(
                         onPressed: () {
                           handleSignUp(3);
-                          context.pushNamed(routeNames.signup); // Navigate to signup route
+                          context.pushNamed(
+                              routeNames.signup); // Navigate to signup route
                         },
                         child: const Text(
                           "Sign Up",

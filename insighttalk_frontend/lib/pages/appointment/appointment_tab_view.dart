@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
 import 'package:insighttalk_backend/apis/appointment/appointment_apis.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/modal/modal_appointment.dart';
 import 'package:insighttalk_frontend/pages/appointment/appointment_controller.dart';
+import 'package:insighttalk_frontend/router.dart';
 
 class AppointmentTabView extends StatefulWidget {
   final DateTimeFilter dateTimeFilter;
@@ -36,7 +38,6 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
     );
   }
 
-  
   @override
   Widget build(BuildContext context) {
     bool linkAdded = true;
@@ -57,12 +58,7 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                             vertical: 8, horizontal: 12),
                         child: InkWell(
                           onTap: () {
-                            // context.pushNamed(
-                            //   routeNames.addNotes,
-                            //   pathParameters: {
-                            //     "id": appointment.id!,
-                            //   },
-                            // );
+                            context.pushNamed(routeNames.chatRooms);
                           },
                           child: Column(
                             children: <Widget>[
@@ -109,7 +105,8 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                         radius: 28,
                                         foregroundImage:
                                             CachedNetworkImageProvider(
-                                                appointment.profileImage ?? defaultImage),
+                                                appointment.profileImage ??
+                                                    defaultImage),
                                         backgroundColor: Theme.of(context)
                                             .colorScheme
                                             .surfaceContainerHigh,

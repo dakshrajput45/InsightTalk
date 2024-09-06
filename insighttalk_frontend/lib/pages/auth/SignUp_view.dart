@@ -19,7 +19,9 @@ class _SignUpViewState extends State<SignUpView> {
   TextEditingController confirmPasswordController = TextEditingController();
   final bool _isNotValidate = false;
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
-  final CollectionReference usersCollection = FirebaseFirestore.instance.collection('userDetails');
+  final CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('userDetails');
+  bool _loggin = false, _logginGoogle = false;
 
   bool _isHidden = true;
   @override
@@ -45,7 +47,10 @@ class _SignUpViewState extends State<SignUpView> {
             padding: const EdgeInsets.only(left: 35, top: 100),
             child: const Text(
               'SignUp To Insight Talk',
-              style: TextStyle(color: Colors.black, fontSize: 33, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 33,
+                  fontWeight: FontWeight.w700),
             ),
           ),
           SingleChildScrollView(
@@ -85,7 +90,9 @@ class _SignUpViewState extends State<SignUpView> {
                       errorText: _isNotValidate ? "Enter Proper Info" : null,
                       hintText: 'Password',
                       suffixIcon: IconButton(
-                        icon: Icon(_isHidden ? Icons.visibility_off : Icons.visibility),
+                        icon: Icon(_isHidden
+                            ? Icons.visibility_off
+                            : Icons.visibility),
                         onPressed: () {
                           setState(() {
                             _isHidden = !_isHidden;
@@ -112,10 +119,15 @@ class _SignUpViewState extends State<SignUpView> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (passwordController.text == confirmPasswordController.text) {
-                          User? user = await _itUserAuthSDK.emailandPasswordSignUp(
-                              email: emailController.text.trim(),
-                              password: passwordController.text);
+                        setState(() {
+                          _loggin = true;
+                        });
+                        if (passwordController.text ==
+                            confirmPasswordController.text) {
+                          User? user =
+                              await _itUserAuthSDK.emailandPasswordSignUp(
+                                  email: emailController.text.trim(),
+                                  password: passwordController.text);
                           if (user != null && mounted) {
                             final DocumentSnapshot userDoc =
                                 await usersCollection.doc(user.uid).get();
@@ -123,7 +135,8 @@ class _SignUpViewState extends State<SignUpView> {
                               context.goNamed(routeNames.editprofileview);
                             } else {
                               DsdToastMessages.error(context,
-                                  text: "User with this email already exist (Try Sign In)");
+                                  text:
+                                      "User with this email already exist (Try Sign In)");
                               // context.goNamed(routeNames.signup);
                             }
                           } else {
@@ -132,9 +145,20 @@ class _SignUpViewState extends State<SignUpView> {
                         } else {
                           print("Password and Confirm Passwords are not same");
                         }
+                        setState(() {
+                          _loggin = false;
+                        });
                         // const ProfileScreen();
                       },
-                      child: const Text("Sign Up"),
+                      child: _loggin
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text('Sign Up'),
                     ),
                   ),
                   const SizedBox(
@@ -167,9 +191,13 @@ class _SignUpViewState extends State<SignUpView> {
                     height: 30,
                   ),
                   SizedBox(
+                    width: 100,
                     child: ElevatedButton.icon(
                       onPressed: () async {
                         // Google Sign Up Function Added here (Same function used for Log In)
+                        setState(() {
+                          _logginGoogle = true;
+                        });
                         User? user = await _itUserAuthSDK.googleSignUp();
                         if (user != null && mounted) {
                           final DocumentSnapshot userDoc =
@@ -182,23 +210,39 @@ class _SignUpViewState extends State<SignUpView> {
                         } else {
                           print("Google Login Failed");
                         }
+                        setState(() {
+                          _logginGoogle = false;
+                        });
                         // Navigate to experts route
                       },
-                      icon: Image.asset(
-                        'assets/images/search.png',
-                        height: 24.0,
-                        width: 24.0,
-                      ),
-                      label: const Text(
-                        'SignUp with Google',
-                        style: TextStyle(fontSize: 18.0),
-                      ),
+                      icon: _logginGoogle
+                          ? const SizedBox.shrink()
+                          : Image.asset(
+                              'assets/images/search.png',
+                              height: 24.0,
+                              width: 24.0,
+                            ),
+                      label: _logginGoogle
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.black,
+                              ),
+                            )
+                          : const Text(
+                              'Log in with Google',
+                              style: TextStyle(fontSize: 18.0),
+                            ),
                       style: ButtonStyle(
                         padding: WidgetStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                          const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
                         ),
-                        backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                        foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+                        backgroundColor:
+                            WidgetStateProperty.all<Color>(Colors.white),
+                        foregroundColor:
+                            WidgetStateProperty.all<Color>(Colors.black),
                         shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
