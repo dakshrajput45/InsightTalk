@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_frontend/pages/appointment/appointment_controller.dart';
 import 'package:intl/intl.dart';
+import 'package:insighttalk_backend/modal/modal_checkout.dart';
+import 'package:insighttalk_backend/modal/modal_order.dart';
+import 'package:insighttalk_backend/services/payment_service.dart';
 
 class BookAppointmentView extends StatefulWidget {
   final DsdExpert expertData;
@@ -19,8 +21,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   String selectedCategory = '';
 
-  final DsdAppointmentController _dsdAppointmentController =
-      DsdAppointmentController();
+  final DsdAppointmentController _dsdAppointmentController = DsdAppointmentController();
   List<DateTime> availableDates = [
     DateTime(2024, 8, 18),
     DateTime(2024, 8, 22),
@@ -79,8 +80,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 1.0)),
+                  decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1.0)),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(0),
                     child: CachedNetworkImage(
@@ -94,8 +94,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                           ),
                         ),
                       ),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
                       fit: BoxFit.cover,
                       width: 140,
                       height: 140,
@@ -112,8 +111,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                     children: [
                       Text(
                         widget.expertData.expertName ?? 'Unknown Expert',
-                        style: const TextStyle(
-                            fontSize: 28, fontWeight: FontWeight.w600),
+                        style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(
                         height: 4,
@@ -121,9 +119,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                       Text(
                         widget.expertData.expertise ?? 'Unknown',
                         style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey),
+                            fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey),
                       ),
                       const SizedBox(
                         height: 15,
@@ -185,8 +181,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
               height: 10,
             ),
             TextField(
-              decoration:
-                  const InputDecoration(icon: Icon(Icons.note_alt_outlined)),
+              decoration: const InputDecoration(icon: Icon(Icons.note_alt_outlined)),
               controller: reasonController,
             ),
           ],
@@ -208,29 +203,34 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                 children: [
                   Text(
                     "Total",
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.grey),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: Colors.grey),
                   ),
                   Text("₹ 60.00", style: TextStyle(fontSize: 20)),
                 ],
               ),
               ElevatedButton(
                 onPressed: () async {
+                  PaymentService _paymentService = PaymentService();
+                  final order = DsdOrder(amount: 6000, currency: "INR", receipt: 'receipt_12345');
+                  final orderDetails = await _paymentService.createOrder(order: order);
+                  // print("Order ID : ${orderDetails!['id']}");
+                  if (orderDetails != null) {
+                    DsdCheckout? checkout = _paymentService.createCheckout(
+                      amount: order.amount!,
+                      description: "Payment for services",
+                      orderId: orderDetails['id'],
+                    );
+                    // print(checkout!.toJson());
+                    if (checkout != null) {
+                      _paymentService.open_checkout(checkout);
+                    }
+                  }
                   String userId = _itUserAuthSDK.getUser()!.uid;
-                  await _dsdAppointmentController.createAppointment(
-                      userId,
-                      widget.expertData.id!,
-                      Timestamp.now(),
-                      reasonController.text,
-                      [selectedCategory],
-                      60,
-                      "20 min");
+                  await _dsdAppointmentController.createAppointment(userId, widget.expertData.id!,
+                      Timestamp.now(), reasonController.text, [selectedCategory], 60, "20 min");
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 10.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
                   textStyle: const TextStyle(fontSize: 22),
                 ),
                 child: const Text("Booking"),
@@ -245,8 +245,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
 
 class CategorySelector extends StatefulWidget {
   final List<String> categories;
-  final ValueChanged<String>
-      onCategorySelected; // Callback for category selection
+  final ValueChanged<String> onCategorySelected; // Callback for category selection
 
   const CategorySelector({
     super.key,
@@ -282,8 +281,7 @@ class _CategorySelectorState extends State<CategorySelector> {
                     selectedIndex = index;
                     selectedCategory = widget.categories[index];
                   }
-                  widget.onCategorySelected(
-                      selectedCategory); // Notify parent of selection
+                  widget.onCategorySelected(selectedCategory); // Notify parent of selection
                 });
               },
               child: Container(
@@ -346,12 +344,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
     DateTime(2024, 8, 20),
     DateTime(2024, 8, 21),
   ];
-  List<String> availableTimes = [
-    '09:00 AM',
-    '11:00 AM',
-    '02:00 PM',
-    '04:00 PM'
-  ];
+  List<String> availableTimes = ['09:00 AM', '11:00 AM', '02:00 PM', '04:00 PM'];
 
   DateTime? selectedDate;
   String? selectedTime;
@@ -387,18 +380,14 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                     Text(
                       DateFormat('EEE').format(availableDates[index]),
                       style: selectedDate == availableDates[index]
-                          ? const TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.w500)
-                          : const TextStyle(
-                              color: Colors.grey, fontWeight: FontWeight.w500),
+                          ? const TextStyle(color: Colors.blue, fontWeight: FontWeight.w500)
+                          : const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
                     ),
                     Text(
                       DateFormat('d/M/y').format(availableDates[index]),
                       style: selectedDate == availableDates[index]
-                          ? const TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.w500)
-                          : const TextStyle(
-                              color: Colors.grey, fontWeight: FontWeight.w500),
+                          ? const TextStyle(color: Colors.blue, fontWeight: FontWeight.w500)
+                          : const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
@@ -433,10 +422,8 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                 child: Text(
                   availableTimes[index],
                   style: selectedTime == availableTimes[index]
-                      ? const TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.w500)
-                      : const TextStyle(
-                          color: Colors.grey, fontWeight: FontWeight.w500),
+                      ? const TextStyle(color: Colors.blue, fontWeight: FontWeight.w500)
+                      : const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
                 ),
               ),
             );
@@ -453,8 +440,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                 ),
                 Text(
                   'Appointment: ${DateFormat('E, yyyy-MM-dd | hh:mm a').format(selectedDateTime!)}',
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w400),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                 ),
               ],
             ),

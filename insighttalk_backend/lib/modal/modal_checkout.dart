@@ -1,5 +1,5 @@
 class DsdCheckout {
-  String apiKey; // API Key ID (mandatory)
+  String key; // API Key ID (mandatory)
   int amount; // Amount in smallest currency sub-unit (mandatory)
   String currency = "INR"; // Currency (mandatory)
   String name; // Business/Enterprise name (mandatory)
@@ -8,7 +8,7 @@ class DsdCheckout {
   bool send_sms_hash = true;
 
   DsdCheckout({
-    required this.apiKey,
+    required this.key,
     required this.amount,
     required this.currency,
     required this.name,
@@ -20,7 +20,7 @@ class DsdCheckout {
   factory DsdCheckout.fromJson({required Map<String, dynamic> json}) {
     try {
       return DsdCheckout(
-        apiKey: json['apiKey'],
+        key: json['key'],
         amount: json['amount'],
         currency: json['currency'],
         name: json['name'],
@@ -36,7 +36,7 @@ class DsdCheckout {
   // Method to convert DsdCheckout to JSON
   Map<String, dynamic> toJson() {
     return {
-      'apiKey': apiKey,
+      'key': key,
       'amount': amount,
       'currency': currency,
       'name': name,

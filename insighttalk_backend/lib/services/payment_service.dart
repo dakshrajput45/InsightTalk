@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:insighttalk_backend/modal/modal_checkout.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -13,30 +14,41 @@ class PaymentService {
     _initializeService();
   }
 
-  Future<void> _initializeService() async {
-    await dotenv.load(fileName: ".env");
+  void _initializeService() async {
+    // await dotenv.load(fileName : ".env");
+    // print("************** Env Loaded **************");
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
-    // _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     // Do something when payment succeeds
+    SnackBar(content: Text("Payment Success"));
+
+    print('**********************************');
     print('Payment Successful: ${response.paymentId}');
+    print('**********************************');
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
     // Do something when payment fails
+    SnackBar(content: Text("Payment Failed"));
+    print('**********************************');
     print('Payment Failed: ${response.code} - ${response.message}');
+    print('**********************************');
   }
 
-  // void _handleExternalWallet(ExternalWalletResponse response) {
-  //   // Do something when an external wallet is selected
-  //   print('External Wallet Selected: ${response.walletName}');
-  // }
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    // Do something when an external wallet is selected
+    SnackBar(content: Text("Wallet Payment"));
+    print('**********************************');
+    print('External Wallet Selected: ${response.walletName}');
+    print('**********************************');
+  }
 
   Future<Map<String, dynamic>?> createOrder({required DsdOrder order}) async {
-    final String basicAuth = "Basic" +
+    final String basicAuth = "Basic " +
         base64Encode(
             utf8.encode('${dotenv.env['RAZORPAY_KEY_ID']}:${dotenv.env['RAZORPAY_SECRET']}'));
 
@@ -45,8 +57,7 @@ class PaymentService {
     // Request body for creating an order
 
     final Map<String, dynamic> data = {
-      "amount": order
-          .amount, // Amount in the smallest currency unit (e.g., paise for INR, so 1000 paise = 10 INR)
+      "amount": order.amount, // Amount in the smallest currency (so 1000 paise = 10 INR)
       "currency": order.currency, // Currency like "INR"
       "receipt": order.receipt ?? "receipt_12345",
       "payment_capture": 1 // Auto-capture payment (1 for auto, 0 for manual)
@@ -84,14 +95,14 @@ class PaymentService {
   DsdCheckout? createCheckout(
       {required int amount, required String description, required String orderId}) {
     try {
+      print("checkout created");
       return DsdCheckout(
-        apiKey: dotenv.env['RAZORPAY_KEY_ID'].toString(),
+        key: dotenv.env['RAZORPAY_KEY_ID'].toString(),
         amount: amount,
         currency: "INR",
         name: "Insight Talk Appointment payment",
         orderId: orderId,
         description: description,
-        
       );
     } catch (err) {
       print('Error creating checkout: $err');
@@ -99,11 +110,13 @@ class PaymentService {
     }
   }
 
-  void open_checkout(DsdCheckout options){
+  void open_checkout(DsdCheckout options) {
+    print("checkout opened");
     _razorpay.open(options.toJson());
   }
 
   void dispose() {
+    print("//////////////// Razorpay instance killed \\\\\\\\\\\\\\\\\\\\");
     _razorpay.clear(); // It's important to clear listeners when done
   }
 }
