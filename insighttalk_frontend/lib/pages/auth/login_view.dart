@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insighttalk_backend/helper/toast.dart';
@@ -16,8 +17,10 @@ class _LoginViewState extends State<LoginView> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
-
+  final CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('userDetails');
   final bool _isNotValidate = false;
+  bool _loggin = false, _logginGoogle = false;
 
   void handleSignUp(int val) {
     updateLoginStatus(val);
@@ -98,6 +101,9 @@ class _LoginViewState extends State<LoginView> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
+                        setState(() {
+                          _loggin = true;
+                        });
                         User? user = await _itUserAuthSDK.emailandPasswordLogIn(
                             email: emailController.text.trim(),
                             password: passwordController.text);
@@ -109,9 +115,20 @@ class _LoginViewState extends State<LoginView> {
                         } else {
                           print("Login Failed");
                         }
+                        setState(() {
+                          _loggin = false;
+                        });
                         // Navigate to experts route
                       },
-                      child: const Text("Log In"),
+                      child: _loggin
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text('Log In'),
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -143,25 +160,47 @@ class _LoginViewState extends State<LoginView> {
                     child: ElevatedButton.icon(
                       onPressed: () async {
                         // Google Log In Function Added here (Same function used for Sign Up)
+                        setState(() {
+                          _logginGoogle = true;
+                        });
                         User? user = await _itUserAuthSDK.googleSignUp();
                         print('Google Log In function is called $mounted');
                         if (user != null && mounted) {
-                          DsdToastMessages.success(context,
-                              text: "Google Login Successful");
+                          final DocumentSnapshot userDoc =
+                              await usersCollection.doc(user.uid).get();
                           handleSignUp(2);
-                          await Future.delayed(const Duration(seconds: 2));
-                          context.goNamed(routeNames.experts);
+                          if (!userDoc.exists) {
+                            context.goNamed(routeNames.editprofileview);
+                          } else {
+                            DsdToastMessages.success(context,
+                                text: "Google Login Successful");
+                            await Future.delayed(const Duration(seconds: 2));
+                            context.goNamed(routeNames.experts);
+                          }
                         } else {
                           print("Google Login Failed");
                         }
+                        setState(() {
+                          _logginGoogle = false;
+                        });
                         // Navigate to experts route
                       },
-                      icon: Image.asset(
-                        'assets/images/search.png',
-                        height: 24.0,
-                        width: 24.0,
-                      ),
-                      label: const Text(
+                      icon: _logginGoogle
+                          ? const SizedBox.shrink()
+                          : Image.asset(
+                              'assets/images/search.png',
+                              height: 24.0,
+                              width: 24.0,
+                            ),
+                      label:  _logginGoogle
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.black,
+                              ),
+                            )
+                          : const Text(
                         'Log in with Google',
                         style: TextStyle(fontSize: 18.0),
                       ),
@@ -205,11 +244,10 @@ class _LoginViewState extends State<LoginView> {
                       TextButton(
                         onPressed: () {
                           // Add your Forgot Password logic here
-                          _itUserAuthSDK.getUser();
+                          print(_itUserAuthSDK.getUser());
                         },
                         onLongPress: () {
-                          DsdToastMessages.success(context,
-                              text: "Toast added");
+                          _itUserAuthSDK.signOut();
                         },
                         child: const Text(
                           "Forget Password",

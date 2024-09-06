@@ -96,7 +96,12 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                   onPressed: () async {
                     if (formKey.currentState?.validate() ?? false) {
                       String link = linkController.text;
-                      await _dsdAppointmentController.updateConfirmation(appointment.id!, link,appointment.userId!);
+                      print("${appointment.id!} ${appointment.userId} ${appointment.expertId}");
+                      await _dsdAppointmentController.updateConfirmation(
+                          appointment.id!,
+                          link,
+                          appointment.userId!,
+                          appointment.expertId!);
                       Navigator.pop(context);
                     }
                   },

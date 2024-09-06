@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/helper/toast.dart';
 import 'package:insighttalk_frontend/router.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 
@@ -17,6 +19,9 @@ class _SignUpViewState extends State<SignUpView> {
   TextEditingController confirmPasswordController = TextEditingController();
   final bool _isNotValidate = false;
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
+  final CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('userDetails');
+  bool _loggin = false, _logginGoogle = false;
 
   bool _isHidden = true;
   @override
@@ -114,6 +119,9 @@ class _SignUpViewState extends State<SignUpView> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
+                        setState(() {
+                          _loggin = true;
+                        });
                         if (passwordController.text ==
                             confirmPasswordController.text) {
                           User? user =
@@ -121,17 +129,36 @@ class _SignUpViewState extends State<SignUpView> {
                                   email: emailController.text.trim(),
                                   password: passwordController.text);
                           if (user != null && mounted) {
-                            context.goNamed(routeNames.editprofileview);
-                            // context.goNamed(routeNames.experts);
+                            final DocumentSnapshot userDoc =
+                                await usersCollection.doc(user.uid).get();
+                            if (!userDoc.exists) {
+                              context.goNamed(routeNames.editprofileview);
+                            } else {
+                              DsdToastMessages.error(context,
+                                  text:
+                                      "User with this email already exist (Try Sign In)");
+                              // context.goNamed(routeNames.signup);
+                            }
                           } else {
                             print("Sign Up Failed");
                           }
                         } else {
                           print("Password and Confirm Passwords are not same");
                         }
+                        setState(() {
+                          _loggin = false;
+                        });
                         // const ProfileScreen();
                       },
-                      child: const Text("Sign Up"),
+                      child: _loggin
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text('Sign Up'),
                     ),
                   ),
                   const SizedBox(
@@ -164,27 +191,49 @@ class _SignUpViewState extends State<SignUpView> {
                     height: 30,
                   ),
                   SizedBox(
+                    width: 100,
                     child: ElevatedButton.icon(
                       onPressed: () async {
                         // Google Sign Up Function Added here (Same function used for Log In)
+                        setState(() {
+                          _logginGoogle = true;
+                        });
                         User? user = await _itUserAuthSDK.googleSignUp();
                         if (user != null && mounted) {
-                          context.goNamed(routeNames.editprofileview);
-                          // const ProfileScreen();
+                          final DocumentSnapshot userDoc =
+                              await usersCollection.doc(user.uid).get();
+                          if (!userDoc.exists) {
+                            context.goNamed(routeNames.editprofileview);
+                          } else {
+                            context.goNamed(routeNames.experts);
+                          }
                         } else {
                           print("Google Login Failed");
                         }
+                        setState(() {
+                          _logginGoogle = false;
+                        });
                         // Navigate to experts route
                       },
-                      icon: Image.asset(
-                        'assets/images/search.png',
-                        height: 24.0,
-                        width: 24.0,
-                      ),
-                      label: const Text(
-                        'SignUp with Google',
-                        style: TextStyle(fontSize: 18.0),
-                      ),
+                      icon: _logginGoogle
+                          ? const SizedBox.shrink()
+                          : Image.asset(
+                              'assets/images/search.png',
+                              height: 24.0,
+                              width: 24.0,
+                            ),
+                      label: _logginGoogle
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.black,
+                              ),
+                            )
+                          : const Text(
+                              'Log in with Google',
+                              style: TextStyle(fontSize: 18.0),
+                            ),
                       style: ButtonStyle(
                         padding: WidgetStateProperty.all<EdgeInsets>(
                           const EdgeInsets.symmetric(

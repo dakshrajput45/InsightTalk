@@ -15,7 +15,7 @@ class Dsdtoken {
   }
   Future<String?> getUserFcmToken(String userId) async {
     try {
-      var result = await _db.collection("user").doc(userId).get();
+      var result = await _db.collection("userDetails").doc(userId).get();
       print(result.data()?['fcmToken'] as String?);
       return result.data()?['fcmToken'] as String?;
     } catch (e) {

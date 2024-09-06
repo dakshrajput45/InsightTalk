@@ -2,12 +2,18 @@ import 'dart:ffi';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter/services.dart';
+
+import 'package:go_router/go_router.dart';
+
 import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_frontend/pages/appointment/appointment_controller.dart';
+import 'package:insighttalk_frontend/router.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
 class BookAppointmentView extends StatefulWidget {
   final DsdExpert expertData;
@@ -195,6 +201,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
             const SizedBox(
               height: 20,
             ),
+
             const Text("Select Date and Time",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
             const SizedBox(
@@ -206,6 +213,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                 appointmentTime = appointmentTimestamp;
               },
             ),
+
             const SizedBox(
               height: 20,
             ),
@@ -282,6 +290,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                       [selectedCategory],
                       60,
                       "20 min");
+                  _showBookingConfirmationDialog();
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -294,6 +303,45 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showBookingConfirmationDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Prevent dismissal by clicking outside the dialog
+      builder: (BuildContext context) {
+        // Delay to automatically dismiss the dialog and navigate to the new page
+        Future.delayed(const Duration(seconds: 3), () {
+          Navigator.of(context).pop(); // Dismiss the dialog
+          // Navigate to the new page after the dialog is dismissed
+          context.goNamed(routeNames.experts);
+        });
+
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Lottie animation
+              Lottie.asset(
+                'assets/lottie/booking_success.json', // Path to your Lottie animation file
+                height: 150,
+                width: 150,
+              ),
+              const SizedBox(height: 20),
+              // Confirmation message
+              const Text(
+                'Appointment Booked',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

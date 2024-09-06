@@ -84,8 +84,10 @@ class _UserProfileViewState extends State<UserProfileView> {
                     Container(
                       height: 120,
                       width: 120,
+
                       margin:
                           const EdgeInsets.only(top: 40, left: 16, bottom: 10),
+
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         color: Colors.grey.shade200,
@@ -102,8 +104,10 @@ class _UserProfileViewState extends State<UserProfileView> {
                             ),
                           ),
                         ),
+
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
+
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -127,17 +131,12 @@ class _UserProfileViewState extends State<UserProfileView> {
                               break;
                             case 'create chat room':
                               await _dsdChatApis.createChatRoom(
-                                  "g5aIvBvX3TgkhAue0cKOKdTrU1r1",
-                                  "g5aIvBvX3TgkhAue0cKOKdTrU1r1");
+                                  "g5aIvBvX3TgkhAue0cKOKdTrU1r1", "g5aIvBvX3TgkhAue0cKOKdTrU1r1");
                           }
                         },
                         itemBuilder: (BuildContext context) {
-                          return {
-                            'Edit Profile',
-                            'Settings',
-                            'Logout',
-                            'create chat room'
-                          }.map((String choice) {
+                          return {'Edit Profile', 'Settings', 'Logout', 'create chat room'}
+                              .map((String choice) {
                             return PopupMenuItem<String>(
                               value: choice,
                               child: Text(
@@ -166,8 +165,7 @@ class _UserProfileViewState extends State<UserProfileView> {
                     children: [
                       Text(
                         "${userData?.userName}",
-                        style: TextStyle(
-                            fontSize: 4.sh, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 4.sh, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(
                         height: 5,
@@ -192,8 +190,7 @@ class _UserProfileViewState extends State<UserProfileView> {
                     children: [
                       Text(
                         "Your Categories",
-                        style: TextStyle(
-                            fontSize: 24.0, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -207,8 +204,7 @@ class _UserProfileViewState extends State<UserProfileView> {
                     child: GridView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3, // Number of columns
                         crossAxisSpacing: 10.0,
                         mainAxisSpacing: 10.0,
@@ -272,8 +268,7 @@ class _UserProfileViewState extends State<UserProfileView> {
                   ),
                 Center(
                   child: Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 20.0),
+                    margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
                     child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,

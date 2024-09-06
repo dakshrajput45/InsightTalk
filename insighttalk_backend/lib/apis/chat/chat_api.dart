@@ -2,14 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
 import 'package:insighttalk_backend/apis/userApis/user_details_api.dart';
+import 'package:insighttalk_backend/helper/get_fcm_token.dart';
 import 'package:insighttalk_backend/modal/modal_chat_rooms.dart';
+import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_backend/modal/modal_message.dart';
+import 'package:insighttalk_backend/modal/modal_user.dart';
 import 'package:insighttalk_backend/services/push_notification_service.dart.dart';
 
 class DsdChatApis {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final DsdUserDetailsApis _dsdUserDetailsApis = DsdUserDetailsApis();
   final DsdExpertApis _dsdExpertApis = DsdExpertApis();
+  final Dsdtoken _token = Dsdtoken();
+
   final DsdPushNotificationService dsdPushNotificationService =
       DsdPushNotificationService();
 
@@ -17,17 +22,13 @@ class DsdChatApis {
 
   Future<String> createChatRoom(String userId, String expertId) async {
     try {
-      var user = await _dsdUserDetailsApis.fetchUserById(userId: userId);
-      var expert = await _dsdExpertApis.fetchExpertById(expertId: expertId);
-
       final chatRoom = _firestore.collection('chatRooms').doc();
       final newChatRoom = DsdChatRooms(
-          userId: userId,
-          expertId: expertId,
-          lock: false,
-          lastMessage: null,
-          user: user,
-          expert: expert);
+        userId: userId,
+        expertId: expertId,
+        lock: false,
+        lastMessage: null,
+      );
       await chatRoom.set(newChatRoom.toJson());
       return chatRoom.id;
     } catch (e) {
@@ -93,6 +94,7 @@ class DsdChatApis {
         id: messageRef.id,
         text: message.text,
         time: message.time,
+        senderId: message.senderId,
         senderName: message.senderName,
       );
 
@@ -101,16 +103,18 @@ class DsdChatApis {
         _updateLastMessage(chatRoom.id!, newMessage),
       ]);
       print("kch to ho");
-      bool isUser =
-          message.senderName == chatRoom.user!.userName! ? true : false;
+      bool isUser = message.senderId == chatRoom.userId! ? true : false;
       print(isUser);
-      String token = isUser ? chatRoom.expert!.fcmToken! : chatRoom.user!.fcmToken!;
+      String? token = isUser
+          ? await _token.getExpertFcmToken(chatRoom.expertId!)
+          : await _token.getUserFcmToken(chatRoom.userId!);
 
       print("token = $token");
       dsdPushNotificationService.sendMessageNotification(
-          token, message.senderName!, message.text!);
+          token!, message.senderName!, message.text!);
     } catch (e) {
       print("Error sending notification: $e");
+      rethrow;
     }
   }
 
@@ -170,6 +174,28 @@ class DsdChatApis {
       }
 
       return (<DsdMessage>[], startAfter);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<(String, String)> fetchNameAndImage(String id, bool isUser) async {
+    try {
+      print(id);
+      print(isUser);
+      String name;
+      String profileImage;
+
+      if (isUser) {
+        DsdUser? user = await _dsdUserDetailsApis.fetchUserById(userId: id);
+        name = user!.userName!;
+        profileImage = user.profileImage!;
+      } else {
+        DsdExpert? expert = await _dsdExpertApis.fetchExpertById(expertId: id);
+        name = expert!.expertName!;
+        profileImage = expert.profileImage!;
+      }
+      return (name, profileImage);
     } catch (e) {
       rethrow;
     }

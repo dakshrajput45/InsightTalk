@@ -43,13 +43,6 @@ class _HomeViewState extends State<HomeView> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                context.pushNamed(routeNames.chatRooms);
-              },
-              icon: const Icon(Icons.chat_outlined))
-        ],
       ),
       body: widget.navigationShell, // Display the current page
       bottomNavigationBar: BottomNavigationBar(
@@ -66,7 +59,7 @@ class _HomeViewState extends State<HomeView> {
                 context.goNamed(routeNames.appointment);
                 break;
               case 2:
-                context.goNamed(routeNames.paymentgateway);
+                context.pushNamed(routeNames.chatRooms);
                 break;
               case 3:
                 context.goNamed(routeNames.userprofile);
@@ -88,11 +81,10 @@ class _HomeViewState extends State<HomeView> {
             label: 'Appointment',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_outlined),
-            activeIcon: Icon(Icons.payment),
-            label: 'Payment Gateway',
+            icon: Icon(Icons.chat_outlined),
+            activeIcon: Icon(Icons.chat_rounded),
+            label: 'chat',
           ),
-          
           BottomNavigationBarItem(
             activeIcon: Icon(Icons.person),
             icon: Icon(Icons.person_outline),

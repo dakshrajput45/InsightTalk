@@ -10,11 +10,10 @@ class DsdChatController {
   final List<DsdChatRooms> _myChatRooms = [];
   List<DsdChatRooms> get myChatRooms => _myChatRooms;
 
-  Future<void> sendMessage(
-      {
-      required DsdChatRooms room,
-      required DsdMessage message,
-      }) async {
+  Future<void> sendMessage({
+    required DsdChatRooms room,
+    required DsdMessage message,
+  }) async {
     try {
       await dsdChatSdk.sendMessage(
         message: message,

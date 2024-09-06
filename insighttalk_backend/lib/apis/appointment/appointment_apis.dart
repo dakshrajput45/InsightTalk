@@ -8,8 +8,8 @@ import 'package:insighttalk_backend/services/push_notification_service.dart.dart
 class DsdAppointmentApis {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final _collectionPath = "appointments";
-  final DsdChatApis _dsdChatApis = DsdChatApis();
   final Dsdtoken _token = Dsdtoken();
+  final DsdChatApis _dsdChatApis = DsdChatApis();
   final DsdPushNotificationService _dsdPushNotificationService =
       DsdPushNotificationService();
 
@@ -122,20 +122,22 @@ class DsdAppointmentApis {
     }
   }
 
-  Future<void> updateConfirmation(String appointmentId, String link, String userId) async {
+  Future<void> updateConfirmation(
+      String appointmentId, String link, String userId, String expertId) async {
     try {
+      String chatRoomId = await _dsdChatApis.createChatRoom(userId, expertId);
+      print('this is chatRoom Id $chatRoomId');
       DocumentReference docRef =
           _db.collection(_collectionPath).doc(appointmentId);
 
-      await docRef.update({
-        'confirmation': true,
-        'linkAdded': link,
-      });
+      await docRef.update(
+          {'confirmation': true, 'linkAdded': link, 'chatRoomId': chatRoomId});
+
       var token = await _token.getUserFcmToken(userId);
       _dsdPushNotificationService.sendAppointmentLinkAdded(token!);
       print('Document updated successfully.');
     } catch (e) {
-      print('Error updating document: $e');
+      print('Error updating Document: $e');
       rethrow;
     }
   }
