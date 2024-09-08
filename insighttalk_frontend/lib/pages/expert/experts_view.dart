@@ -279,23 +279,14 @@ class _CategoryCardSectionState extends State<CategoryCardSection> {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height * 0.275,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                widget.category,
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: const Text(
-                  "See all",
-                  style: TextStyle(fontSize: 16),
-                ),
-              )
-            ],
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12.0, top: 10.0),
+            child: Text(
+              widget.category,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
           ),
           const SizedBox(height: 5.0),
           if (_isLoading) // Show a loading indicator while data is loading

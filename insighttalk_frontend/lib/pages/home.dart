@@ -76,8 +76,8 @@ class _HomeViewState extends State<HomeView> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.groups_outlined),
-            activeIcon: Icon(Icons.dock_rounded),
+            icon: Icon(Icons.calendar_month_outlined),
+            activeIcon: Icon(Icons.calendar_month_rounded),
             label: 'Appointment',
           ),
           BottomNavigationBarItem(
