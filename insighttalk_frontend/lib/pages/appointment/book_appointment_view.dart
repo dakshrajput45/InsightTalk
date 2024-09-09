@@ -36,7 +36,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
   final DsdAvailablitySDK _dsdExpertAvalabilityApis = DsdAvailablitySDK();
   String selectedCategory = '';
   int selectedDuration = 0;
-  double price = 0.00;
+  int price = 0;
   Timestamp? appointmentTime;
   final int _maxCharacters = 500;
   DsdExpertAvailability? expertAvailability;
@@ -210,7 +210,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
               onDurationSelected: (selectedDuration) {
                 setState(() {
                   selectedDuration = selectedDuration;
-                  (selectedDuration != 0) ? price = (selectedDuration * 5) - 40.00 : price = 0.00;
+                  (selectedDuration != 0) ? price = (selectedDuration * 5) - 40 : price = 0;
                 });
               },
             ),
@@ -293,7 +293,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
               ElevatedButton(
                 onPressed: () async {
                   PaymentService _paymentService = PaymentService();
-                  final order = DsdOrder(amount: 6000, currency: "INR", receipt: 'receipt_12345');
+                  final order = DsdOrder(amount: price*100, currency: "INR", receipt: 'receipt_12345');
                   final orderDetails = await _paymentService.createOrder(order: order);
                   // print("Order ID : ${orderDetails!['id']}");
                   if (orderDetails != null) {
@@ -315,7 +315,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                       appointmentTime!,
                       reasonController.text,
                       [selectedCategory],
-                      60,
+                      price,
                       selectedDuration);
                   _showBookingConfirmationDialog();
                 },
