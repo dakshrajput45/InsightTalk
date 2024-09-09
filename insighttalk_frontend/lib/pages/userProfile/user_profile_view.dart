@@ -126,9 +126,6 @@ class _UserProfileViewState extends State<UserProfileView> {
                               _itUserAuthSDK.signOut();
                               context.goNamed(routeNames.login);
                               break;
-                            case 'create chat room':
-                              await _dsdChatApis.createChatRoom(
-                                  "g5aIvBvX3TgkhAue0cKOKdTrU1r1", "g5aIvBvX3TgkhAue0cKOKdTrU1r1");
                           }
                         },
                         itemBuilder: (BuildContext context) {
