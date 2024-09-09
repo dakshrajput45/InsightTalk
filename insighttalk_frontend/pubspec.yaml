@@ -76,8 +76,8 @@ flutter:
     - assets/ads/ad_image2.jpg
     - assets/ads/ad_image3.jpg
     - assets/sounds/pop.mp3
-    - .env
     - assets/lottie/booking_success.json
+    - .env
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
