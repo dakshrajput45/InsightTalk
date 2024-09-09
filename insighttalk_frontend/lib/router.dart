@@ -68,11 +68,6 @@ class RouterConfig {
         builder: (context, state) => const SignUpView(),
       ),
       GoRoute(
-        path: '/chatRooms',
-        name: routeNames.chatRooms,
-        builder: (context, state) => const ChatRoomsView(),
-      ),
-      GoRoute(
         path:
             '/expertsOfCategory/:categoryTitle', // Updated path to include categoryTitle
         name: routeNames.expertsOfCategory,
@@ -121,10 +116,9 @@ class RouterConfig {
                     const NoTransitionPage(child: AppointmentsView()),
               ),
               GoRoute(
-                path: '/paymentgateway',
-                name: routeNames.paymentgateway,
-                pageBuilder: (context, state) =>
-                    const NoTransitionPage(child: PaymentGatewayView()),
+                path: '/chatRooms',
+                name: routeNames.chatRooms,
+                builder: (context, state) => const ChatRoomsView(),
               ),
               GoRoute(
                 path: '/userprofile',

@@ -22,7 +22,20 @@ class DsdChatApis {
 
   Future<String> createChatRoom(String userId, String expertId) async {
     try {
+      // Check if a chat room with the same userId and expertId already exists
+      final existingChatRoom = await _firestore
+          .collection('chatRooms')
+          .where('userId', isEqualTo: userId)
+          .where('expertId', isEqualTo: expertId)
+          .limit(1) // Limit to 1 result since we just need to know if it exists
+          .get();
+
+      if (existingChatRoom.docs.isNotEmpty) {
+        // If a chat room exists, return the existing chat room ID
+        return existingChatRoom.docs.first.id;
+      }
       final chatRoom = _firestore.collection('chatRooms').doc();
+
       final newChatRoom = DsdChatRooms(
         userId: userId,
         expertId: expertId,

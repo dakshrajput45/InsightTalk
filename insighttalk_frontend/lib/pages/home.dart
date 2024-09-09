@@ -59,7 +59,7 @@ class _HomeViewState extends State<HomeView> {
                 context.goNamed(routeNames.appointment);
                 break;
               case 2:
-                context.pushNamed(routeNames.chatRooms);
+                context.goNamed(routeNames.chatRooms);
                 break;
               case 3:
                 context.goNamed(routeNames.userprofile);
