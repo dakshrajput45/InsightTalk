@@ -19,7 +19,7 @@ class ChatRoomsView extends StatefulWidget {
 class _ChatRoomsViewState extends State<ChatRoomsView> {
   bool _loading = false;
   DsdChatController chatController = DsdChatController();
-  DsdChatApis _dsdChatApis = DsdChatApis();
+  final DsdChatApis _dsdChatApis = DsdChatApis();
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   SharedPreferences? _prefs;
 
@@ -78,9 +78,6 @@ class _ChatRoomsViewState extends State<ChatRoomsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Messages"),
-      ),
       body: _loading
           ? const Center(
               child: CircularProgressIndicator(),
@@ -104,9 +101,9 @@ class _ChatRoomsViewState extends State<ChatRoomsView> {
                             await _loadData();
                           },
                           child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 16),
+                            margin: const EdgeInsets.symmetric(vertical: 8),
                             padding: const EdgeInsets.symmetric(
-                                vertical: 4, horizontal: 12),
+                                 horizontal: 12),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -163,10 +160,8 @@ class _ChatRoomsViewState extends State<ChatRoomsView> {
                             ),
                           ),
                         ),
-                        Divider(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHigh,
+                        const Divider(
+                          color: Colors.grey,
                         ),
                       ],
                     );

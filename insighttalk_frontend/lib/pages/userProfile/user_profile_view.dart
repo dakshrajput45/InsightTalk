@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:insighttalk_backend/apis/chat/chat_api.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/modal/modal_category.dart';
 import 'package:insighttalk_backend/modal/modal_user.dart';
@@ -20,7 +19,7 @@ class UserProfileView extends StatefulWidget {
 class _UserProfileViewState extends State<UserProfileView> {
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   final DsdProfileController _dsdProfileController = DsdProfileController();
-  final DsdChatApis _dsdChatApis = DsdChatApis();
+
   bool _loading = true;
   List<DsdCategory>? categories = [];
   DsdUser? userData;
@@ -81,10 +80,8 @@ class _UserProfileViewState extends State<UserProfileView> {
                     Container(
                       height: 120,
                       width: 120,
-
                       margin:
                           const EdgeInsets.only(top: 40, left: 16, bottom: 10),
-
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         color: Colors.grey.shade200,
@@ -101,10 +98,8 @@ class _UserProfileViewState extends State<UserProfileView> {
                             ),
                           ),
                         ),
-
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
-
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -129,8 +124,12 @@ class _UserProfileViewState extends State<UserProfileView> {
                           }
                         },
                         itemBuilder: (BuildContext context) {
-                          return {'Edit Profile', 'Settings', 'Logout', 'create chat room'}
-                              .map((String choice) {
+                          return {
+                            'Edit Profile',
+                            'Settings',
+                            'Logout',
+                            'create chat room'
+                          }.map((String choice) {
                             return PopupMenuItem<String>(
                               value: choice,
                               child: Text(
@@ -159,7 +158,8 @@ class _UserProfileViewState extends State<UserProfileView> {
                     children: [
                       Text(
                         "${userData?.userName}",
-                        style: TextStyle(fontSize: 4.sh, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 4.sh, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(
                         height: 5,
@@ -184,7 +184,8 @@ class _UserProfileViewState extends State<UserProfileView> {
                     children: [
                       Text(
                         "Your Categories",
-                        style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 24.0, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -198,7 +199,8 @@ class _UserProfileViewState extends State<UserProfileView> {
                     child: GridView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3, // Number of columns
                         crossAxisSpacing: 10.0,
                         mainAxisSpacing: 10.0,
@@ -262,7 +264,8 @@ class _UserProfileViewState extends State<UserProfileView> {
                   ),
                 Center(
                   child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 20.0),
                     child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
