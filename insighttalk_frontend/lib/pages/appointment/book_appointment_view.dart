@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:go_router/go_router.dart';
+import 'package:insighttalk_backend/apis/availablity/availablity_sdk.dart';
 
 import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
 
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
+import 'package:insighttalk_backend/modal/modal_availablity.dart';
 import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_frontend/pages/appointment/appointment_controller.dart';
 import 'package:insighttalk_frontend/router.dart';
@@ -31,11 +33,13 @@ class BookAppointmentView extends StatefulWidget {
 
 class _BookAppointmentViewState extends State<BookAppointmentView> {
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
+  final DsdAvailablitySDK _dsdExpertAvalabilityApis = DsdAvailablitySDK();
   String selectedCategory = '';
   int selectedDuration = 0;
   double price = 0.00;
   Timestamp? appointmentTime;
   final int _maxCharacters = 500;
+  DsdExpertAvailability? expertAvailability;
 
   final DsdAppointmentController _dsdAppointmentController =
       DsdAppointmentController();
@@ -63,9 +67,24 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
   //   }
   // }
 
+  Future<void> getExpertAvailability() async {
+    try {
+      DsdExpertAvailability? fetchedExpertAvailability =
+          await _dsdExpertAvalabilityApis
+              .getAvailability(widget.expertData.id!);
+
+      setState(() {
+        expertAvailability = fetchedExpertAvailability;
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    getExpertAvailability();
     // _loadData();
   }
 
@@ -207,19 +226,17 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
             const SizedBox(
               height: 20,
             ),
-
             const Text("Select Date and Time",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
             const SizedBox(
               height: 10,
             ),
-            // DateTimeSelector(
-            //   //availability: widget.expertData.availability,
-            //   onAppointmentSelected: (Timestamp appointmentTimestamp) {
-            //     appointmentTime = appointmentTimestamp;
-            //   },
-            // ),
-
+            DateTimeSelector(
+              availability: expertAvailability?.availability,
+              onAppointmentSelected: (Timestamp appointmentTimestamp) {
+                appointmentTime = appointmentTimestamp;
+              },
+            ),
             const SizedBox(
               height: 20,
             ),
@@ -228,7 +245,6 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
             const SizedBox(
               height: 10,
             ),
-
             TextFormField(
               maxLines: 2,
               inputFormatters: [
@@ -549,13 +565,14 @@ class _DurationSelectorState extends State<DurationSelector> {
 }
 
 class DateTimeSelector extends StatefulWidget {
-  final Map<DateTime, List<Map<String, DateTime>>>? availability;
+  final Map<DateTime, List<AvailabilitySlot>>? availability;
   final Function(Timestamp)? onAppointmentSelected;
 
-  const DateTimeSelector(
-      {super.key,
-      required this.availability,
-      required this.onAppointmentSelected});
+  const DateTimeSelector({
+    super.key,
+    required this.availability,
+    required this.onAppointmentSelected,
+  });
 
   @override
   _DateTimeSelectorState createState() => _DateTimeSelectorState();
@@ -580,130 +597,62 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
   @override
   Widget build(BuildContext context) {
     List<DateTime> availableDates = widget.availability?.keys.toList() ?? [];
-    List<Map<String, DateTime>> availableTimes =
-        selectedDate != null ? widget.availability![selectedDate!] ?? [] : [];
+    List<AvailabilitySlot>? availableTimes =
+        selectedDate != null ? widget.availability![selectedDate!] : [];
 
-    return Column(children: [
-      if (widget.availability == null || widget.availability!.isEmpty)
-        const Center(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              "Currently, there are no available appointment slots. Please contact support or check back later for updates.",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-                fontWeight: FontWeight.w500,
+    return Column(
+      children: [
+        if (widget.availability == null || widget.availability!.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                "Currently, there are no available appointment slots. Please contact support or check back later for updates.",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
-          ),
-        )
-      else
-        Column(
-          children: [
-            Wrap(
-              spacing: 6.0,
-              children: List.generate(availableDates.length, (index) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (selectedDate == availableDates[index]) {
-                        selectedDate = null;
-                        selectedTimeLabel = null;
-                        selectedStartTime = null;
-                        selectedEndTime = null;
-                      } else {
-                        selectedDate = availableDates[index];
-                        selectedTimeLabel = null;
-                      }
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: selectedDate == availableDates[index]
-                          ? const Color.fromRGBO(173, 239, 255, 1)
-                          : Colors.white,
-                      border: selectedDate == availableDates[index]
-                          ? Border.all(color: Colors.blue, width: 2.0)
-                          : Border.all(color: Colors.grey, width: 2.0),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          DateFormat('EEE').format(availableDates[index]),
-                          style: selectedDate == availableDates[index]
-                              ? const TextStyle(
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.w500)
-                              : const TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w500),
-                        ),
-                        Text(
-                          DateFormat('d/M/y').format(availableDates[index]),
-                          style: selectedDate == availableDates[index]
-                              ? const TextStyle(
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.w500)
-                              : const TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
-            ),
-            if (selectedDate != null)
-              Column(
-                children: [
-                  const SizedBox(height: 20),
-                  Wrap(
-                    spacing: 8.0,
-                    children: List.generate(availableTimes.length, (index) {
-                      DateTime startTime = availableTimes[index]['start']!;
-                      DateTime endTime = availableTimes[index]['end']!;
-
-                      String timeSlot = formatTimeSlot(startTime, endTime);
-
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedTimeLabel = timeSlot;
-                            selectedStartTime = startTime;
-                            selectedEndTime = endTime;
-
-                            DateTime appointmentStartTime =
-                                combineDateAndTime(selectedDate!, startTime);
-
-                            // Convert DateTime to Firestore Timestamp
-                            Timestamp appointmentTimestamp =
-                                Timestamp.fromDate(appointmentStartTime);
-
-                            if (widget.onAppointmentSelected != null) {
-                              widget
-                                  .onAppointmentSelected!(appointmentTimestamp);
-                            }
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: selectedTimeLabel == timeSlot
-                                ? const Color.fromRGBO(173, 239, 255, 1)
-                                : Colors.white,
-                            border: selectedTimeLabel == timeSlot
-                                ? Border.all(color: Colors.blue, width: 2.0)
-                                : Border.all(color: Colors.grey, width: 2.0),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            timeSlot,
-                            style: selectedTimeLabel == timeSlot
+          )
+        else
+          Column(
+            children: [
+              Wrap(
+                spacing: 6.0,
+                children: List.generate(availableDates.length, (index) {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (selectedDate == availableDates[index]) {
+                          selectedDate = null;
+                          selectedTimeLabel = null;
+                          selectedStartTime = null;
+                          selectedEndTime = null;
+                        } else {
+                          selectedDate = availableDates[index];
+                          selectedTimeLabel = null;
+                        }
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: selectedDate == availableDates[index]
+                            ? const Color.fromRGBO(173, 239, 255, 1)
+                            : Colors.white,
+                        border: selectedDate == availableDates[index]
+                            ? Border.all(color: Colors.blue, width: 2.0)
+                            : Border.all(color: Colors.grey, width: 2.0),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            DateFormat('EEE').format(availableDates[index]),
+                            style: selectedDate == availableDates[index]
                                 ? const TextStyle(
                                     color: Colors.blue,
                                     fontWeight: FontWeight.w500)
@@ -711,29 +660,113 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                                     color: Colors.grey,
                                     fontWeight: FontWeight.w500),
                           ),
+                          Text(
+                            DateFormat('d/M/y').format(availableDates[index]),
+                            style: selectedDate == availableDates[index]
+                                ? const TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w500)
+                                : const TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+              ),
+              if (selectedDate != null)
+                Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    Wrap(
+                      spacing: 8.0,
+                      children: List.generate(availableTimes!.length, (index) {
+                        DateTime startTime = availableTimes[index].start;
+                        DateTime endTime = availableTimes[index].end;
+
+                        String timeSlot = formatTimeSlot(startTime, endTime);
+
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedTimeLabel = timeSlot;
+                              selectedStartTime = startTime;
+                              selectedEndTime = endTime;
+
+                              DateTime appointmentStartTime =
+                                  combineDateAndTime(selectedDate!, startTime);
+
+                              Timestamp appointmentTimestamp =
+                                  Timestamp.fromDate(appointmentStartTime);
+
+                              widget.onAppointmentSelected
+                                  ?.call(appointmentTimestamp);
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: selectedTimeLabel == timeSlot
+                                  ? const Color.fromRGBO(173, 239, 255, 1)
+                                  : Colors.white,
+                              border: selectedTimeLabel == timeSlot
+                                  ? Border.all(color: Colors.blue, width: 2.0)
+                                  : Border.all(color: Colors.grey, width: 2.0),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              timeSlot,
+                              style: selectedTimeLabel == timeSlot
+                                  ? const TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.w500)
+                                  : const TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              const SizedBox(height: 20),
+              if (selectedStartTime != null && selectedEndTime != null)
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_month_rounded,
+                          color: Colors.blue,
                         ),
-                      );
-                    }),
-                  ),
-                ],
-              ),
-            const SizedBox(height: 20),
-            if (selectedStartTime != null && selectedEndTime != null)
-              Row(
-                children: [
-                  const Icon(
-                    Icons.calendar_month_rounded,
-                    color: Colors.blue,
-                  ),
-                  Text(
-                    'Appointment: ${DateFormat('E, yyyy-MM-dd').format(selectedDate!)} | ${formatTimeSlot(selectedStartTime!, selectedEndTime!)}',
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w400),
-                  ),
-                ],
-              ),
-          ],
-        )
-    ]);
+                        Text(
+                          'Appointment Date: ${DateFormat('E, yyyy-MM-dd').format(selectedDate!)} ',
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w400),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.access_time_rounded,
+                          color: Colors.blue,
+                        ),
+                        Text(
+                          'Appointment Time:${formatTimeSlot(selectedStartTime!, selectedEndTime!)}',
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w400),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+            ],
+          )
+      ],
+    );
   }
 }
