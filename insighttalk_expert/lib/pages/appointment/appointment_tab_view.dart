@@ -6,6 +6,7 @@ import 'package:insighttalk_backend/apis/appointment/appointment_apis.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/modal/modal_appointment.dart';
 import 'package:insighttalk_expert/pages/appointment/appointment_controller.dart';
+import 'package:insighttalk_backend/apis/appointment/appointment_apis.dart';
 
 class AppointmentTabView extends StatefulWidget {
   final DateTimeFilter dateTimeFilter;
@@ -96,7 +97,8 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                   onPressed: () async {
                     if (formKey.currentState?.validate() ?? false) {
                       String link = linkController.text;
-                      print("${appointment.id!} ${appointment.userId} ${appointment.expertId}");
+                      print(
+                          "${appointment.id!} ${appointment.userId} ${appointment.expertId}");
                       await _dsdAppointmentController.updateConfirmation(
                           appointment.id!,
                           link,
@@ -134,7 +136,10 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                             vertical: 8, horizontal: 12),
                         child: InkWell(
                           onTap: () {
-                            _showAppointmentDetails(context, appointment);
+                            if (!appointment.confirmation! &&
+                                widget.dateTimeFilter != DateTimeFilter.past) {
+                              _showAppointmentDetails(context, appointment);
+                            }
                           },
                           child: Column(
                             children: <Widget>[
@@ -310,7 +315,10 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                               ),
                                             ),
                                             onPressed: () {
-                                              if (!appointment.confirmation!) {
+                                              print(widget.dateTimeFilter);
+                                              if (!appointment.confirmation! &&
+                                                  widget.dateTimeFilter !=
+                                                      DateTimeFilter.past) {
                                                 _showAppointmentDetails(
                                                     context, appointment);
                                               }
