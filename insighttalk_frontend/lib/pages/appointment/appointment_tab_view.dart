@@ -168,7 +168,7 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                                 width: 4,
                                               ),
                                               Text(
-                                                appointment.duration!,
+                                                appointment.duration!.toString(),
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodySmall

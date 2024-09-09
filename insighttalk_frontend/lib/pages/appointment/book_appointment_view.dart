@@ -41,8 +41,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
   final int _maxCharacters = 500;
   DsdExpertAvailability? expertAvailability;
 
-  final DsdAppointmentController _dsdAppointmentController =
-      DsdAppointmentController();
+  final DsdAppointmentController _dsdAppointmentController = DsdAppointmentController();
   List<DateTime> availableDates = [
     DateTime(2024, 8, 18),
     DateTime(2024, 8, 22),
@@ -70,8 +69,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
   Future<void> getExpertAvailability() async {
     try {
       DsdExpertAvailability? fetchedExpertAvailability =
-          await _dsdExpertAvalabilityApis
-              .getAvailability(widget.expertData.id!);
+          await _dsdExpertAvalabilityApis.getAvailability(widget.expertData.id!);
 
       setState(() {
         expertAvailability = fetchedExpertAvailability;
@@ -116,8 +114,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 1.0)),
+                  decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1.0)),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(0),
                     child: CachedNetworkImage(
@@ -131,8 +128,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                           ),
                         ),
                       ),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
                       fit: BoxFit.cover,
                       width: 140,
                       height: 140,
@@ -149,8 +145,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                     children: [
                       Text(
                         widget.expertData.expertName ?? 'Unknown Expert',
-                        style: const TextStyle(
-                            fontSize: 28, fontWeight: FontWeight.w600),
+                        style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(
                         height: 4,
@@ -158,9 +153,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                       Text(
                         widget.expertData.expertise ?? 'Unknown',
                         style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey),
+                            fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey),
                       ),
                       const SizedBox(
                         height: 15,
@@ -217,9 +210,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
               onDurationSelected: (selectedDuration) {
                 setState(() {
                   selectedDuration = selectedDuration;
-                  (selectedDuration != 0)
-                      ? price = (selectedDuration * 5) - 40.00
-                      : price = 0.00;
+                  (selectedDuration != 0) ? price = (selectedDuration * 5) - 40.00 : price = 0.00;
                 });
               },
             ),
@@ -294,10 +285,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                 children: [
                   const Text(
                     "Total",
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.grey),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: Colors.grey),
                   ),
                   Text("₹ $price", style: const TextStyle(fontSize: 20)),
                 ],
@@ -305,10 +293,8 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
               ElevatedButton(
                 onPressed: () async {
                   PaymentService _paymentService = PaymentService();
-                  final order = DsdOrder(
-                      amount: 6000, currency: "INR", receipt: 'receipt_12345');
-                  final orderDetails =
-                      await _paymentService.createOrder(order: order);
+                  final order = DsdOrder(amount: 6000, currency: "INR", receipt: 'receipt_12345');
+                  final orderDetails = await _paymentService.createOrder(order: order);
                   // print("Order ID : ${orderDetails!['id']}");
                   if (orderDetails != null) {
                     DsdCheckout? checkout = _paymentService.createCheckout(
@@ -326,16 +312,15 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                   await _dsdAppointmentController.createAppointment(
                       userId,
                       widget.expertData.id!,
-                      Timestamp.now(),
+                      appointmentTime!,
                       reasonController.text,
                       [selectedCategory],
                       60,
-                      "20 min");
+                      selectedDuration);
                   _showBookingConfirmationDialog();
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 10.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
                   textStyle: const TextStyle(fontSize: 22),
                 ),
                 child: const Text("Booking"),
@@ -350,8 +335,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
   void _showBookingConfirmationDialog() {
     showDialog(
       context: context,
-      barrierDismissible:
-          false, // Prevent dismissal by clicking outside the dialog
+      barrierDismissible: false, // Prevent dismissal by clicking outside the dialog
       builder: (BuildContext context) {
         // Delay to automatically dismiss the dialog and navigate to the new page
         Future.delayed(const Duration(seconds: 3), () {
@@ -389,8 +373,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
 
 class CategorySelector extends StatefulWidget {
   final List<String> categories;
-  final ValueChanged<String>
-      onCategorySelected; // Callback for category selection
+  final ValueChanged<String> onCategorySelected; // Callback for category selection
 
   const CategorySelector({
     super.key,
@@ -426,8 +409,7 @@ class _CategorySelectorState extends State<CategorySelector> {
                     selectedIndex = index;
                     selectedCategory = widget.categories[index];
                   }
-                  widget.onCategorySelected(
-                      selectedCategory); // Notify parent of selection
+                  widget.onCategorySelected(selectedCategory); // Notify parent of selection
                 });
               },
               child: Container(
@@ -514,8 +496,7 @@ class _DurationSelectorState extends State<DurationSelector> {
                     selectedIndex = index;
                     selectedDuration = widget.durations[index];
                   }
-                  widget.onDurationSelected(
-                      selectedDuration); // Notify parent of selection
+                  widget.onDurationSelected(selectedDuration); // Notify parent of selection
                 });
               },
               child: Container(
@@ -653,22 +634,14 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                           Text(
                             DateFormat('EEE').format(availableDates[index]),
                             style: selectedDate == availableDates[index]
-                                ? const TextStyle(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.w500)
-                                : const TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w500),
+                                ? const TextStyle(color: Colors.blue, fontWeight: FontWeight.w500)
+                                : const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
                           ),
                           Text(
                             DateFormat('d/M/y').format(availableDates[index]),
                             style: selectedDate == availableDates[index]
-                                ? const TextStyle(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.w500)
-                                : const TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w500),
+                                ? const TextStyle(color: Colors.blue, fontWeight: FontWeight.w500)
+                                : const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
@@ -701,8 +674,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                               Timestamp appointmentTimestamp =
                                   Timestamp.fromDate(appointmentStartTime);
 
-                              widget.onAppointmentSelected
-                                  ?.call(appointmentTimestamp);
+                              widget.onAppointmentSelected?.call(appointmentTimestamp);
                             });
                           },
                           child: Container(
@@ -719,12 +691,9 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                             child: Text(
                               timeSlot,
                               style: selectedTimeLabel == timeSlot
-                                  ? const TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.w500)
+                                  ? const TextStyle(color: Colors.blue, fontWeight: FontWeight.w500)
                                   : const TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w500),
+                                      color: Colors.grey, fontWeight: FontWeight.w500),
                             ),
                           ),
                         );
@@ -744,8 +713,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                         ),
                         Text(
                           'Appointment Date: ${DateFormat('E, yyyy-MM-dd').format(selectedDate!)} ',
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w400),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                         ),
                       ],
                     ),
@@ -757,8 +725,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                         ),
                         Text(
                           'Appointment Time:${formatTimeSlot(selectedStartTime!, selectedEndTime!)}',
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w400),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                         ),
                       ],
                     ),

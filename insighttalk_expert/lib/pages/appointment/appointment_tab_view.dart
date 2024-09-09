@@ -6,7 +6,6 @@ import 'package:insighttalk_backend/apis/appointment/appointment_apis.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/modal/modal_appointment.dart';
 import 'package:insighttalk_expert/pages/appointment/appointment_controller.dart';
-import 'package:insighttalk_backend/apis/appointment/appointment_apis.dart';
 
 class AppointmentTabView extends StatefulWidget {
   final DateTimeFilter dateTimeFilter;
@@ -24,8 +23,7 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
   String? userName;
   StreamSubscription? appointmentStream;
   DocumentSnapshot<Object?>? _lastSnapShot;
-  final DsdAppointmentController _dsdAppointmentController =
-      DsdAppointmentController();
+  final DsdAppointmentController _dsdAppointmentController = DsdAppointmentController();
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
 
   var defaultImage =
@@ -39,8 +37,7 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
     );
   }
 
-  void _showAppointmentDetails(
-      BuildContext context, DsdAppointment appointment) {
+  void _showAppointmentDetails(BuildContext context, DsdAppointment appointment) {
     final formKey = GlobalKey<FormState>();
     final TextEditingController linkController = TextEditingController();
 
@@ -63,8 +60,7 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                 const SizedBox(height: 12),
                 Text(
                   'Reason: ${appointment.reason ?? 'No reason provided'}',
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 const Text(
@@ -97,13 +93,9 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                   onPressed: () async {
                     if (formKey.currentState?.validate() ?? false) {
                       String link = linkController.text;
-                      print(
-                          "${appointment.id!} ${appointment.userId} ${appointment.expertId}");
+                      print("${appointment.id!} ${appointment.userId} ${appointment.expertId}");
                       await _dsdAppointmentController.updateConfirmation(
-                          appointment.id!,
-                          link,
-                          appointment.userId!,
-                          appointment.expertId!);
+                          appointment.id!, link, appointment.userId!, appointment.expertId!);
                       Navigator.pop(context);
                     }
                   },
@@ -132,8 +124,7 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                       var appointment = _appointments[index];
                       return Container(
                         padding: EdgeInsets.zero,
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 8, horizontal: 12),
+                        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                         child: InkWell(
                           onTap: () {
                             if (!appointment.confirmation! &&
@@ -155,21 +146,16 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                       runSpacing: 8,
                                       children: [
                                         if (appointment.category != null)
-                                          ...appointment.category!
-                                              .asMap()
-                                              .entries
-                                              .map((entry) {
+                                          ...appointment.category!.asMap().entries.map((entry) {
                                             int index = entry.key;
                                             String category = entry.value;
 
                                             // Determine the color based on the index
-                                            Color bgColor = (index % 2 == 0)
-                                                ? Colors.grey
-                                                : Colors.blue;
+                                            Color bgColor =
+                                                (index % 2 == 0) ? Colors.grey : Colors.blue;
 
-                                            Color textColor = (index % 2 == 0)
-                                                ? Colors.black
-                                                : Colors.white;
+                                            Color textColor =
+                                                (index % 2 == 0) ? Colors.black : Colors.white;
 
                                             return labelBuilder(
                                               context,
@@ -184,28 +170,21 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                       contentPadding: EdgeInsets.zero,
                                       leading: CircleAvatar(
                                         radius: 28,
-                                        foregroundImage:
-                                            CachedNetworkImageProvider(
-                                                appointment.profileImage ??
-                                                    defaultImage),
-                                        backgroundColor: Theme.of(context)
-                                            .colorScheme
-                                            .surfaceContainerHigh,
+                                        foregroundImage: CachedNetworkImageProvider(
+                                            appointment.profileImage ?? defaultImage),
+                                        backgroundColor:
+                                            Theme.of(context).colorScheme.surfaceContainerHigh,
                                         child: Icon(
                                           Icons.person,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .tertiary,
+                                          color: Theme.of(context).colorScheme.tertiary,
                                         ),
                                       ),
                                       title: Text(
                                         appointment.name!,
                                       ),
                                       subtitle: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
@@ -221,9 +200,7 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                                 width: 4,
                                               ),
                                               Text(
-                                                appointment.appointmentTime!
-                                                    .toDate()
-                                                    .toString(),
+                                                appointment.appointmentTime!.toDate().toString(),
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodySmall
@@ -249,7 +226,7 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                                 width: 4,
                                               ),
                                               Text(
-                                                appointment.duration!,
+                                                appointment.duration!.toString(),
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodySmall
@@ -294,9 +271,7 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                                 )),
                                           ),
                                         ],
-                                        surfaceTintColor: Theme.of(context)
-                                            .colorScheme
-                                            .surface,
+                                        surfaceTintColor: Theme.of(context).colorScheme.surface,
                                       ),
                                     ),
                                     const SizedBox(
@@ -307,32 +282,25 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                         Expanded(
                                           child: ElevatedButton.icon(
                                             style: ButtonStyle(
-                                              backgroundColor:
-                                                  WidgetStatePropertyAll<Color>(
-                                                Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary,
+                                              backgroundColor: WidgetStatePropertyAll<Color>(
+                                                Theme.of(context).colorScheme.secondary,
                                               ),
                                             ),
                                             onPressed: () {
                                               print(widget.dateTimeFilter);
                                               if (!appointment.confirmation! &&
-                                                  widget.dateTimeFilter !=
-                                                      DateTimeFilter.past) {
-                                                _showAppointmentDetails(
-                                                    context, appointment);
+                                                  widget.dateTimeFilter != DateTimeFilter.past) {
+                                                _showAppointmentDetails(context, appointment);
                                               }
                                             },
                                             label: !appointment.confirmation!
                                                 ? const Text(
                                                     "Confirm Meeting",
-                                                    style:
-                                                        TextStyle(fontSize: 18),
+                                                    style: TextStyle(fontSize: 18),
                                                   )
                                                 : const Text(
                                                     'Click to join Meeting',
-                                                    style:
-                                                        TextStyle(fontSize: 18),
+                                                    style: TextStyle(fontSize: 18),
                                                   ),
                                             icon: const Icon(
                                               Icons.done_all,
@@ -385,8 +353,7 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
           _isLoading = true;
         });
       }
-      var (appointments, lastSnapshot) =
-          await _dsdAppointmentController.fetchAppointments(
+      var (appointments, lastSnapshot) = await _dsdAppointmentController.fetchAppointments(
         dateFilter: dateFilter,
         uid: _itUserAuthSDK.getUser()!.uid,
         startAfter: _lastSnapShot,
@@ -424,8 +391,7 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
   }
 }
 
-Widget labelBuilder(BuildContext context, String text,
-    {Color? bgColor, Color? textColor}) {
+Widget labelBuilder(BuildContext context, String text, {Color? bgColor, Color? textColor}) {
   return Container(
     padding: const EdgeInsets.all(6),
     decoration: BoxDecoration(

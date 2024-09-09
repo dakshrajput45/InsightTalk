@@ -49,6 +49,7 @@ dependencies:
   firebase_messaging: ^15.0.4
   table_calendar: ^3.1.2
   syncfusion_flutter_calendar: ^26.2.12
+  flutter_dotenv: ^5.1.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -81,6 +82,7 @@ flutter:
   assets:
     - assets/search.png
     - assets/sounds/pop.mp3
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
