@@ -10,14 +10,8 @@ class DsdAppointmentController {
   final DsdExpertApis _dsdExpertApis = DsdExpertApis();
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
 
-  Future<void> createAppointment(
-      String userId,
-      String expertId,
-      Timestamp appointmentTime,
-      String reason,
-      List<String> category,
-      int fee,
-      String duration) async {
+  Future<void> createAppointment(String userId, String expertId, Timestamp appointmentTime,
+      String reason, List<String> category, int fee, int duration) async {
     try {
       DsdAppointment appointment = DsdAppointment(
           expertId: expertId,
@@ -60,8 +54,7 @@ class DsdAppointmentController {
 
   Future<(String, String)> fetchExpertById(String expertId) async {
     try {
-      DsdExpert? expert =
-          await _dsdExpertApis.fetchExpertById(expertId: expertId);
+      DsdExpert? expert = await _dsdExpertApis.fetchExpertById(expertId: expertId);
 
       String profileImage = expert!.profileImage!;
       String userName = expert.expertName!;

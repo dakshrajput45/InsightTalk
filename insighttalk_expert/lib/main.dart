@@ -5,6 +5,7 @@ import 'package:insighttalk_expert/firebase_options.dart';
 import 'package:insighttalk_expert/router.dart';
 import 'package:insighttalk_expert/themes/theme.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 DsdNotificationService? dsdNotificationService;
 void main() async {
@@ -12,6 +13,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await dotenv.load();
   runApp(const MyApp());
 }
 
