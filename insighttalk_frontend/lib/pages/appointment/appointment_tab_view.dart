@@ -7,6 +7,7 @@ import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/modal/modal_appointment.dart';
 import 'package:insighttalk_frontend/pages/appointment/appointment_controller.dart';
 import 'package:insighttalk_frontend/router.dart';
+import 'package:intl/intl.dart';
 
 class AppointmentTabView extends StatefulWidget {
   final DateTimeFilter dateTimeFilter;
@@ -140,9 +141,10 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                                 width: 4,
                                               ),
                                               Text(
-                                                appointment.appointmentTime!
-                                                    .toDate()
-                                                    .toString(),
+                                                DateFormat('yyyy-MM-dd HH:mm')
+                                                    .format(appointment
+                                                        .appointmentTime!
+                                                        .toDate()), // Customize the format as needed
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodySmall
@@ -168,7 +170,8 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                                 width: 4,
                                               ),
                                               Text(
-                                                appointment.duration!.toString(),
+                                                appointment.duration!
+                                                    .toString(),
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodySmall

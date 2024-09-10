@@ -6,6 +6,7 @@ import 'package:insighttalk_backend/apis/appointment/appointment_apis.dart';
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/modal/modal_appointment.dart';
 import 'package:insighttalk_expert/pages/appointment/appointment_controller.dart';
+import 'package:intl/intl.dart';
 
 class AppointmentTabView extends StatefulWidget {
   final DateTimeFilter dateTimeFilter;
@@ -200,7 +201,10 @@ class _AppointmentTabViewState extends State<AppointmentTabView> {
                                                 width: 4,
                                               ),
                                               Text(
-                                                appointment.appointmentTime!.toDate().toString(),
+                                                 DateFormat('yyyy-MM-dd HH:mm')
+                                                    .format(appointment
+                                                        .appointmentTime!
+                                                        .toDate()),
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodySmall
