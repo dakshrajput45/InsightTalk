@@ -109,9 +109,7 @@ class DsdPushNotificationService {
 
     final Map<String, dynamic> requestNotify = {
       "message": {
-
         "notification": {"title": "Your appointment is confirmed and Link is added you can join the meeting on time of appointment","body":""},
-
         "data": {},
         "token": token
       }

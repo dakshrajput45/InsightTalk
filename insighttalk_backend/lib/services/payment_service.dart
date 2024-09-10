@@ -13,7 +13,7 @@ class PaymentService {
   PaymentService() {
     _initializeService();
   }
-
+  static bool? check;
   void _initializeService() async {
     // await dotenv.load(fileName : ".env");
     // print("************** Env Loaded **************");
@@ -29,6 +29,7 @@ class PaymentService {
     print('**********************************');
     print('Payment Successful: ${response.paymentId}');
     print('**********************************');
+    check = true;
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
@@ -37,6 +38,7 @@ class PaymentService {
     print('**********************************');
     print('Payment Failed: ${response.code} - ${response.message}');
     print('**********************************');
+    check = false;
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
@@ -49,15 +51,16 @@ class PaymentService {
 
   Future<Map<String, dynamic>?> createOrder({required DsdOrder order}) async {
     final String basicAuth = "Basic " +
-        base64Encode(
-            utf8.encode('${dotenv.env['RAZORPAY_KEY_ID']}:${dotenv.env['RAZORPAY_SECRET']}'));
+        base64Encode(utf8.encode(
+            '${dotenv.env['RAZORPAY_KEY_ID']}:${dotenv.env['RAZORPAY_SECRET']}'));
 
     final String _url = dotenv.env['URL'].toString();
 
     // Request body for creating an order
 
     final Map<String, dynamic> data = {
-      "amount": order.amount, // Amount in the smallest currency (so 1000 paise = 10 INR)
+      "amount": order
+          .amount, // Amount in the smallest currency (so 1000 paise = 10 INR)
       "currency": order.currency, // Currency like "INR"
       "receipt": order.receipt ?? "receipt_12345",
       "payment_capture": 1 // Auto-capture payment (1 for auto, 0 for manual)
@@ -93,7 +96,9 @@ class PaymentService {
   }
 
   DsdCheckout? createCheckout(
-      {required int amount, required String description, required String orderId}) {
+      {required int amount,
+      required String description,
+      required String orderId}) {
     try {
       print("checkout created");
       return DsdCheckout(

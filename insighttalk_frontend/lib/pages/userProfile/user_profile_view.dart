@@ -128,7 +128,6 @@ class _UserProfileViewState extends State<UserProfileView> {
                             'Edit Profile',
                             'Settings',
                             'Logout',
-                            'create chat room'
                           }.map((String choice) {
                             return PopupMenuItem<String>(
                               value: choice,
