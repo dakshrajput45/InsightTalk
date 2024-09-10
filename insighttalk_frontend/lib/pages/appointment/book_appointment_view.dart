@@ -297,37 +297,51 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  PaymentService _paymentService = PaymentService();
-                  final order = DsdOrder(
-                      amount: price * 100,
-                      currency: "INR",
-                      receipt: 'receipt_12345');
-                  final orderDetails =
-                      await _paymentService.createOrder(order: order);
-                  // print("Order ID : ${orderDetails!['id']}");
-                  if (orderDetails != null) {
-                    DsdCheckout? checkout = _paymentService.createCheckout(
-                      amount: order.amount!,
-                      description: "Payment for services",
-                      orderId: orderDetails['id'],
-                    );
-                    // print(checkout!.toJson());
-                    if (checkout != null) {
-                      _paymentService.open_checkout(checkout);
+                  if (_validateFields()) {
+                    PaymentService _paymentService = PaymentService();
+                    final order = DsdOrder(
+                        amount: price * 100,
+                        currency: "INR",
+                        receipt: 'receipt_12345');
+                    final orderDetails =
+                        await _paymentService.createOrder(order: order);
+                    // print("Order ID : ${orderDetails!['id']}");
+                    if (orderDetails != null) {
+                      DsdCheckout? checkout = _paymentService.createCheckout(
+                        amount: order.amount!,
+                        description: "Payment for services",
+                        orderId: orderDetails['id'],
+                      );
+                      // print(checkout!.toJson());
+                      if (checkout != null) {
+                        _paymentService.open_checkout(checkout);
+                      }
                     }
+                    Future.delayed(const Duration(seconds: 10), () async {
+                      String userId = _itUserAuthSDK.getUser()!.uid;
+                      await _dsdAppointmentController.createAppointment(
+                          userId,
+                          widget.expertData.id!,
+                          appointmentTime!,
+                          reasonController.text,
+                          [selectedCategory],
+                          price,
+                          _selectedDuration);
+                      context.goNamed(routeNames.experts);
+                    });
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        backgroundColor: Colors.red,
+                        content: Row(
+                          children: [
+                            Icon(Icons.error, color: Colors.white),
+                            Text(' Please fill all the fields.'),
+                          ],
+                        ),
+                      ),
+                    );
                   }
-                  Future.delayed(const Duration(seconds: 10), () async {
-                    String userId = _itUserAuthSDK.getUser()!.uid;
-                    await _dsdAppointmentController.createAppointment(
-                        userId,
-                        widget.expertData.id!,
-                        appointmentTime!,
-                        reasonController.text,
-                        [selectedCategory],
-                        price,
-                        _selectedDuration);
-                    context.goNamed(routeNames.experts);
-                  });
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -341,6 +355,22 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
         ),
       ),
     );
+  }
+
+  bool _validateFields() {
+    if (selectedCategory.isEmpty) {
+      return false;
+    }
+    if (_selectedDuration == 0) {
+      return false;
+    }
+    if (appointmentTime == null) {
+      return false;
+    }
+    if (reasonController.text.isEmpty) {
+      return false;
+    }
+    return true;
   }
 
   void _showBookingConfirmationDialog() {
@@ -578,6 +608,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
   String? selectedTimeLabel;
   DateTime? selectedStartTime;
   DateTime? selectedEndTime;
+  bool showAllDates = false;
 
   String formatTimeSlot(DateTime start, DateTime end) {
     final startTime = DateFormat('h:mm a').format(start);
@@ -594,6 +625,9 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
     List<DateTime> availableDates = widget.availability?.keys.toList() ?? [];
     List<AvailabilitySlot>? availableTimes =
         selectedDate != null ? widget.availability![selectedDate!] : [];
+
+    List<DateTime> displayedDates =
+        showAllDates ? availableDates : availableDates.take(8).toList();
 
     return Column(
       children: [
@@ -617,17 +651,18 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
             children: [
               Wrap(
                 spacing: 6.0,
-                children: List.generate(availableDates.length, (index) {
+                runSpacing: 8.0,
+                children: List.generate(displayedDates.length, (index) {
                   return GestureDetector(
                     onTap: () {
                       setState(() {
-                        if (selectedDate == availableDates[index]) {
+                        if (selectedDate == displayedDates[index]) {
                           selectedDate = null;
                           selectedTimeLabel = null;
                           selectedStartTime = null;
                           selectedEndTime = null;
                         } else {
-                          selectedDate = availableDates[index];
+                          selectedDate = displayedDates[index];
                           selectedTimeLabel = null;
                         }
                       });
@@ -635,19 +670,19 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: selectedDate == availableDates[index]
+                        color: selectedDate == displayedDates[index]
                             ? const Color.fromRGBO(173, 239, 255, 1)
                             : Colors.white,
-                        border: selectedDate == availableDates[index]
+                        border: selectedDate == displayedDates[index]
                             ? Border.all(color: Colors.blue, width: 2.0)
                             : Border.all(color: Colors.grey, width: 2.0),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: Column(
                         children: [
                           Text(
-                            DateFormat('EEE').format(availableDates[index]),
-                            style: selectedDate == availableDates[index]
+                            DateFormat('EEE').format(displayedDates[index]),
+                            style: selectedDate == displayedDates[index]
                                 ? const TextStyle(
                                     color: Colors.blue,
                                     fontWeight: FontWeight.w500)
@@ -656,8 +691,8 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                                     fontWeight: FontWeight.w500),
                           ),
                           Text(
-                            DateFormat('d/M/y').format(availableDates[index]),
-                            style: selectedDate == availableDates[index]
+                            DateFormat('d/M/y').format(displayedDates[index]),
+                            style: selectedDate == displayedDates[index]
                                 ? const TextStyle(
                                     color: Colors.blue,
                                     fontWeight: FontWeight.w500)
@@ -671,12 +706,31 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                   );
                 }),
               ),
+              if (availableDates.length > 8 && !showAllDates)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      setState(() {
+                        showAllDates = true;
+                      });
+                    },
+                    child: const Text(
+                      "See all available dates",
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
               if (selectedDate != null)
                 Column(
                   children: [
                     const SizedBox(height: 20),
                     Wrap(
                       spacing: 8.0,
+                      runSpacing: 8.0,
                       children: List.generate(availableTimes!.length, (index) {
                         DateTime startTime = availableTimes[index].start;
                         DateTime endTime = availableTimes[index].end;
@@ -709,7 +763,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                               border: selectedTimeLabel == timeSlot
                                   ? Border.all(color: Colors.blue, width: 2.0)
                                   : Border.all(color: Colors.grey, width: 2.0),
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
                               timeSlot,
@@ -751,7 +805,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                           color: Colors.blue,
                         ),
                         Text(
-                          'Appointment Time:${formatTimeSlot(selectedStartTime!, selectedEndTime!)}',
+                          'Appointment Time: ${formatTimeSlot(selectedStartTime!, selectedEndTime!)}',
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.w400),
                         ),
@@ -760,7 +814,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                   ],
                 ),
             ],
-          )
+          ),
       ],
     );
   }
