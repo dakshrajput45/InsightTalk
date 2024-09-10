@@ -47,7 +47,7 @@ class _ChatRoomsViewState extends State<ChatRoomsView> {
       _loading = true;
     });
     await chatController.initializeSharedPreference();
-    await chatController.fetchChatRooms(hardReset: true, userId: _itUserAuthSDK.getUser()!.uid);
+    await chatController.fetchChatRooms(hardReset: true, userId: _itUserAuthSDK.getUser()!.uid,isUser: true);
 
     // Fetch name and profile image for each chat room
 

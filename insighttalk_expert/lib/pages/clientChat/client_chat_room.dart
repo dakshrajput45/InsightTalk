@@ -36,8 +36,7 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
   }
 
   Future<void> openChatRoom(BuildContext context,
-      {required String chatRoomId,
-      required DsdChatRooms chatRoom}) async {
+      {required String chatRoomId, required DsdChatRooms chatRoom}) async {
     await context.pushNamed(routeNames.chat, pathParameters: {
       "id": chatRoomId
     }, extra: {
@@ -46,12 +45,15 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
 
     chatController.logTimeToSharedPreference(chatRoomId);
 
-    if (!mounted) return; // Ensure the widget is still mounted before calling _loadData
+    if (!mounted) {
+      return; // Ensure the widget is still mounted before calling _loadData
+    }
     await _loadData();
   }
 
   Future<void> _loadData() async {
-    if (!mounted) return; // Add this line to check if the widget is still mounted
+    if (!mounted)
+      return; // Add this line to check if the widget is still mounted
 
     setState(() {
       _loading = true;
@@ -61,11 +63,13 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
 
     var userId = _itUserAuthSDK.getUser()!.uid;
 
-    await chatController.fetchChatRooms(hardReset: true, userId: userId);
+    await chatController.fetchChatRooms(
+        hardReset: true, userId: userId, isUser: false);
 
     // Fetch name and profile image for each chat room
     for (var chatRoom in chatController.myChatRooms) {
-      var details = await _dsdChatApis.fetchNameAndImage(chatRoom.userId!, true);
+      var details =
+          await _dsdChatApis.fetchNameAndImage(chatRoom.userId!, true);
       chatRoom.name = details.$1;
       chatRoom.profileImage = details.$2;
     }
@@ -107,11 +111,10 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
                         children: [
                           InkWell(
                             onTap: () async {
-                              await openChatRoom(
-                                  context,
-                                  chatRoomId: chatRoom.id!,
-                                  chatRoom: chatRoom);
-                              if (!mounted) return; // Ensure the widget is mounted before calling _loadData
+                              await openChatRoom(context,
+                                  chatRoomId: chatRoom.id!, chatRoom: chatRoom);
+                              if (!mounted)
+                                return; // Ensure the widget is mounted before calling _loadData
                               await _loadData();
                             },
                             child: Container(
@@ -124,8 +127,7 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   CircleAvatar(
-                                    foregroundImage:
-                                        CachedNetworkImageProvider(
+                                    foregroundImage: CachedNetworkImageProvider(
                                       chatRoom.profileImage!,
                                     ),
                                     child: const Icon(Icons.person),

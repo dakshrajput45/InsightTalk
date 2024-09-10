@@ -24,14 +24,14 @@ class DsdChatController {
     }
   }
 
-  fetchChatRooms({bool hardReset = false, required String userId}) async {
+  fetchChatRooms({bool hardReset = false, required String userId,required bool isUser}) async {
     if (hardReset) {
       _myChatRooms.clear();
       lastChatRoomSnapshot = null;
     }
     var rooms = await dsdChatSdk.getChatRooms(
       id: userId,
-      isUser: true,
+      isUser: isUser,
       lastDocumentSnapshot: lastChatRoomSnapshot,
     );
     _myChatRooms.addAll(rooms.$1);
