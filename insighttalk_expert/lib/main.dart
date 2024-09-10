@@ -10,7 +10,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 DsdNotificationService? dsdNotificationService;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
+  await Firebase.initializeApp(     
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await dotenv.load();

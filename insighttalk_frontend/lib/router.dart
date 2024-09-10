@@ -11,7 +11,6 @@ import 'package:insighttalk_frontend/pages/appointment/book_appointment_view.dar
 import 'package:insighttalk_frontend/pages/expert/expert_profile_view.dart';
 import 'package:insighttalk_frontend/pages/expert/experts_view.dart';
 import 'package:insighttalk_frontend/pages/home.dart';
-import 'package:insighttalk_frontend/pages/paymentgateway/payment_gateway.dart';
 import 'package:insighttalk_frontend/pages/userProfile/editprofile_view.dart';
 import 'package:insighttalk_frontend/pages/userProfile/experts_of_category_view.dart';
 import 'package:insighttalk_frontend/pages/userProfile/user_profile_view.dart';

@@ -1,15 +1,9 @@
-import 'dart:ffi';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter/services.dart';
-
 import 'package:go_router/go_router.dart';
 import 'package:insighttalk_backend/apis/availablity/availablity_sdk.dart';
-
-import 'package:insighttalk_backend/apis/expert/expert_apis.dart';
-
 import 'package:insighttalk_backend/apis/userApis/auth_user.dart';
 import 'package:insighttalk_backend/helper/toast.dart';
 import 'package:insighttalk_backend/modal/modal_availablity.dart';
@@ -17,11 +11,9 @@ import 'package:insighttalk_backend/modal/modal_expert.dart';
 import 'package:insighttalk_frontend/pages/appointment/appointment_controller.dart';
 import 'package:insighttalk_frontend/router.dart';
 import 'package:intl/intl.dart';
-
 import 'package:insighttalk_backend/modal/modal_checkout.dart';
 import 'package:insighttalk_backend/modal/modal_order.dart';
 import 'package:insighttalk_backend/services/payment_service.dart';
-
 import 'package:lottie/lottie.dart';
 
 class BookAppointmentView extends StatefulWidget {

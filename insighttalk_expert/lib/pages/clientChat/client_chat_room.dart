@@ -30,6 +30,11 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
     _loadData();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> openChatRoom(BuildContext context,
       {required String chatRoomId,
       required DsdChatRooms chatRoom}) async {
@@ -40,9 +45,14 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
     });
 
     chatController.logTimeToSharedPreference(chatRoomId);
+
+    if (!mounted) return; // Ensure the widget is still mounted before calling _loadData
+    await _loadData();
   }
 
   Future<void> _loadData() async {
+    if (!mounted) return; // Add this line to check if the widget is still mounted
+
     setState(() {
       _loading = true;
     });
@@ -51,8 +61,7 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
 
     var userId = _itUserAuthSDK.getUser()!.uid;
 
-    await chatController.fetchChatRooms(
-        hardReset: true, userId: userId);
+    await chatController.fetchChatRooms(hardReset: true, userId: userId);
 
     // Fetch name and profile image for each chat room
     for (var chatRoom in chatController.myChatRooms) {
@@ -60,6 +69,8 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
       chatRoom.name = details.$1;
       chatRoom.profileImage = details.$2;
     }
+
+    if (!mounted) return; // Check again before calling setState
 
     setState(() {
       _loading = false;
@@ -85,8 +96,8 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
             )
           : chatController.myChatRooms.isNotEmpty
               ? Container(
-                margin: const EdgeInsets.symmetric(vertical: 20),
-                child: ListView.builder(
+                  margin: const EdgeInsets.symmetric(vertical: 20),
+                  child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: chatController.myChatRooms.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -96,9 +107,11 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
                         children: [
                           InkWell(
                             onTap: () async {
-                              await openChatRoom(context,
+                              await openChatRoom(
+                                  context,
                                   chatRoomId: chatRoom.id!,
                                   chatRoom: chatRoom);
+                              if (!mounted) return; // Ensure the widget is mounted before calling _loadData
                               await _loadData();
                             },
                             child: Container(
@@ -106,11 +119,13 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
                               padding: const EdgeInsets.symmetric(
                                   vertical: 2, horizontal: 12),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   CircleAvatar(
-                                    foregroundImage: CachedNetworkImageProvider(
+                                    foregroundImage:
+                                        CachedNetworkImageProvider(
                                       chatRoom.profileImage!,
                                     ),
                                     child: const Icon(Icons.person),
@@ -122,9 +137,7 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                            chatRoom.name!
-                                                .toUpperCase(),
+                                        Text(chatRoom.name!.toUpperCase(),
                                             style: const TextStyle(
                                               fontSize: 16.0,
                                               fontWeight: FontWeight.bold,
@@ -163,13 +176,12 @@ class _CleintChatRoomViewState extends State<CleintChatRoomView> {
                               ),
                             ),
                           ),
-                          const Divider(
-                            color: Colors.grey)
+                          const Divider(color: Colors.grey)
                         ],
                       );
                     },
                   ),
-              )
+                )
               : _buildEmptyState(),
     );
   }

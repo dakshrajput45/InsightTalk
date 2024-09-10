@@ -33,22 +33,25 @@ class _AvailabilityViewState extends State<AvailabilityView> {
   Future<void> getExpertAvailablity() async {
     try {
       String? expertId = _itUserAuthSDK.getUser()!.uid;
-      DsdExpertAvailability? schedule =
-          await _availablitySDK.getAvailability(expertId);
+      DsdExpertAvailability? schedule = await _availablitySDK.getAvailability(expertId);
 
       // Ensure that the data is not null
       if (schedule != null && schedule.availability != null) {
-        setState(() {
-          dateWiseTimeslots = schedule.availability!;
-          selectedDates = dateWiseTimeslots.keys.toList();
-        });
+        if (mounted) {
+          setState(() {
+            dateWiseTimeslots = schedule.availability!;
+            selectedDates = dateWiseTimeslots.keys.toList();
+          });
+        }
       }
     } catch (e) {
       print('Error fetching availability: $e');
     } finally {
-      setState(() {
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -61,6 +64,12 @@ class _AvailabilityViewState extends State<AvailabilityView> {
     getExpertAvailablity(); // Load data initially
   }
 
+  @override
+  void dispose() {
+    // Cancel any ongoing operations if needed
+    super.dispose();
+  }
+
   void onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     setState(() {
       // Check if the selected day has not been added to the selectedDates
@@ -71,22 +80,16 @@ class _AvailabilityViewState extends State<AvailabilityView> {
         // Assign default availability slots for the new day
         dateWiseTimeslots[selectedDay] = [
           AvailabilitySlot(
-            start: DateTime(
-                selectedDay.year, selectedDay.month, selectedDay.day, 8, 0),
-            end: DateTime(
-                selectedDay.year, selectedDay.month, selectedDay.day, 10, 0),
+            start: DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 8, 0),
+            end: DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 10, 0),
           ),
           AvailabilitySlot(
-            start: DateTime(
-                selectedDay.year, selectedDay.month, selectedDay.day, 11, 0),
-            end: DateTime(
-                selectedDay.year, selectedDay.month, selectedDay.day, 13, 0),
+            start: DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 11, 0),
+            end: DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 13, 0),
           ),
           AvailabilitySlot(
-            start: DateTime(
-                selectedDay.year, selectedDay.month, selectedDay.day, 14, 0),
-            end: DateTime(
-                selectedDay.year, selectedDay.month, selectedDay.day, 16, 0),
+            start: DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 14, 0),
+            end: DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 16, 0),
           ),
         ];
       }
@@ -127,22 +130,19 @@ class _AvailabilityViewState extends State<AvailabilityView> {
     return endTime.isAfter(startTime.add(const Duration(minutes: 30)));
   }
 
-  Future<void> _selectTime(
-      BuildContext context, bool isStartTime, int index) async {
-    if (currentEditingDate == null ||
-        dateWiseTimeslots[currentEditingDate!] == null) return;
+  Future<void> _selectTime(BuildContext context, bool isStartTime, int index) async {
+    if (currentEditingDate == null || dateWiseTimeslots[currentEditingDate!] == null) return;
 
     final DateTime selectedDate = currentEditingDate!;
     final AvailabilitySlot timeSlot = dateWiseTimeslots[selectedDate]![index];
 
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime:
-          TimeOfDay.fromDateTime(isStartTime ? timeSlot.start : timeSlot.end),
+      initialTime: TimeOfDay.fromDateTime(isStartTime ? timeSlot.start : timeSlot.end),
     );
     if (picked != null) {
-      final DateTime newTime = DateTime(selectedDate.year, selectedDate.month,
-          selectedDate.day, picked.hour, picked.minute);
+      final DateTime newTime = DateTime(
+          selectedDate.year, selectedDate.month, selectedDate.day, picked.hour, picked.minute);
       if (isStartTime) {
         if (validateTimes(newTime, timeSlot.end)) {
           setState(() {
@@ -152,8 +152,7 @@ class _AvailabilityViewState extends State<AvailabilityView> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(
-                  'Start time must be at least 30 minutes before end time.'),
+              content: Text('Start time must be at least 30 minutes before end time.'),
               backgroundColor: Colors.red,
             ),
           );
@@ -167,8 +166,7 @@ class _AvailabilityViewState extends State<AvailabilityView> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(
-                  'End time must be at least 30 minutes after start time.'),
+              content: Text('End time must be at least 30 minutes after start time.'),
               backgroundColor: Colors.red,
             ),
           );
@@ -180,8 +178,7 @@ class _AvailabilityViewState extends State<AvailabilityView> {
   @override
   Widget build(BuildContext context) {
     return _loading
-        ? const Center(
-            child: CircularProgressIndicator()) // Center loading indicator
+        ? const Center(child: CircularProgressIndicator()) // Center loading indicator
         : Scaffold(
             body: SingleChildScrollView(
               child: Column(
@@ -191,8 +188,7 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                     padding: EdgeInsets.all(16.0),
                     child: Text(
                       'Manage Your Availability',
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const Padding(
@@ -209,8 +205,7 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                       firstDay: firstDay,
                       lastDay: lastDay,
                       focusedDay: focusedDay,
-                      selectedDayPredicate: (day) =>
-                          selectedDates.contains(day),
+                      selectedDayPredicate: (day) => selectedDates.contains(day),
                       onDaySelected: onDaySelected,
                       availableCalendarFormats: const {
                         CalendarFormat.month: 'Month',
@@ -237,9 +232,7 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                             margin: const EdgeInsets.all(6.0),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: date == focusedDay
-                                  ? Colors.blue
-                                  : Colors.grey,
+                              color: date == focusedDay ? Colors.blue : Colors.grey,
                               shape: BoxShape.circle,
                             ),
                             child: Text(
@@ -250,15 +243,13 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                         },
                       ),
                       enabledDayPredicate: (day) {
-                        return day.isAfter(
-                                today.subtract(const Duration(days: 1))) &&
+                        return day.isAfter(today.subtract(const Duration(days: 1))) &&
                             day.isBefore(lastDay.add(const Duration(days: 1)));
                       },
                     ),
                   ),
                   const SizedBox(height: 20),
-                  if (currentEditingDate != null &&
-                      dateWiseTimeslots[currentEditingDate!] != null)
+                  if (currentEditingDate != null && dateWiseTimeslots[currentEditingDate!] != null)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Column(
@@ -266,14 +257,10 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                         children: [
                           Text(
                             'Timeslots for ${DateFormat('yMMMMd').format(currentEditingDate!)}',
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 20),
-                          ...dateWiseTimeslots[currentEditingDate!]!
-                              .asMap()
-                              .entries
-                              .map((entry) {
+                          ...dateWiseTimeslots[currentEditingDate!]!.asMap().entries.map((entry) {
                             int index = entry.key;
                             AvailabilitySlot timeSlot = entry.value;
                             return ListTile(
@@ -286,8 +273,8 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                                       },
                                       child: InputDecorator(
                                         decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.symmetric(
-                                              vertical: 0, horizontal: 10.0),
+                                          contentPadding:
+                                              EdgeInsets.symmetric(vertical: 0, horizontal: 10.0),
                                           labelText: 'From',
                                           border: OutlineInputBorder(),
                                         ),
@@ -302,8 +289,7 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                                   Expanded(
                                     child: InkWell(
                                       onTap: () async {
-                                        await _selectTime(
-                                            context, false, index);
+                                        await _selectTime(context, false, index);
                                       },
                                       child: InputDecorator(
                                         decoration: const InputDecoration(
@@ -320,8 +306,7 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                                   IconButton(
                                     icon: const Icon(Icons.delete),
                                     onPressed: () {
-                                      removeTimeslot(
-                                          currentEditingDate!, index);
+                                      removeTimeslot(currentEditingDate!, index);
                                     },
                                   ),
                                 ],
@@ -335,13 +320,10 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                                 child: Container(
                                   height: 50,
                                   width: 150,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                                   decoration: BoxDecoration(
-                                    color:
-                                        const Color.fromRGBO(173, 239, 255, 1),
-                                    border: Border.all(
-                                        color: Colors.blue, width: 2.0),
+                                    color: const Color.fromRGBO(173, 239, 255, 1),
+                                    border: Border.all(color: Colors.blue, width: 2.0),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: TextButton(
@@ -363,13 +345,10 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                                 child: Container(
                                   height: 50,
                                   width: 150,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                                   decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 255, 191, 186),
-                                    border: Border.all(
-                                        color: Colors.red, width: 2.0),
+                                    color: const Color.fromARGB(255, 255, 191, 186),
+                                    border: Border.all(color: Colors.red, width: 2.0),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: TextButton(
@@ -419,8 +398,7 @@ class _AvailabilityViewState extends State<AvailabilityView> {
                           setState(() {
                             _sendData = false;
                           });
-                          DsdToastMessages.success(context,
-                              text: "Time Slots Updated!");
+                          DsdToastMessages.success(context, text: "Time Slots Updated!");
                         });
                       },
                       child: _sendData

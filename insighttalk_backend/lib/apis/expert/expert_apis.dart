@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:insighttalk_backend/apis/category/category_apis.dart';
-import 'package:insighttalk_backend/helper/dsd_dob_validator.dart';
-import 'package:insighttalk_backend/modal/modal_availablity.dart';
 import 'package:insighttalk_backend/modal/modal_category.dart';
 import 'package:insighttalk_backend/modal/modal_expert.dart';
 
