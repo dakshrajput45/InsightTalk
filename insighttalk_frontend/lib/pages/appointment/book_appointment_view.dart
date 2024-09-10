@@ -36,7 +36,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
   final ITUserAuthSDK _itUserAuthSDK = ITUserAuthSDK();
   final DsdAvailablitySDK _dsdExpertAvalabilityApis = DsdAvailablitySDK();
   String selectedCategory = '';
-  int selectedDuration = 0;
+  int _selectedDuration = 0;
   int price = 0;
   Timestamp? appointmentTime;
   final int _maxCharacters = 500;
@@ -215,11 +215,11 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
             ),
             DurationSelector(
               durations: const [20, 40, 60],
-              onDurationSelected: (selectedDuration) {
+              onDurationSelected: (duration) {
                 setState(() {
-                  selectedDuration = selectedDuration;
-                  (selectedDuration != 0)
-                      ? price = (selectedDuration * 5) - 40
+                  _selectedDuration = duration;
+                  (_selectedDuration != 0)
+                      ? price = (_selectedDuration * 5) - 40
                       : price = 0;
                 });
               },
@@ -324,7 +324,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                       _paymentService.open_checkout(checkout);
                     }
                   }
-                  Future.delayed(Duration(seconds: 10), () async {
+                  Future.delayed(const Duration(seconds: 10), () async {
                     String userId = _itUserAuthSDK.getUser()!.uid;
                     await _dsdAppointmentController.createAppointment(
                         userId,
@@ -333,7 +333,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                         reasonController.text,
                         [selectedCategory],
                         price,
-                        selectedDuration);
+                        _selectedDuration);
                     context.goNamed(routeNames.experts);
                   });
                 },
