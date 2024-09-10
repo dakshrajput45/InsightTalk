@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -40,10 +39,7 @@ class _ChatViewState extends State<ChatView> {
     if (text.isEmpty) return;
 
     DsdMessage message = DsdMessage(
-        text: text,
-        time: Timestamp.now(),
-        senderName: senderName,
-        senderId: widget.room!.userId!);
+        text: text, time: Timestamp.now(), senderName: senderName, senderId: widget.room!.userId!);
     _dsdChatController.sendMessage(
       message: message,
       room: widget.room!,
@@ -81,8 +77,7 @@ class _ChatViewState extends State<ChatView> {
   }
 
   Future<void> loadData() async {
-    var name =
-        await _dsdChatApis.fetchNameAndImage(widget.room!.userId!, false);
+    var name = await _dsdChatApis.fetchNameAndImage(widget.room!.userId!, false);
     senderName = name.$1;
   }
 
@@ -112,8 +107,7 @@ class _ChatViewState extends State<ChatView> {
   }
 
   late StreamSubscription<QuerySnapshot<Object?>> docChangeListener;
-  late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>
-      chatRoomListener;
+  late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>> chatRoomListener;
 
   @override
   void initState() {
@@ -133,12 +127,10 @@ class _ChatViewState extends State<ChatView> {
           switch (change.type) {
             case DocumentChangeType.added:
               {
-                FlutterRingtonePlayer()
-                    .play(fromAsset: "assets/sounds/pop.mp3");
+                FlutterRingtonePlayer().play(fromAsset: "assets/sounds/pop.mp3");
                 setState(() {
                   _messages.add(DsdMessage.fromJson(
-                      change.doc.data() as Map<String, dynamic>,
-                      change.doc.id));
+                      change.doc.data() as Map<String, dynamic>, change.doc.id));
                   _sortMessages();
                 });
 
@@ -153,11 +145,8 @@ class _ChatViewState extends State<ChatView> {
         }
       },
     );
-    chatRoomListener = FirebaseFirestore.instance
-        .collection("chatRooms")
-        .doc(widget.roomId)
-        .snapshots()
-        .listen(
+    chatRoomListener =
+        FirebaseFirestore.instance.collection("chatRooms").doc(widget.roomId).snapshots().listen(
       (event) {
         _chatRoom = DsdChatRooms.fromJson(json: event.data()!, id: event.id);
       },
@@ -194,8 +183,7 @@ class _ChatViewState extends State<ChatView> {
                           ),
                         ),
                       ),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
                       fit: BoxFit.cover,
                       width: 40,
                       height: 40,
@@ -252,10 +240,7 @@ class _ChatViewState extends State<ChatView> {
                             ),
                           ),
                           maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                          maxLength:
-                              senderMessageController.value.text.length > 900
-                                  ? 1024
-                                  : null,
+                          maxLength: senderMessageController.value.text.length > 900 ? 1024 : null,
                           keyboardType: TextInputType.text,
                         ),
                       ),
@@ -299,9 +284,7 @@ class _ChatViewState extends State<ChatView> {
           final bgColor = selfMessage
               ? Theme.of(context).colorScheme.primary
               : const Color.fromARGB(255, 202, 202, 202);
-          final fgColor = selfMessage
-              ? Theme.of(context).colorScheme.onPrimary
-              : Colors.black;
+          final fgColor = selfMessage ? Theme.of(context).colorScheme.onPrimary : Colors.black;
 
           // Previous message ka time check karenge
           bool showDate = false;
@@ -312,10 +295,8 @@ class _ChatViewState extends State<ChatView> {
             final lastMessage = _messages[index + 1];
             // Agar current message aur previous message ka date alag hai, toh date dikhani hogi
             if (message.time!.toDate().day != lastMessage.time!.toDate().day ||
-                message.time!.toDate().month !=
-                    lastMessage.time!.toDate().month ||
-                message.time!.toDate().year !=
-                    lastMessage.time!.toDate().year) {
+                message.time!.toDate().month != lastMessage.time!.toDate().month ||
+                message.time!.toDate().year != lastMessage.time!.toDate().year) {
               showDate = true;
             }
           }
@@ -323,9 +304,7 @@ class _ChatViewState extends State<ChatView> {
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
-              crossAxisAlignment: selfMessage
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
+              crossAxisAlignment: selfMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 if (showDate) ...[
                   Padding(
@@ -338,14 +317,10 @@ class _ChatViewState extends State<ChatView> {
                           decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.surface,
                               border: Border.all(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainerHigh),
+                                  color: Theme.of(context).colorScheme.surfaceContainerHigh),
                               borderRadius: BorderRadius.circular(8)),
                           child: Text(
-                            message.time!
-                                .toDate()
-                                .dateFormatter("EEEE, dd MMMM"),
+                            message.time!.toDate().dateFormatter("EEEE, dd MMMM"),
                           ),
                         ),
                       ],
@@ -356,14 +331,9 @@ class _ChatViewState extends State<ChatView> {
                   ),
                 ],
                 DsdMessageView(
-                    message: message,
-                    selfMessage: selfMessage,
-                    bgColor: bgColor,
-                    fgColor: fgColor),
+                    message: message, selfMessage: selfMessage, bgColor: bgColor, fgColor: fgColor),
                 Row(
-                  mainAxisAlignment: selfMessage
-                      ? MainAxisAlignment.end
-                      : MainAxisAlignment.start,
+                  mainAxisAlignment: selfMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
                   children: [
                     Text(
                       message.time!.toDate().dateFormatter("hh:mm aa"),

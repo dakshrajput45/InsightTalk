@@ -47,17 +47,14 @@ class _ChatRoomsViewState extends State<ChatRoomsView> {
       _loading = true;
     });
     await chatController.initializeSharedPreference();
-    await chatController.fetchChatRooms(
-        hardReset: true, userId: _itUserAuthSDK.getUser()!.uid);
+    await chatController.fetchChatRooms(hardReset: true, userId: _itUserAuthSDK.getUser()!.uid);
 
     // Fetch name and profile image for each chat room
-    if (chatController.myChatRooms != null) {
-      for (var chatRoom in chatController.myChatRooms) {
-        var details =
-            await _dsdChatApis.fetchNameAndImage(chatRoom.expertId!, false);
-        chatRoom.name = details.$1;
-        chatRoom.profileImage = details.$2;
-      }
+
+    for (var chatRoom in chatController.myChatRooms) {
+      var details = await _dsdChatApis.fetchNameAndImage(chatRoom.expertId!, false);
+      chatRoom.name = details.$1;
+      chatRoom.profileImage = details.$2;
     }
 
     setState(() {
@@ -94,16 +91,16 @@ class _ChatRoomsViewState extends State<ChatRoomsView> {
                       children: [
                         InkWell(
                           onTap: () async {
-                            await openChatRoom(context,
-                                chatRoomId: chatRoom.id!, 
-                                chatRoom: chatRoom,
-                                );
+                            await openChatRoom(
+                              context,
+                              chatRoomId: chatRoom.id!,
+                              chatRoom: chatRoom,
+                            );
                             await _loadData();
                           },
                           child: Container(
                             margin: const EdgeInsets.symmetric(vertical: 8),
-                            padding: const EdgeInsets.symmetric(
-                                 horizontal: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,8 +115,7 @@ class _ChatRoomsViewState extends State<ChatRoomsView> {
                                 Expanded(
                                   flex: 2,
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(chatRoom.name!.toUpperCase(),
                                           style: const TextStyle(
@@ -130,8 +126,7 @@ class _ChatRoomsViewState extends State<ChatRoomsView> {
                                       const SizedBox(height: 4),
                                       if (chatRoom.lastMessage != null)
                                         Text(
-                                          chatRoom.lastMessage!.text!
-                                              .toUpperCase(),
+                                          chatRoom.lastMessage!.text!.toUpperCase(),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -149,9 +144,7 @@ class _ChatRoomsViewState extends State<ChatRoomsView> {
                                     if (isNewMessage)
                                       Icon(
                                         Icons.circle_notifications_rounded,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
+                                        color: Theme.of(context).colorScheme.primary,
                                         size: 20,
                                       ),
                                   ],
