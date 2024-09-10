@@ -231,7 +231,7 @@ class _SignUpViewState extends State<SignUpView> {
                               ),
                             )
                           : const Text(
-                              'Log in with Google',
+                              'Sign Up with Google',
                               style: TextStyle(fontSize: 18.0),
                             ),
                       style: ButtonStyle(

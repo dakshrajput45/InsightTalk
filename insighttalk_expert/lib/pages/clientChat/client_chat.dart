@@ -291,7 +291,7 @@ class _ClientChatViewState extends State<ClientChatView> {
         itemCount: _messages.length,
         itemBuilder: (context, index) {
           final message = _messages[index];
-          final selfMessage = message.senderName == senderName;
+          final selfMessage = message.senderName == senderName && message.senderId == widget.room!.expertId;
           final bgColor = selfMessage
               ? Theme.of(context).colorScheme.primary
               : const Color.fromARGB(255, 202, 202, 202);

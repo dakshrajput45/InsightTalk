@@ -29,7 +29,7 @@ class _ChatViewState extends State<ChatView> {
   late Stream<QuerySnapshot> _messageStream;
   bool _isLoading = false;
   DsdChatRooms? _chatRoom;
-  var senderName;
+  String? senderName;
 
   final List<DsdMessage> _messages = [];
   final Timestamp screenLoadTime = Timestamp.now();
@@ -77,7 +77,7 @@ class _ChatViewState extends State<ChatView> {
   }
 
   Future<void> loadData() async {
-    var name = await _dsdChatApis.fetchNameAndImage(widget.room!.userId!, false);
+    var name = await _dsdChatApis.fetchNameAndImage(widget.room!.userId!, true);
     senderName = name.$1;
   }
 
@@ -280,7 +280,7 @@ class _ChatViewState extends State<ChatView> {
         itemCount: _messages.length,
         itemBuilder: (context, index) {
           final message = _messages[index];
-          final selfMessage = message.senderName == senderName;
+          final selfMessage = message.senderName == senderName && message.senderId == widget.room!.userId;
           final bgColor = selfMessage
               ? Theme.of(context).colorScheme.primary
               : const Color.fromARGB(255, 202, 202, 202);

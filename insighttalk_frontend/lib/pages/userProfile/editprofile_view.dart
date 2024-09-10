@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:insighttalk_backend/modal/modal_category.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
+import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:insighttalk_backend/helper/toast.dart';
 import 'package:insighttalk_backend/helper/Dsd_dob_validator.dart';
 import 'package:insighttalk_backend/apis/userApis/user_details_api.dart';
+import 'package:path_provider/path_provider.dart';
 
 final DsdProfileController _dsdProfileController = DsdProfileController();
 
@@ -152,6 +154,8 @@ class _EditProfileViewState extends State<EditProfileView> {
       final pickedImage = await picker.pickImage(source: source);
       if (pickedImage != null) {
         _imageFile = File(pickedImage.path);
+        // Compress the image before uploading
+        _imageFile = await _compressImage(File(pickedImage.path));
         return _imageFile;
       } else {
         return null;
@@ -161,22 +165,50 @@ class _EditProfileViewState extends State<EditProfileView> {
     }
   }
 
-  Future<void> _uploadImageToFirebase(img) async {
-    if (img == null) {
-      return;
-    }
+  Future<File> _compressImage(File imageFile) async {
     try {
-      if (!await img!.exists()) {
+      // Read the image from the file
+      final img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
+
+      if (image == null) {
+        throw Exception("Failed to decode the image.");
+      }
+
+      // Resize and compress the image to reduce its size (optional)
+      final img.Image resizedImage = img.copyResize(
+        image,
+        width: 600, // Resize to a width of 600px, adjust as needed
+      );
+
+      // Compress the image (quality between 0 to 100)
+      final List<int> compressedImageBytes = img.encodeJpg(resizedImage,
+          quality: 80); // Adjust the quality as needed
+
+      // Save the compressed image to a temporary file
+      final tempDir = await getTemporaryDirectory();
+      final compressedImageFile =
+          File('${tempDir.path}/compressed_${path.basename(imageFile.path)}');
+      await compressedImageFile.writeAsBytes(compressedImageBytes);
+
+      return compressedImageFile;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> _uploadImageToFirebase(File img) async {
+    try {
+      if (!await img.exists()) {
         return;
       }
 
+      // Upload the file to Firebase Storage
       final ref = firebase_storage.FirebaseStorage.instance
           .ref()
           .child('images')
-          .child(path.basename(_imageFile!.path));
+          .child(path.basename(img.path));
 
-      // Upload the file to Firebase Storage
-      final uploadTask = ref.putFile(img!);
+      final uploadTask = ref.putFile(img);
       await uploadTask;
       final downloadURL = await ref.getDownloadURL();
 
