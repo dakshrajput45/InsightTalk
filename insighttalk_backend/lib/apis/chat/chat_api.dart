@@ -52,7 +52,7 @@ class DsdChatApis {
 
   Future<(List<DsdChatRooms>, DocumentSnapshot?)> getChatRooms(
       {required String id,
-      required bool isUser, // userId ke liye true, expertId ke liye false
+      required bool isUser , // userId ke liye true, expertId ke liye false
       DocumentSnapshot? lastDocumentSnapshot,
       int pageSize = 10 // Default page size 10
       }) async {
